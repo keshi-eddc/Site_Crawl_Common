@@ -12,12 +12,14 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.springframework.stereotype.Component;
 
 import fun.jerry.browser.WebDriverSupport;
 import fun.jerry.browser.entity.WebDriverConfig;
+import fun.jerry.common.LogSupport;
 import fun.jerry.common.ProxyType;
 import fun.jerry.common.RequestType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
@@ -27,6 +29,8 @@ import fun.jerry.httpclient.core.UserAgentSupport;
 
 @Component
 public class DianPingCommonRequest extends HttpClientSupport {
+	
+	private static Logger log = LogSupport.getDianpinglog();
 	
 	private final static BlockingQueue<String> COOKIES = new ArrayBlockingQueue<String>(200);
 
@@ -38,32 +42,39 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		COOKIES_SHOPLIST.add("showNav=javascript:; navCtgScroll=200; showNav=javascript:; navCtgScroll=0; _hc.v=e21bfd77-23c0-bd96-85cf-adec6aa34747.1509347333; __utma=1.780503649.1510041292.1510041292.1510041292.1; __utmz=1.1510041292.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); JSESSIONID=26CEC1B3FCEF371EED7A05E9969BEE13; _lxsdk_cuid=161fa3115fcc8-0538dde0ed830a-5e183017-100200-161fa3115fdc8; _lxsdk=161fa3115fcc8-0538dde0ed830a-5e183017-100200-161fa3115fdc8; _lx_utm=utm_source%3Ddp_pc_other; cy=1; cye=shanghai; s_ViewType=10; _lxsdk_s=161ff1ee5c3-e08-518-197%7C%7C10");
 	}
 	
-	private static void refreshShopListCookie (String url) {
-		StringBuilder cookies = new StringBuilder();
-		WebDriverConfig config = new WebDriverConfig();
-		WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
-		while (StringUtils.isEmpty(cookies)) {
-			config.setProxyType(ProxyType.PROXY_TYPE_STATIC);
-			driver.get(url);
-			
-			String html = driver.getPageSource();
-			if (html.contains("未连接到互联网") || html.contains("代理服务器出现问题，或者地址有误") || html.contains("ERR_PROXY_CONNECTION_FAILED")) {
-				continue;
-			}
-			
-			Set<Cookie> cookieSet = driver.manage().getCookies();
-	        for (Cookie temp : cookieSet) {
-	        	cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
-	        	//System.out.println(temp.getName() + "    " + temp.getValue());
-//	        	if (ArrayUtils.contains(new String[] {"JSESSIONID", "cid", "sut", "saut"}, temp.getName())) {
-//	        		cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
-//	        	}
-	        }
-		}
+	private synchronized static void refreshShopListCookie (String url) {
 		COOKIES_SHOPLIST.poll();
-		COOKIES_SHOPLIST.add(cookies.toString());
-		driver.close();
-		driver.quit();
+		if (COOKIES_SHOPLIST.isEmpty()) {
+			StringBuilder cookies = new StringBuilder();
+			WebDriverConfig config = new WebDriverConfig();
+			WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
+			try {
+				while (StringUtils.isEmpty(cookies)) {
+					config.setProxyType(ProxyType.PROXY_TYPE_STATIC);
+					driver.get(url);
+					
+					String html = driver.getPageSource();
+					if (html.contains("未连接到互联网") || html.contains("代理服务器出现问题，或者地址有误") || html.contains("ERR_PROXY_CONNECTION_FAILED")) {
+						continue;
+					}
+					
+					Set<Cookie> cookieSet = driver.manage().getCookies();
+			        for (Cookie temp : cookieSet) {
+			        	cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
+			        	//System.out.println(temp.getName() + "    " + temp.getValue());
+//			        	if (ArrayUtils.contains(new String[] {"JSESSIONID", "cid", "sut", "saut"}, temp.getName())) {
+//			        		cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
+//			        	}
+			        }
+				}
+				COOKIES_SHOPLIST.add(cookies.toString());
+			} catch (Exception e) {
+				log.info("refreshShopListCookie error ", e);
+			} finally {
+				driver.close();
+				driver.quit();
+			}
+		}
 	}
 	
 	public static String getSubCategorySubRegion(HttpRequestHeader header) {

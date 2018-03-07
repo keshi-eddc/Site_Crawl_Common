@@ -77,7 +77,7 @@ public class DianPingSubCategorySubRegionRefresh implements Runnable {
 	@SuppressWarnings("unchecked")
 	private void crawl() {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select top 10000 * from Dianping_SubCategory_SubRegion where shop_total_page = -1 ")
+		sql.append("select top 50000 * from Dianping_SubCategory_SubRegion where shop_total_page = -1 ")
 //			.append("and sub_category_id in (select sub_category_id from dbo.Dianping_City_SubCategory ")
 //				.append("where primary_category = '" + primaryCategory + "' ")
 //				.append(StringUtils.isNotEmpty(category) ? "and category = '" + category + "' " : " ")
@@ -98,7 +98,7 @@ public class DianPingSubCategorySubRegionRefresh implements Runnable {
 			
 			List<SqlEntity> updateList = new ArrayList<>();
 			
-			ExecutorService pool = Executors.newFixedThreadPool(10); 
+			ExecutorService pool = Executors.newFixedThreadPool(30); 
 			
 			for (DianpingSubCategorySubRegion sub : urls) {
 				sub.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
