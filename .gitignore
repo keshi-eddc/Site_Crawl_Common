@@ -1,0 +1,14 @@
+/.settings/
+/.project
+/.classpath
+/target/
+
+/*/.settings/
+/*/.project
+/*/.classpath
+/*/target/
+/*/log/
+
+/*/chromedriver.exe
+/*/phantomjs
+/*/phantomjs.exe
