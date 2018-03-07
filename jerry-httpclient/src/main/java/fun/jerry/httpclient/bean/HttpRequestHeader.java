@@ -2,6 +2,9 @@ package fun.jerry.httpclient.bean;
 
 import java.util.List;
 
+import org.openqa.selenium.WebDriver;
+
+import fun.jerry.common.ProxyType;
 import fun.jerry.common.RequestType;
 
 public class HttpRequestHeader {
@@ -47,7 +50,7 @@ public class HttpRequestHeader {
 	/** 页面加载时候的超时时间 */
 	private int timeOut = 2000;
 	
-	private String proxyType;
+	private ProxyType proxyType;
 	
 	/**
 	 * 请求最大重试次数
@@ -60,6 +63,8 @@ public class HttpRequestHeader {
 	private int requestSleepTime;
 	
 	private RequestType requestType = RequestType.HTTP_GET;
+	
+	private WebDriver driver;
 	
 	public HttpRequestHeader() {
 		super();
@@ -226,11 +231,11 @@ public class HttpRequestHeader {
 		this.maxTryTimes = maxTryTimes;
 	}
 
-	public String getProxyType() {
+	public ProxyType getProxyType() {
 		return proxyType;
 	}
 
-	public void setProxyType(String proxyType) {
+	public void setProxyType(ProxyType proxyType) {
 		this.proxyType = proxyType;
 	}
 
@@ -249,6 +254,16 @@ public class HttpRequestHeader {
 	public void setRequestType(RequestType requestType) {
 		this.requestType = requestType;
 	}
+
+	public WebDriver getDriver() {
+		return driver;
+	}
+
+	public void setDriver(WebDriver driver) {
+		this.driver = driver;
+	}
+
+
 
 	public class NameValue {
 		

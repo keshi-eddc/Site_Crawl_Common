@@ -41,7 +41,7 @@ public class UserAgentSupport {
 	public static String getPCUserAgent() {
 		String ua = PC_UAList.poll();
 		if (StringUtils.isNotEmpty(ua)) {
-			log.info("useragent = " + ua);
+//			log.info("useragent = " + ua);
 			PC_UAList.offer(ua);
 		}
 		return ua;

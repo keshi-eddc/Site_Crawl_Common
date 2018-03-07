@@ -4,13 +4,11 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>fun.jerry</groupId>
+		<groupId>com.edmi</groupId>
 		<artifactId>fun-jerry</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>fun.jerry</groupId>
 	<artifactId>jerry-cache</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>jerry-cache</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -24,12 +22,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-            <groupId>fun.jerry</groupId>
+            <groupId>com.edmi</groupId>
             <artifactId>jerry-entity</artifactId>
            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fun.jerry</groupId>
+            <groupId>com.edmi</groupId>
             <artifactId>jerry-common</artifactId>
            <version>0.0.1-SNAPSHOT</version>
         </dependency>

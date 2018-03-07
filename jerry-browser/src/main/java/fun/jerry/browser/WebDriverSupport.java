@@ -35,17 +35,15 @@ public class WebDriverSupport {
 	public final static String DRIVER = "driver";
 	
 	/* WebDriver页面加载超时时间 */
-	public static final int PAGE_LOAD_TIMEOUT = 1000;
+	public static final int PAGE_LOAD_TIMEOUT = 60;
 	
-	private static final int ChromeDriverCapacity = 1;
+	private static final int CHROMEDRIVER_CAPACITY = 3;
 
-	private static boolean ChromeDriverCapacityFull = false;
-
-	private static final int PhantomJSDriverCapacity = 10;
+	private static final int PhantomJSDriver_Capacity = 10;
 	
-	public static final ArrayBlockingQueue<WebDriver> ChromeDriver_List = new ArrayBlockingQueue<>(ChromeDriverCapacity);
+	public static final ArrayBlockingQueue<WebDriver> ChromeDriver_List = new ArrayBlockingQueue<>(CHROMEDRIVER_CAPACITY);
 	
-	public static final ArrayBlockingQueue<WebDriver> PhantomJS_List = new ArrayBlockingQueue<>(PhantomJSDriverCapacity);
+	public static final ArrayBlockingQueue<WebDriver> PhantomJS_List = new ArrayBlockingQueue<>(PhantomJSDriver_Capacity);
 	
 	private static String phantomjs_path = null;
 
@@ -70,20 +68,15 @@ public class WebDriverSupport {
 	 * 获取一个ChromeDriver对象，用于加载页面，执行js
 	 * @return
 	 */
-	public synchronized static WebDriver getChromeDriver(WebDriverConfig config) {
+	private synchronized static WebDriver initChromeDriverList(WebDriverConfig config) {
 		WebDriver driver = null;
-		while (!ChromeDriverCapacityFull) {
-			if (ChromeDriver_List.remainingCapacity() > 0) {
-				try {
-					WebDriver driver_ = getChromeDriverInstance(config);
-					driver_.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIMEOUT, TimeUnit.SECONDS);
-					ChromeDriver_List.add(driver_);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				ChromeDriverCapacityFull = true;
-				break;
+		while (ChromeDriver_List.remainingCapacity() > 0) {
+			try {
+				WebDriver driver_ = getChromeDriverInstance(config);
+				driver_.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIMEOUT, TimeUnit.SECONDS);
+				ChromeDriver_List.add(driver_);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 //		driver = ChromeDriver_List.poll();
@@ -194,17 +187,45 @@ public class WebDriverSupport {
 	
 	public static Map<String, Object> load(WebDriverConfig config) {
 		
+		return load(config, 0);
+		
+	}
+	
+	private static Map<String, Object> load(WebDriverConfig config, int count) {
+		
 		Map<String, Object> result = new HashMap<>();
+		result.put(HTML, "");
+		result.put(DRIVER, null);
+		
 		WebDriver driver = null;
 		try {
-			driver = getChromeDriverInstance(config);
+			driver = ChromeDriver_List.isEmpty() ? getChromeDriverInstance(config) : ChromeDriver_List.poll();
+			count ++;
 			driver.get(config.getUrl());
+			String html = driver.getPageSource();
+			if (html.contains("未连接到互联网") || html.contains("代理服务器出现问题，或者地址有误") || html.contains("ERR_PROXY_CONNECTION_FAILED")) {
+				driver.close();
+				driver.quit();
+				driver = null;
+				if (count > config.getMaxTryTimes()) {
+					return result;
+				} else {
+					load(config, count);
+				}
+			}
+			result.put(HTML, html);
 		} catch (TimeoutException e) {
 			stop(driver);
-			driver.navigate().refresh();
+		} finally {
+			if (null != driver) {
+				ChromeDriver_List.add(driver);
+			}
+			String html = driver.getPageSource();
+			result.put(HTML, html);
+//			driver.close();
+//			driver.quit();
 		}
 		
-		result.put(HTML, driver.getPageSource());
 		result.put(DRIVER, driver);
 		
 		return result;

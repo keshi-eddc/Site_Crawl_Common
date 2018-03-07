@@ -1,5 +1,9 @@
 package fun.jerry.browser.entity;
 
+import org.openqa.selenium.WebDriver;
+
+import fun.jerry.common.ProxyType;
+
 public class WebDriverConfig {
 	
 	private String url;
@@ -8,7 +12,9 @@ public class WebDriverConfig {
 	
 	private String downloadPath;
 	
-	private String proxyType;
+	private ProxyType proxyType = ProxyType.PROXY_TYPE_STATIC;
+	
+	private int maxTryTimes = 3;
 
 	public String getUrl() {
 		return url;
@@ -34,12 +40,20 @@ public class WebDriverConfig {
 		this.downloadPath = downloadPath;
 	}
 
-	public String getProxyType() {
+	public ProxyType getProxyType() {
 		return proxyType;
 	}
 
-	public void setProxyType(String proxyType) {
+	public void setProxyType(ProxyType proxyType) {
 		this.proxyType = proxyType;
+	}
+
+	public int getMaxTryTimes() {
+		return maxTryTimes;
+	}
+
+	public void setMaxTryTimes(int maxTryTimes) {
+		this.maxTryTimes = maxTryTimes;
 	}
 	
 }

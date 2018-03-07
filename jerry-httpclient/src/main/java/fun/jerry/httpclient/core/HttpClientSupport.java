@@ -34,8 +34,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
-import fun.jerry.common.ProxyType;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.ProxyType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.proxy.ProxyIpSupport;
@@ -218,9 +218,11 @@ public class HttpClientSupport {
 
 //			get.setConfig(requestConfig);//poass the request config to request
 			
-			if (ArrayUtils.contains(new String[] {ProxyType.PROXY_TYPE_STATIC}, header.getProxyType())) {
+			if (header.getProxyType() ==  ProxyType.PROXY_TYPE_STATIC) {
 				//普通代理IP设置
 				Proxy _proxy = ProxyIpSupport.getStaticProxy();
+//				_proxy.setIp("1.196.158.145");
+//				_proxy.setPort(57112);
 				HttpHost proxy = new HttpHost(_proxy.getIp(), _proxy.getPort());
 		        builder.setProxy(proxy);
 			}
