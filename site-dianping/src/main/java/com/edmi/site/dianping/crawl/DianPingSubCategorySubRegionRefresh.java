@@ -71,23 +71,24 @@ public class DianPingSubCategorySubRegionRefresh implements Runnable {
 	@Override
 	public void run() {
 		log.info(cityCnname + " 开始抓取");
+		DianPingCommonRequest.refreshShopListCookie("http://www.dianping.com/shanghai/ch10/g110r2");
 		crawl();
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void crawl() {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select top 50000 * from Dianping_SubCategory_SubRegion where shop_total_page = -1 ")
+		sql.append("select * from Dianping_SubCategory_SubRegion where shop_total_page = 0 ")
 //			.append("and sub_category_id in (select sub_category_id from dbo.Dianping_City_SubCategory ")
 //				.append("where primary_category = '" + primaryCategory + "' ")
 //				.append(StringUtils.isNotEmpty(category) ? "and category = '" + category + "' " : " ")
 //				.append(StringUtils.isNotEmpty(subCategory) ? "and sub_category = '" + subCategory + "' " : " ")
 //				.append(")")
-//			.append("and sub_region_id in (select sub_region_id from dbo.Dianping_City_SubRegion ")
-//				.append(" where city_cnname = '" + cityCnname + "' ")
-//				.append(StringUtils.isNotEmpty(region) ? "and region = '" + region + "' " : " ")
-//				.append(StringUtils.isNotEmpty(subRegion) ? "and sub_region = '" + subRegion + "' " : " ")
-//				.append(")")
+			.append("and sub_region_id in (select sub_region_id from dbo.Dianping_City_SubRegion ")
+				.append(" where city_cnname = '" + cityCnname + "' ")
+				.append(StringUtils.isNotEmpty(region) ? "and region = '" + region + "' " : " ")
+				.append(StringUtils.isNotEmpty(subRegion) ? "and sub_region = '" + subRegion + "' " : " ")
+				.append(")")
 			;
 		
 		while (true) {

@@ -31,7 +31,7 @@ import fun.jerry.entity.SqlEntity;
 import fun.jerry.entity.SqlType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 
-public class DianPingShopListCrawl implements Runnable {
+public class DianPingShopCommentCrawl implements Runnable {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
@@ -39,7 +39,7 @@ public class DianPingShopListCrawl implements Runnable {
 	
 	private IGeneralJdbcUtils iGeneralJdbcUtils;
 
-	public DianPingShopListCrawl(DianpingSubCategorySubRegion subCategorySubRegion) {
+	public DianPingShopCommentCrawl(DianpingSubCategorySubRegion subCategorySubRegion) {
 		super();
 		this.subCategorySubRegion = subCategorySubRegion;
 		this.iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
@@ -223,7 +223,7 @@ public class DianPingShopListCrawl implements Runnable {
 //		}
 //		iGeneralJdbcUtils.batchExecute(sqlEntityList);
 		
-		new DianPingShopListCrawl(null).run();
+		new DianPingShopCommentCrawl(null).run();
 	}
 	
 }

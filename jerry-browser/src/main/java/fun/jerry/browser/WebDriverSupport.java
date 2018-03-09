@@ -22,13 +22,16 @@ import org.springframework.stereotype.Component;
 import fun.jerry.browser.entity.WebDriverConfig;
 import fun.jerry.common.ProxyType;
 import fun.jerry.common.LogSupport;
-import fun.jerry.proxy.ProxyIpSupport;
+import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
 
 @Component
 public class WebDriverSupport {
 	
 	public static Logger log = LogSupport.getHttplog();
+	
+	final static String proxyUser = "H26U3Y18CA6L02YD";
+	final static String proxyPass = "0567219ED7DF3592";
 	
 	public final static String HTML = "html";
 	
@@ -140,9 +143,10 @@ public class WebDriverSupport {
 		prefs.put("download.default_directory", (null != config ? config.getDownloadPath() : ""));
 		options.setExperimentalOption("prefs", prefs);
 		
-		if (config.getProxyType().equals(ProxyType.PROXY_TYPE_STATIC)) {
-			Proxy proxy = ProxyIpSupport.getStaticProxy();
+		if (config.getProxyType().equals(ProxyType.PROXY_TYPE_STATIC) || config.getProxyType().equals(ProxyType.PROXY_TYPE_ABUYUN)) {
+			Proxy proxy = StaticProxySupport.getStaticProxy();
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
+//			String proxyIpAndPort = "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
 			org.openqa.selenium.Proxy driverProxy = new org.openqa.selenium.Proxy();
 			driverProxy.setHttpProxy(proxyIpAndPort)
 				.setFtpProxy(proxyIpAndPort)
@@ -153,6 +157,7 @@ public class WebDriverSupport {
 			System.setProperty("http.nonProxyHosts", "localhost");
 
 			capability.setCapability(CapabilityType.PROXY, driverProxy);
+			
 			
 //			options.addArguments("--proxy-server=http://" + proxyIpAndPort);
 		}
@@ -186,9 +191,7 @@ public class WebDriverSupport {
 	}
 	
 	public static Map<String, Object> load(WebDriverConfig config) {
-		
 		return load(config, 0);
-		
 	}
 	
 	private static Map<String, Object> load(WebDriverConfig config, int count) {

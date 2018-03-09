@@ -30,9 +30,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import fun.jerry.proxy.entity.Proxy;
 
-public class ProxyIpSupport {
+public class StaticProxySupport {
 	
-	private static Logger log = Logger.getLogger(ProxyIpSupport.class);
+	private static Logger log = Logger.getLogger(StaticProxySupport.class);
 
 	private static PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 
@@ -72,7 +72,7 @@ public class ProxyIpSupport {
             in.close();
 //			String responseBody = httpclient.execute(httpget, responseHandler);
 			// System.out.println("----------------------------------------");
-			System.out.println(json);
+//			System.out.println(json);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -101,7 +101,7 @@ public class ProxyIpSupport {
 
 				@Override
 				public void run() {
-					ProxyIpSupport.getStaticProxy();
+					StaticProxySupport.getStaticProxy();
 				}
 			});
 

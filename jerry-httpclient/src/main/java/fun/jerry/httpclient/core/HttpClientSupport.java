@@ -11,11 +11,14 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -28,6 +31,9 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -38,7 +44,7 @@ import fun.jerry.common.LogSupport;
 import fun.jerry.common.ProxyType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
-import fun.jerry.proxy.ProxyIpSupport;
+import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
 
 public class HttpClientSupport {
@@ -95,11 +101,21 @@ public class HttpClientSupport {
 	
 	private static HttpResponse execute(HttpRequestHeader header, int tryCount) {
 		HttpResponse httpResponse = new HttpResponse();
+		
 		String html = "";
 		try {
 			HttpGet httpGet = (HttpGet) buildHeader(header, "get");
 			
-			CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm).build();
+			CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			if (header.getProxyType() == ProxyType.PROXY_TYPE_ABUYUN) {
+				credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("H26U3Y18CA6L02YD", "0567219ED7DF3592"));
+			}
+			CookieStore cookieStore = new BasicCookieStore();
+			CloseableHttpClient httpclient = HttpClients.custom()
+					.setConnectionManager(cm)
+					.setDefaultCredentialsProvider(credsProvider)
+					.setDefaultCookieStore(cookieStore)
+					.build();
 			
 			boolean existError = false;
 			
@@ -112,6 +128,10 @@ public class HttpClientSupport {
 			CloseableHttpResponse response = null;
 			try {
 				response = httpclient.execute(httpGet);
+				List<Cookie> cookies = cookieStore.getCookies();
+				for (int i = 0; i < cookies.size(); i++) {
+					log.info(cookies.get(i).getName() + "    " + cookies.get(i).getValue());
+	            }
 				// 如果响应不为null
 				if (null != response) {
 					
@@ -174,7 +194,7 @@ public class HttpClientSupport {
 				try {
 					BufferedReader bufferedReader = new BufferedReader(
 							new InputStreamReader(entity.getContent(), 
-									(StringUtils.isNotEmpty(header.getEncode()) ? header.getEncode() : "UTF-8")), 8 * 1024);
+									(StringUtils.isNotEmpty(header.getEncode()) ? header.getEncode() : "UTF-8")), 12 * 1024);
 					String line = null;
 					while ((line = bufferedReader.readLine()) != null) {
 						entityStringBuilder.append(line + "\n");
@@ -220,10 +240,13 @@ public class HttpClientSupport {
 			
 			if (header.getProxyType() ==  ProxyType.PROXY_TYPE_STATIC) {
 				//普通代理IP设置
-				Proxy _proxy = ProxyIpSupport.getStaticProxy();
+				Proxy _proxy = StaticProxySupport.getStaticProxy();
 //				_proxy.setIp("1.196.158.145");
 //				_proxy.setPort(57112);
 				HttpHost proxy = new HttpHost(_proxy.getIp(), _proxy.getPort());
+		        builder.setProxy(proxy);
+			} else if (header.getProxyType() ==  ProxyType.PROXY_TYPE_ABUYUN) {
+				HttpHost proxy = new HttpHost("http-dyn.abuyun.com", 9020);
 		        builder.setProxy(proxy);
 			}
 			
