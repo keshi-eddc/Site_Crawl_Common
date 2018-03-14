@@ -122,7 +122,7 @@ public class BuildSqlByBeanUtil {
 		//组装where条件部分
 		for (int i = 0; i < keys.size(); i++) {
 			for (PropertyDescriptor pd : pds) {
-				if (keys.get(i).equalsIgnoreCase(pd.getName())) {
+				if (keys.get(i).equalsIgnoreCase(fieldColumnMapping.get(pd.getName()))) {
 					Object value = getReadMethodValue(pd.getReadMethod(), entity);
 					sqlWhere.append((i > 0 ? " and " : "") + keys.get(i)).append(" = ");
 					if (pd.getPropertyType() == String.class
@@ -296,13 +296,13 @@ public class BuildSqlByBeanUtil {
 			}
 			
 			for (String key : keys) {
-				if (key.equalsIgnoreCase(pd.getName())) {
+				if (key.equalsIgnoreCase(fieldColumnMapping.get(pd.getName()))) {
 					if (count > 0) {
 						sql.append(" and ");
 					} else {
 						sql.append(" where ");
 					}
-					sql.append(fieldColumnMapping.get(key));
+					sql.append(key);
 					sql.append(" = ");
 					if (pd.getPropertyType() == String.class
 							|| pd.getPropertyType() == Date.class) {

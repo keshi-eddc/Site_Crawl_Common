@@ -11,25 +11,27 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 public class HtmlUnitDriverSupport {
 	// 代理隧道验证信息
-	final static String proxyUser = "H26U3Y18CA6L02YD";
-	final static String proxyPass = "0567219ED7DF3592";
+//	final static String proxyUser = "H26U3Y18CA6L02YD";
+//	final static String proxyPass = "0567219ED7DF3592";
 
 	// 代理服务器
-	final static String proxyServer = "http-dyn.abuyun.com:9020";
+//	final static String proxyServer = "http-dyn.abuyun.com:9020";
+	final static String proxyServer = "113.57.96.153:57112";
 
 	public static void main(String[] args) {
 		for (int i = 1; i < 10; i++) {
+			HtmlUnitDriver driver = getHtmlUnitDriver();
 			try {
-				HtmlUnitDriver driver = getHtmlUnitDriver();
 
-//				driver.get("https://test.abuyun.com/test.php");
+//				driver.get("https://www.baidu.com");
 				driver.get("http://www.dianping.com/shop/98350001");
 
 //				String title = driver.getTitle();
 				String title = driver.getPageSource();
-				System.out.println(title);
+//				System.out.println(title + "########");
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.out.println(driver.getPageSource());
 			}
 		}
 		
@@ -45,13 +47,13 @@ public class HtmlUnitDriverSupport {
 		DesiredCapabilities capabilities = DesiredCapabilities.htmlUnit();
 		capabilities.setCapability(CapabilityType.PROXY, proxy);
 		capabilities.setJavascriptEnabled(true);
-		capabilities.setPlatform(Platform.WIN8_1);
+		capabilities.setPlatform(Platform.WINDOWS);
 
 		driver = new HtmlUnitDriver(capabilities) {
 			@Override
 			protected WebClient modifyWebClient(WebClient client) {
 				DefaultCredentialsProvider creds = new DefaultCredentialsProvider();
-				creds.addCredentials(proxyUser, proxyPass);
+//				creds.addCredentials(proxyUser, proxyPass);
 				client.setCredentialsProvider(creds);
 				return client;
 			}

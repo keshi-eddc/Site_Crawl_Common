@@ -121,6 +121,47 @@ create table dbo.Dianping_Shop_Recommend_Info (
 
 ALTER TABLE DataCenter.dbo.Dianping_Shop_Recommend_Info ADD CONSTRAINT Dianping_Shop_Recommend_Info_PK PRIMARY KEY (dish_id, shop_id);
 
+-- 店铺推荐菜
+drop table Dianping_Shop_Comment_Page;
+create table dbo.Dianping_Shop_Comment_Page (
+    shop_id varchar(255) not null,
+    total_page int not null,
+    page int not null,
+    status int default -1,
+    update_time datetime,
+    insert_time datetime
+);
+
+ALTER TABLE DataCenter.dbo.Dianping_Shop_Comment_Page ADD CONSTRAINT Dianping_Shop_Comment_Page_PK PRIMARY KEY (shop_id, page);
+
+-- 店铺评论
+drop table Dianping_Shop_Comment;
+create table dbo.Dianping_Shop_Comment (
+    id BIGINT IDENTITY(1,1),
+    comment_id varchar(255),
+    shop_id varchar(255),
+    user_id varchar(255),
+    user_name varchar(255),
+    user_level varchar(255),
+    is_vip int,
+    comment_star varchar(255),
+    taste_comment varchar(255),
+    environment_comment varchar(255),
+    service_comment varchar(255),
+    avg_price varchar(255),
+    comment varchar(max),
+    recommend_dish varchar(1000),
+    comment_time varchar(1000),
+    favorite_num int,
+    reply_num int,
+    collect_num int,
+    page int,
+    update_time datetime,
+    insert_time datetime
+);
+
+ALTER TABLE DataCenter.dbo.Dianping_Shop_Comment ADD CONSTRAINT Dianping_Shop_Comment_PK PRIMARY KEY (id);
+
 
 
 

@@ -58,7 +58,7 @@ public class StaticProxySupport {
 		CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm).build();
 
 		// CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpget = new HttpGet("http://localhost:9090/ip/proxy/get/dly");
+		HttpGet httpget = new HttpGet("http://localhost:9090/ip/proxy/get/dly/dianping");
 		String json=null;
 		CloseableHttpResponse response=null;
 		try {

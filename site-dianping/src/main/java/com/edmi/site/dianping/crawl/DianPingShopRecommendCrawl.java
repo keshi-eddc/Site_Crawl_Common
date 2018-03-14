@@ -228,9 +228,10 @@ public class DianPingShopRecommendCrawl implements Runnable {
 //		DianPingCommonRequest.refreshShopListCookie("http://www.dianping.com/ajax/json/shopDynamic/shopTabs?shopId=96737681&cityId=1&shopName=MOLI%E7%83%A7%E8%82%89&power=5&mainCategoryId=225&shopType=10&shopCityId=1&_token=eJx1T11Pg0AQ/C/3KuHugDta3oR+R1pDKYmYPlwpArEcH4dga/zvbmNN9MFkk5mdnZ3sfqB2eUQOJYRYVEN92iIHUZ3oHGmoUzBhBmGccjImHAzJX43aREOHNpog55manGuGbe+vSgDCt2Lz0V77RQ0L6upZggXlXVc7GA/DoB8LIetCZnpSlVjlVY3H3DZhh8Ip//uEzHJR4CSnBGeUmgiyyxCyAV9vKG7Y/fQ+fAmpqsgksHT1Hm6VpZqXwFdhtDsT078s1puH6Wl9OY88L8jiUlQRW6Vy1pWiySPJ3MQaxlt3M/XmdVwydShj9ynsT6w4iLe+te8eWb+QrODxRs3yZbybN62Yu9PMm9xvVw36/AKAy27W&uuid=e21bfd77-23c0-bd96-85cf-adec6aa34747.1509347333&platform=1&partner=150&originUrl=http://www.dianping.com/shop/96737681");
 //		DianPingCommonRequest.refreshShopListCookie("http://www.dianping.com/shop/96737681");
 		
-//		for (int i = 1; i < 10; i++) {
+		for (int i = 1; i < 10; i++) {
 			DianPingCommonRequest.refreshShopListCookie("http://www.dianping.com/shop/96737681");
-//		}
+//			DianPingCommonRequest.refreshShopListCookie("http://www.ip138.com/");
+		}
 		
 //		HttpRequestHeader header = new HttpRequestHeader();
 //		header.setUrl("http://www.dianping.com/ajax/json/shopDynamic/shopAside?shopId=98350001&cityId=105&shopName=%E6%B5%B7%E5%BA%95%E6%8D%9E%E7%81%AB%E9%94%85&power=5&mainCategoryId=110&shopType=10&mainRegionId=3962&shopGlat=29.10391&shopGlng=119.65399&cityGlat=29.079164&cityGlng=119.647422&cityEnName=jinhua&categoryName=%E7%BE%8E%E9%A3%9F&shopCityId=105&_token=eJxVjlFvgjAUhf9LX0ekBcrAZA84p4NZRVGxLHtAdIwVRKBaYdl%2FX5fpw5KbnHO%2Fe25yvkDt7kAfQQgNpIDzvgZ9gHqwZwIF8EZesAbxvQk1qOlQAcl%2FpuuGArb1egj6r8jWoGJY92%2B%2FZCHBH0HQgm%2FKzRvSa4ac35QrQ%2BCD82NfVYUQvV0WH47ZIe0lZaE2H%2BVRtS0dy2pIlgHyo1jKD6nsqvFV%2BW0nsr3MNll6kG7vXZYBM5pgpfsTs4aBdZnyjXZX36m5cc6rNmJ5HmNMvXHTTVoCWSCyZz6jZcFZHO7TbZGXEfPWj%2BlZ323ncDTxO7JMLiR1J7M4ogUv6UsVFjiLsBBo3C5Y7DjhIztOO6vzHVHSEJdRtdiw3ExCLaqqUfjORl36absvBpk2ZEgFH8ZPGSGcfAaQi5Xn2BENLxUdD1I690Ln4NsnU90XpyqxTdyh88ZHbZBx6lZB6w7WJR%2B4zny2Xgnx8AC%2BfwCuJo1E&uuid=acf7f16c-257a-70d5-d40f-91620a75bb6b.1520571532&platform=1&partner=150&originUrl=http%3A%2F%2Fwww.dianping.com%2Fshop%2F98350001");

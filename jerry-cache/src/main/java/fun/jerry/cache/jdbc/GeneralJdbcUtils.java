@@ -220,7 +220,7 @@ public class GeneralJdbcUtils<T extends Model> implements IGeneralJdbcUtils<T> {
 		try {
 			if (null != sqlEntity.getSqlType()) {
 				if (sqlEntity.getSqlType() == SqlType.PARSE_INSERT) {
-					sql = BuildSqlUtil.insert(sqlEntity.getObj()).getSql().toString();
+					sql = BuildSqlByBeanUtil.insert(sqlEntity.getObj()).getSql().toString();
 				} else if (sqlEntity.getSqlType() == SqlType.PARSE_INSERT_NOT_EXISTS) {
 					sql = BuildSqlByBeanUtil.insertNotExists(sqlEntity.getObj()).getSql().toString();
 				} else if (sqlEntity.getSqlType() == SqlType.PARSE_UPDATE) {

@@ -159,7 +159,7 @@ public class HttpClientSupport {
 				tryCount ++;
 				
 				//达到最大次数的时候直接返回
-				if (tryCount >= header.getMaxTryTimes()) {
+				if (tryCount > header.getMaxTryTimes()) {
 					log.error(header.getUrl() + " has tried " + header.getMaxTryTimes() + " times.");
 					return httpResponse;
 				}

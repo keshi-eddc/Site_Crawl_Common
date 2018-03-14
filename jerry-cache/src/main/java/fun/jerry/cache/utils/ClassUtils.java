@@ -336,7 +336,8 @@ public class ClassUtils {
 			for (Class<?> temp = clazz; temp != Object.class; temp = temp.getSuperclass()) {
 				for (Field field : temp.getDeclaredFields()) {
 					if (null != field.getAnnotation(LogicalPrimaryKey.class)) {
-						keys.add(field.getName());
+//						keys.add(field.getName());
+						keys.add(BEAN_FIELD_COLUMN_CACHE.get(clazz).get(field.getName()));
 					}
 //					System.out.println(field.getAnnotation(LogicalPrimaryKey.class).value());;
 				}
