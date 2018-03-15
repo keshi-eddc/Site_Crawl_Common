@@ -11,12 +11,11 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 public class HtmlUnitDriverSupport {
 	// 代理隧道验证信息
-//	final static String proxyUser = "H26U3Y18CA6L02YD";
-//	final static String proxyPass = "0567219ED7DF3592";
+	final static String proxyUser = "H26U3Y18CA6L02YD";
+	final static String proxyPass = "0567219ED7DF3592";
 
 	// 代理服务器
-//	final static String proxyServer = "http-dyn.abuyun.com:9020";
-	final static String proxyServer = "113.57.96.153:57112";
+	final static String proxyServer = "http-dyn.abuyun.com:9020";
 
 	public static void main(String[] args) {
 		for (int i = 1; i < 10; i++) {

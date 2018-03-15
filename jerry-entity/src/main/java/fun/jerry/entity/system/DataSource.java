@@ -1,4 +1,4 @@
-package fun.jerry.entity;
+package fun.jerry.entity.system;
 
 /**
  * 数据源常量类

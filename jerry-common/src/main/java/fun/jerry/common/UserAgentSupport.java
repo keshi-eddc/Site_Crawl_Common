@@ -1,4 +1,4 @@
-package fun.jerry.httpclient.core;
+package fun.jerry.common;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package fun.jerry.common;
+package com.edmi.site.dianping.entity;
 
 public class Version {
 	

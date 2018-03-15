@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -19,12 +20,11 @@ import fun.jerry.cache.utils.BuildSqlByBeanUtil;
 import fun.jerry.cache.utils.BuildSqlUtil;
 import fun.jerry.cache.utils.ClassUtils;
 import fun.jerry.common.ApplicationContextHolder;
-import fun.jerry.entity.DataSource;
 import fun.jerry.entity.Model;
-import fun.jerry.entity.PropertyOrder;
-import fun.jerry.entity.SqlEntity;
-import fun.jerry.entity.SqlType;
-import fun.jerry.entity.system.ExecuteFailLog;
+import fun.jerry.entity.system.DataSource;
+import fun.jerry.entity.system.PropertyOrder;
+import fun.jerry.entity.system.SqlEntity;
+import fun.jerry.entity.system.SqlType;
 
 /**
  * 通用JDBC操作
@@ -235,33 +235,11 @@ public class GeneralJdbcUtils<T extends Model> implements IGeneralJdbcUtils<T> {
 				
 				// 用户信息很多会重复，导致在每个批处理保存中很大机率出现主键错误的异常
 				// 所以为用户信息单独处理，现将所有sql保存到 Execute_Fail_Log 表中
-				Object obj = sqlEntity.getObj();
-				if (obj instanceof Model) {
-					Model model = (Model) obj;
-					if (model.getSaveMode() == 2) {
-						ExecuteFailLog executeFailLog = new ExecuteFailLog();
-						executeFailLog.setObjName(obj.getClass().getSimpleName());
-						executeFailLog.setTableName(ClassUtils.getTableName(obj.getClass()));
-						
-						List<String> keys = ClassUtils.getLogicalKey(obj.getClass());
-						StringBuilder primaryKey = new StringBuilder();
-						StringBuilder primaryKeyValue = new StringBuilder();
-						for (String key : keys) {
-							primaryKey.append(key).append("-");
-							primaryKeyValue.append(ClassUtils.getAttributeVlaue(obj, key)).append("-");
-						}
-						
-						executeFailLog.setPrimaryKey(primaryKey.substring(0, primaryKey.length() - 1));
-						executeFailLog.setPrimaryKeyValue(primaryKeyValue.substring(0, primaryKeyValue.length() - 1));
-						executeFailLog.setExecuteSql(sql);
-						
-						sqlEntity.setSqlType(SqlType.PARSE_INSERT);
-						sqlEntity.setObj(executeFailLog);
-						sqlEntity.setDataSource(DataSource.DATASOURCE_SGM);
-						
-						sql = getSql(sqlEntity);
-					}
-				}
+//				Object obj = sqlEntity.getObj();
+//				if (obj instanceof Model) {
+//					Model model = (Model) obj;
+//					if (model.getSaveMode() == 2) {}
+//				}
 			}
 		} catch (Exception e) {
 			log.error(sqlEntity + " 解析sql报错，", e);
@@ -272,6 +250,8 @@ public class GeneralJdbcUtils<T extends Model> implements IGeneralJdbcUtils<T> {
 	private JdbcTemplate getJdbcTemplate(DataSource ds) {
 		if (null == ds) {
 			throw new RuntimeException("SqlEntity No DataSource");
+		} else if (!ArrayUtils.contains(DataSource.values(), ds)) {
+			throw new RuntimeException(ds + " is not found in the configured Datasource");
 		}
 		if (ds == DataSource.DATASOURCE_CrawlElve) {
 			return (JdbcTemplate) ApplicationContextHolder.getBean("jdbcTemplateCrawlElve");

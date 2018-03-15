@@ -3,7 +3,7 @@ package fun.jerry.cache.holder.thread;
 import java.util.List;
 
 import fun.jerry.cache.FirstSqlCache;
-import fun.jerry.entity.SqlEntity;
+import fun.jerry.entity.system.SqlEntity;
 
 /**
  * 一级缓存线程，负责添加到一级缓存

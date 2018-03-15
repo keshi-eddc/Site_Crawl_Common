@@ -23,13 +23,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import fun.jerry.cache.common.log.CacheLogConfig;
-import fun.jerry.entity.PropertyOrder;
+import fun.jerry.entity.annotation.ColumnMapping;
 import fun.jerry.entity.annotation.FieldInsertExclude;
 import fun.jerry.entity.annotation.FieldUpdateExclude;
-import fun.jerry.entity.annotation.ColumnMapping;
 import fun.jerry.entity.annotation.HiveColumnOrder;
 import fun.jerry.entity.annotation.LogicalPrimaryKey;
 import fun.jerry.entity.annotation.TableMapping;
+import fun.jerry.entity.system.PropertyOrder;
 
 public class ClassUtils {
 	

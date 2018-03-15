@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 
 import fun.jerry.cache.common.log.CacheLogConfig;
 import fun.jerry.cache.context.SqlContext;
-import fun.jerry.entity.Model;
 
 public class BuildSqlByBeanUtil {
 	

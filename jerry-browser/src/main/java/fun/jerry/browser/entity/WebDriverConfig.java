@@ -1,9 +1,7 @@
 package fun.jerry.browser.entity;
 
-import org.openqa.selenium.WebDriver;
-
-import fun.jerry.common.DriverType;
-import fun.jerry.common.ProxyType;
+import fun.jerry.common.enumeration.DriverType;
+import fun.jerry.proxy.enumeration.ProxyType;
 
 public class WebDriverConfig {
 	
@@ -13,9 +11,9 @@ public class WebDriverConfig {
 	
 	private String downloadPath;
 	
-	private DriverType driverType = DriverType.DRIVER_TYPE_HTMLUNIT;
+	private DriverType driverType;
 	
-	private ProxyType proxyType = ProxyType.PROXY_TYPE_STATIC;
+	private ProxyType proxyType = ProxyType.PROXY_STATIC_AUTO;
 	
 	private int maxTryTimes = 3;
 

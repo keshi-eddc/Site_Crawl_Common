@@ -1,4 +1,4 @@
-package fun.jerry.entity;
+package fun.jerry.entity.system;
 
 /**
  * 对象属性顺序

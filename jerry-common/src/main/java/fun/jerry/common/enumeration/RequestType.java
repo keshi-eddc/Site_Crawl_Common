@@ -1,4 +1,4 @@
-package fun.jerry.common;
+package fun.jerry.common.enumeration;
 
 public enum RequestType {
 	

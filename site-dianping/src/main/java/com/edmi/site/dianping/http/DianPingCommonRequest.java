@@ -16,12 +16,11 @@ import org.springframework.stereotype.Component;
 import fun.jerry.browser.WebDriverSupport;
 import fun.jerry.browser.entity.WebDriverConfig;
 import fun.jerry.common.LogSupport;
-import fun.jerry.common.ProxyType;
-import fun.jerry.common.RequestType;
+import fun.jerry.common.enumeration.RequestType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.httpclient.core.HttpClientSupport;
-import fun.jerry.httpclient.core.UserAgentSupport;
+import fun.jerry.proxy.enumeration.ProxyType;
 
 @Component
 public class DianPingCommonRequest extends HttpClientSupport {
@@ -61,7 +60,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		synchronized (COOKIES_SHOPLIST) {
 			StringBuilder cookies = new StringBuilder();
 			WebDriverConfig config = new WebDriverConfig();
-			config.setProxyType(ProxyType.PROXY_TYPE_STATIC);
+			config.setProxyType(ProxyType.PROXY_STATIC_AUTO);
 			// config.setProxyType(ProxyType.PROXY_TYPE_ABUYUN);
 			WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
 			int count = 0;
@@ -152,7 +151,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 
 	public static String getSubCategorySubRegion(HttpRequestHeader header) {
 		header.setRequestType(RequestType.HTTP_GET);
-		header.setProxyType(ProxyType.PROXY_TYPE_STATIC);
+		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
 		header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 		header.setAcceptEncoding("gzip, deflate");
 		header.setAcceptLanguage("zh-CN,zh;q=0.9,en;q=0.8");
@@ -160,7 +159,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setUserAgent(UserAgentSupport.getPCUserAgent());
+		header.setAutoPcUa(true);
 		header.setCookie(COOKIES_SHOPLIST.element());
 		header.setRequestSleepTime(5000);
 		header.setMaxTryTimes(2);
@@ -182,7 +181,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setProxyType(ProxyType.PROXY_TYPE_STATIC);
+		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
 		header.setCookie(COOKIES_SHOPLIST.element());
 		header.setUserAgent(
 				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
@@ -205,11 +204,11 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setProxyType(ProxyType.PROXY_TYPE_ABUYUN);
+		header.setProxyType(ProxyType.PROXY_CLOUD_ABUYUN);
 		// header.setProxyType(ProxyType.PROXY_TYPE_STATIC);
 		header.setCookie(
 				"_lxsdk_cuid=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _lxsdk=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; cy=105; cye=jinhua; _hc.v=acf7f16c-257a-70d5-d40f-91620a75bb6b.1520571532; s_ViewType=10; _lxsdk_s=162094d01cf-011-a41-6f5%7C%7C44");
-		header.setUserAgent(UserAgentSupport.getPCUserAgent());
+		header.setAutoPcUa(true);
 		header.setRequestSleepTime(2000);
 		header.setReferer("http://www.dianping.com/shop/98350001");
 		header.setXrequestedWith("XMLHttpRequest");
@@ -232,9 +231,9 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setProxyType(ProxyType.PROXY_TYPE_STATIC);
+		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
 		header.setCookie(COOKIES_SHOPCOMMENT.element());
-		header.setUserAgent(UserAgentSupport.getPCUserAgent());
+		header.setAutoPcUa(true);
 		header.setRequestSleepTime(5000);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
@@ -257,9 +256,9 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setProxyType(ProxyType.PROXY_TYPE_STATIC);
+		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
 		header.setCookie(COOKIES_SHOPRECOMMEND.element());
-		header.setUserAgent(UserAgentSupport.getPCUserAgent());
+		header.setAutoPcUa(true);
 		header.setRequestSleepTime(5000);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);

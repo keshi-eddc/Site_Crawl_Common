@@ -29,6 +29,7 @@ import org.springframework.util.StopWatch;
 import com.alibaba.fastjson.JSONObject;
 
 import fun.jerry.proxy.entity.Proxy;
+import fun.jerry.proxy.enumeration.ProxyType;
 
 public class StaticProxySupport {
 	
@@ -52,13 +53,13 @@ public class StaticProxySupport {
 		cm.setDefaultMaxPerRoute(50);
 	}
 
-	public static Proxy getStaticProxy() {
+	public static Proxy getStaticProxy(ProxyType proxyType) {
 		Proxy proxy = null;
 		
 		CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm).build();
 
 		// CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpget = new HttpGet("http://localhost:9090/ip/proxy/get/dly/dianping");
+		HttpGet httpget = new HttpGet("http://localhost:9090/ip/proxy/get/" + proxyType + "/dianping/dianping");
 		String json=null;
 		CloseableHttpResponse response=null;
 		try {
@@ -92,37 +93,38 @@ public class StaticProxySupport {
 
 	public static void main(String[] args) {
 		log.info("start");
-		ExecutorService pool = Executors.newScheduledThreadPool(100);
-		int count = 0;
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
-		while (count < 100000) {
-			pool.submit(new Runnable() {
-
-				@Override
-				public void run() {
-					StaticProxySupport.getStaticProxy();
-				}
-			});
-
-			count++;
-			System.out.println("$$$$$$$$$$$$$$$ " + count);
-		}
-		pool.shutdown();
-		while (true) {
-			if (!pool.isTerminated()) {
-				try {
-					TimeUnit.SECONDS.sleep(20);
-					log.info("#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$ not stop");
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} else {
-				stopWatch.stop();
-				System.out.println("########## " + stopWatch.getTotalTimeMillis());
-				break;
-			}
-		}
+		StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
+//		ExecutorService pool = Executors.newScheduledThreadPool(100);
+//		int count = 0;
+//		StopWatch stopWatch = new StopWatch();
+//		stopWatch.start();
+//		while (count < 100000) {
+//			pool.submit(new Runnable() {
+//
+//				@Override
+//				public void run() {
+//					StaticProxySupport.getStaticProxy();
+//				}
+//			});
+//
+//			count++;
+//			System.out.println("$$$$$$$$$$$$$$$ " + count);
+//		}
+//		pool.shutdown();
+//		while (true) {
+//			if (!pool.isTerminated()) {
+//				try {
+//					TimeUnit.SECONDS.sleep(20);
+//					log.info("#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$ not stop");
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			} else {
+//				stopWatch.stop();
+//				System.out.println("########## " + stopWatch.getTotalTimeMillis());
+//				break;
+//			}
+//		}
 	}
 
 }

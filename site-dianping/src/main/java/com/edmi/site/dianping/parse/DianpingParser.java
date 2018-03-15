@@ -69,18 +69,22 @@ public class DianpingParser {
 	
 	public static int parseShopRecommendTotalPage(Document doc) {
 		int totalPage = -1;
-		if (null != doc.select(".list-desc")) {
-			// 发现有推荐菜列表的，看是否包含推荐菜
-			if (CollectionUtils.isNotEmpty(doc.select(".list-desc ul a"))) {
-				Element pageEle = doc.select(".shop-food-list-page .next").last();
-				Element totalPageEle = pageEle.previousElementSibling();
-				totalPage = null != totalPageEle ? Integer.parseInt(totalPageEle.text().trim()) : 1;
+		try {
+			if (null != doc.select(".list-desc")) {
+				// 发现有推荐菜列表的，看是否包含推荐菜
+				if (CollectionUtils.isNotEmpty(doc.select(".list-desc ul a"))) {
+					Element pageEle = doc.select(".shop-food-list-page .next").last();
+					Element totalPageEle = null != pageEle ? pageEle.previousElementSibling() : null;
+					totalPage = null != totalPageEle ? Integer.parseInt(totalPageEle.text().trim()) : 1;
+				} else {
+					totalPage = 0;
+				}
 			} else {
+				// 未发现评论列表的，没有评论，总页数为0
 				totalPage = 0;
 			}
-		} else {
-			// 未发现评论列表的，没有评论，总页数为0
-			totalPage = 0;
+		} catch (Exception e) {
+			log.error("dianping shop recommend parse total page error", e);
 		}
 		return totalPage;
 	}

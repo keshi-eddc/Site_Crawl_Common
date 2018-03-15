@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import fun.jerry.cache.common.log.CacheLogConfig;
 import fun.jerry.cache.constant.Constant;
-import fun.jerry.entity.SqlEntity;
+import fun.jerry.entity.system.SqlEntity;
 
 /**
  * 一级缓存100万 只接收需要执行的sql

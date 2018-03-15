@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import fun.jerry.entity.Model;
-import fun.jerry.entity.SqlEntity;
+import fun.jerry.entity.system.SqlEntity;
 
 /**
  * 通用JDBC操作

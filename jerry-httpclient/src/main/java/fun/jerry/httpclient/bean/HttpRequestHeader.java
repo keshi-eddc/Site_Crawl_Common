@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.openqa.selenium.WebDriver;
 
-import fun.jerry.common.ProxyType;
-import fun.jerry.common.RequestType;
+import fun.jerry.common.enumeration.RequestType;
+import fun.jerry.proxy.enumeration.ProxyType;
 
 public class HttpRequestHeader {
 	
@@ -36,6 +36,15 @@ public class HttpRequestHeader {
 	private String upgradeInsecureRequests;
 	
 	private String userAgent;
+	
+	/**
+	 * 是否自动切换UserAgent
+	 */
+	private boolean autoUa = true;
+	
+	private boolean autoPcUa = false;
+	
+	private boolean autoMobileUa = false;
 	
 	private String xrequestedWith;
 	
@@ -189,6 +198,30 @@ public class HttpRequestHeader {
 
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
+	}
+
+	public boolean isAutoUa() {
+		return autoUa;
+	}
+
+	public void setAutoUa(boolean autoUa) {
+		this.autoUa = autoUa;
+	}
+
+	public boolean isAutoPcUa() {
+		return autoPcUa;
+	}
+
+	public void setAutoPcUa(boolean autoPcUa) {
+		this.autoPcUa = autoPcUa;
+	}
+
+	public boolean isAutoMobileUa() {
+		return autoMobileUa;
+	}
+
+	public void setAutoMobileUa(boolean autoMobileUa) {
+		this.autoMobileUa = autoMobileUa;
 	}
 
 	public String getXrequestedWith() {

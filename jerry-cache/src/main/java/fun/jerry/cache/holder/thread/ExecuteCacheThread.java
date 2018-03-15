@@ -6,7 +6,7 @@ import fun.jerry.cache.FirstSqlCache;
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
-import fun.jerry.entity.SqlEntity;
+import fun.jerry.entity.system.SqlEntity;
 
 /**
  * 负责从二级缓存获取，执行sql

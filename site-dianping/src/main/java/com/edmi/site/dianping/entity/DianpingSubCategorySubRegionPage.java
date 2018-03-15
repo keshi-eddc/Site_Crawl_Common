@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
-import fun.jerry.common.Version;
 import fun.jerry.entity.Model;
 import fun.jerry.entity.annotation.ColumnMapping;
 import fun.jerry.entity.annotation.FieldInsertExclude;

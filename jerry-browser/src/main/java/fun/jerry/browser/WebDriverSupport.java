@@ -10,12 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -24,10 +22,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.stereotype.Component;
 
 import fun.jerry.browser.entity.WebDriverConfig;
-import fun.jerry.common.ProxyType;
 import fun.jerry.common.LogSupport;
 import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
+import fun.jerry.proxy.enumeration.ProxyType;
 
 @Component
 public class WebDriverSupport {
@@ -155,9 +153,9 @@ public class WebDriverSupport {
 		prefs.put("download.default_directory", (null != config ? config.getDownloadPath() : ""));
 		options.setExperimentalOption("prefs", prefs);
 
-		if (config.getProxyType().equals(ProxyType.PROXY_TYPE_STATIC)
-				|| config.getProxyType().equals(ProxyType.PROXY_TYPE_ABUYUN)) {
-			Proxy proxy = StaticProxySupport.getStaticProxy();
+		if (config.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
+				|| config.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
+			Proxy proxy = StaticProxySupport.getStaticProxy(config.getProxyType());
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
 			// String proxyIpAndPort =
 			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
@@ -285,7 +283,7 @@ public class WebDriverSupport {
 					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
 					proxy.setAutodetect(false);
-					Proxy staticProxy = StaticProxySupport.getStaticProxy();//自定义函数，返回代理ip及端口
+					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);//自定义函数，返回代理ip及端口
 					proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
 					desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
 				}

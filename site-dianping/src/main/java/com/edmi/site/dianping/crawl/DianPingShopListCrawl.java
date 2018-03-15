@@ -26,9 +26,9 @@ import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
-import fun.jerry.entity.DataSource;
-import fun.jerry.entity.SqlEntity;
-import fun.jerry.entity.SqlType;
+import fun.jerry.entity.system.DataSource;
+import fun.jerry.entity.system.SqlEntity;
+import fun.jerry.entity.system.SqlType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 
 public class DianPingShopListCrawl implements Runnable {

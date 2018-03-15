@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -41,11 +42,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
 import fun.jerry.common.LogSupport;
-import fun.jerry.common.ProxyType;
+import fun.jerry.common.UserAgentSupport;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
+import fun.jerry.proxy.enumeration.ProxyType;
 
 public class HttpClientSupport {
 	
@@ -107,7 +109,7 @@ public class HttpClientSupport {
 			HttpGet httpGet = (HttpGet) buildHeader(header, "get");
 			
 			CredentialsProvider credsProvider = new BasicCredentialsProvider();
-			if (header.getProxyType() == ProxyType.PROXY_TYPE_ABUYUN) {
+			if (header.getProxyType() == ProxyType.PROXY_CLOUD_ABUYUN) {
 				credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("H26U3Y18CA6L02YD", "0567219ED7DF3592"));
 			}
 			CookieStore cookieStore = new BasicCookieStore();
@@ -238,14 +240,15 @@ public class HttpClientSupport {
 
 //			get.setConfig(requestConfig);//poass the request config to request
 			
-			if (header.getProxyType() ==  ProxyType.PROXY_TYPE_STATIC) {
+			if (ArrayUtils.contains(new ProxyType[] { ProxyType.PROXY_STATIC_AUTO, ProxyType.PROXY_STATIC_DLY,
+					ProxyType.PROXY_STATIC_DUNG }, header.getProxyType())) {
 				//普通代理IP设置
-				Proxy _proxy = StaticProxySupport.getStaticProxy();
+				Proxy _proxy = StaticProxySupport.getStaticProxy(header.getProxyType());
 //				_proxy.setIp("1.196.158.145");
 //				_proxy.setPort(57112);
 				HttpHost proxy = new HttpHost(_proxy.getIp(), _proxy.getPort());
 		        builder.setProxy(proxy);
-			} else if (header.getProxyType() ==  ProxyType.PROXY_TYPE_ABUYUN) {
+			} else if (header.getProxyType() ==  ProxyType.PROXY_CLOUD_ABUYUN) {
 				HttpHost proxy = new HttpHost("http-dyn.abuyun.com", 9020);
 		        builder.setProxy(proxy);
 			}
@@ -259,8 +262,21 @@ public class HttpClientSupport {
 			}
 			// 使用AAS Node方式的代理IP时不需要设置该属性
 //			if (StringUtils.isNotEmpty(header.getUserAgent()) && http_request_type_static != 2) {
-			if (StringUtils.isNotEmpty(header.getUserAgent())) {
+			// 如果配置了使用PC端的UA
+			if (header.isAutoPcUa()) {
+				httpRequest.addHeader("User-Agent", UserAgentSupport.getPCUserAgent());
+			} else if (header.isAutoMobileUa()) {
+				// 如果配置了使用Mobile端的UA
+				httpRequest.addHeader("User-Agent", UserAgentSupport.getMobileUserAgent());
+			} else if (header.isAutoUa()) {
+				// 如果配置了自动切换UA
+				httpRequest.addHeader("User-Agent", UserAgentSupport.getUserAgent());
+			} else if (StringUtils.isNotEmpty(header.getUserAgent())) {
+				// 如果配置了不使用自动切换UA，使用自己配置的UA
 				httpRequest.addHeader("User-Agent", header.getUserAgent());
+			} else {
+				// 如果UA不使用自动切换，但没有配置UA，默认UA自动切换
+				httpRequest.addHeader("User-Agent", UserAgentSupport.getUserAgent());
 			}
 			if (StringUtils.isNotEmpty(header.getAccept())) {
 				httpRequest.addHeader("Accept", header.getAccept());			
