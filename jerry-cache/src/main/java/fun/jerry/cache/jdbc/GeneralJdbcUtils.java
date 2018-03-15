@@ -99,7 +99,7 @@ public class GeneralJdbcUtils<T extends Model> implements IGeneralJdbcUtils<T> {
 							String [] _sqls = sqlList.toArray(new String[sqlList.size()]);
 							try {
 								getJdbcTemplate(ds).batchUpdate(_sqls);
-								log.info("save once time");
+								log.info("save once time " + _sqls.length);
 							} catch (Exception e) {
 								// 批量处理中发现有异常的时候，调用单条保存
 								for (SqlEntity se : list) {

@@ -106,20 +106,38 @@ create table dbo.Dianping_ShopInfo (
 
 ALTER TABLE DataCenter.dbo.Dianping_ShopInfo ADD CONSTRAINT Dianping_ShopInfo_PK PRIMARY KEY (shop_id);
 
-
--- 店铺推荐菜
-drop table Dianping_Shop_Recommend_Info;
-create table dbo.Dianping_Shop_Recommend_Info (
-    dish_id varchar(255) not null,
-    dish varchar(255) not null,
-    shop_id varchar(255) not null,
-    recommend_count int,
-    price varchar(255),
+-- 店铺推荐菜-页数
+drop table Dianping_Shop_Recommend_Page;
+create table dbo.Dianping_Shop_Recommend_Page (
+    id varchar(255) not null,
+    shop_id varchar(255),
+    status int,
+    page int,
+    total_page int,
     update_time datetime,
     insert_time datetime
 );
 
-ALTER TABLE DataCenter.dbo.Dianping_Shop_Recommend_Info ADD CONSTRAINT Dianping_Shop_Recommend_Info_PK PRIMARY KEY (dish_id, shop_id);
+ALTER TABLE DataCenter.dbo.Dianping_Shop_Recommend_Page ADD CONSTRAINT Dianping_Shop_Recommend_Page_PK PRIMARY KEY (id);
+
+-- 店铺推荐菜
+drop table Dianping_Shop_Recommend_Info;
+create table dbo.Dianping_Shop_Recommend_Info (
+    id varchar(255) not null,
+    dish_id varchar(255) not null,
+    dish varchar(255),
+    dish_url varchar(500),
+    dish_image_url varchar(500),
+    recommend_tag varchar(500),
+    shop_id varchar(255),
+    recommend_count int,
+    price varchar(255),
+    page int,
+    update_time datetime,
+    insert_time datetime
+);
+
+ALTER TABLE DataCenter.dbo.Dianping_Shop_Recommend_Info ADD CONSTRAINT Dianping_Shop_Recommend_Info_PK PRIMARY KEY (id);
 
 -- 店铺推荐菜
 drop table Dianping_Shop_Comment_Page;

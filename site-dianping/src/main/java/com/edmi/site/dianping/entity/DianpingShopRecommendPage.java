@@ -11,8 +11,8 @@ import fun.jerry.entity.annotation.FieldUpdateExclude;
 import fun.jerry.entity.annotation.LogicalPrimaryKey;
 import fun.jerry.entity.annotation.TableMapping;
 
-@TableMapping("Dianping_Shop_Recommend_Info")
-public class DianpingShopRecommendInfo extends Model {
+@TableMapping("Dianping_Shop_Recommend_Page")
+public class DianpingShopRecommendPage extends Model {
 
 	private static final long serialVersionUID = 4217070017854978866L;
 	
@@ -20,32 +20,17 @@ public class DianpingShopRecommendInfo extends Model {
 	@ColumnMapping("id")
 	private String id;
 	
-	@ColumnMapping("dish_id")
-	private String dishId;
-	
-	@ColumnMapping("dish")
-	private String dish;
-	
-	@ColumnMapping("dish_url")
-	private String dishUrl;
-	
-	@ColumnMapping("dish_image_url")
-	private String dishImageUrl;
-	
-	@ColumnMapping("recommend_tag")
-	private String recommendTag;
-	
 	@ColumnMapping("shop_id")
 	private String shopId;
 	
-	@ColumnMapping("recommend_count")
-	private Integer recommendCount;
-	
-	@ColumnMapping("price")
-	private String price;
+	@ColumnMapping("status")
+	private Integer status = -1;
 	
 	@ColumnMapping("page")
 	private Integer page;
+	
+	@ColumnMapping("total_page")
+	private Integer totalPage;
 	
 	@ColumnMapping("update_time")
 	@FieldInsertExclude
@@ -56,51 +41,11 @@ public class DianpingShopRecommendInfo extends Model {
 	private String insertTime = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
 
 	public String getId() {
-		return dishId + "--" + shopId;
+		return shopId + "-edmi-" + page;
 	}
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getDishId() {
-		return dishId;
-	}
-
-	public void setDishId(String dishId) {
-		this.dishId = dishId;
-	}
-
-	public String getDish() {
-		return dish;
-	}
-
-	public void setDish(String dish) {
-		this.dish = dish;
-	}
-
-	public String getDishUrl() {
-		return dishUrl;
-	}
-
-	public void setDishUrl(String dishUrl) {
-		this.dishUrl = dishUrl;
-	}
-
-	public String getDishImageUrl() {
-		return dishImageUrl;
-	}
-
-	public void setDishImageUrl(String dishImageUrl) {
-		this.dishImageUrl = dishImageUrl;
-	}
-
-	public String getRecommendTag() {
-		return recommendTag;
-	}
-
-	public void setRecommendTag(String recommendTag) {
-		this.recommendTag = recommendTag;
 	}
 
 	public String getShopId() {
@@ -111,20 +56,12 @@ public class DianpingShopRecommendInfo extends Model {
 		this.shopId = shopId;
 	}
 
-	public Integer getRecommendCount() {
-		return recommendCount;
+	public Integer getStatus() {
+		return status;
 	}
 
-	public void setRecommendCount(Integer recommendCount) {
-		this.recommendCount = recommendCount;
-	}
-
-	public String getPrice() {
-		return price;
-	}
-
-	public void setPrice(String price) {
-		this.price = price;
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	public Integer getPage() {
@@ -133,6 +70,14 @@ public class DianpingShopRecommendInfo extends Model {
 
 	public void setPage(Integer page) {
 		this.page = page;
+	}
+
+	public Integer getTotalPage() {
+		return totalPage;
+	}
+
+	public void setTotalPage(Integer totalPage) {
+		this.totalPage = totalPage;
 	}
 
 	public String getUpdateTime() {

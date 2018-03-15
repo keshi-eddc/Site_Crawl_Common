@@ -321,6 +321,7 @@ public class WebDriverSupport {
 			driver.close();
 			driver.quit();
 		}
+		log.info(url + " get cookie : " + cookie.toString());
 		return cookie.toString();
 	}
 
