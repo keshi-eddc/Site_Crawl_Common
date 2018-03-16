@@ -10,8 +10,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.edmi.site.dianping.entity.DianpingShopComment;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingShopRecommendInfo;
+import com.edmi.site.dianping.entity.DianpingUserInfo;
 
 import fun.jerry.common.LogSupport;
 
@@ -19,6 +21,13 @@ public class DianpingParser {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
+	/**
+	 * 解析店铺推荐菜
+	 * @param doc
+	 * @param shop
+	 * @param page
+	 * @return
+	 */
 	public static List<DianpingShopRecommendInfo> parseShopRecommend(Document doc, DianpingShopInfo shop, int page) {
 		List<DianpingShopRecommendInfo> list = new ArrayList<>();
 		Elements eles = doc.select(".list-desc ul a");
@@ -67,6 +76,11 @@ public class DianpingParser {
 		return list;
 	}
 	
+	/**
+	 * 解析店铺推荐菜的页数
+	 * @param doc
+	 * @return
+	 */
 	public static int parseShopRecommendTotalPage(Document doc) {
 		int totalPage = -1;
 		try {
@@ -87,5 +101,70 @@ public class DianpingParser {
 			log.error("dianping shop recommend parse total page error", e);
 		}
 		return totalPage;
+	}
+	
+	public static DianpingUserInfo parseUserInfo(Document doc, DianpingShopComment comment) {
+		DianpingUserInfo user = new DianpingUserInfo();
+		user.setUserId(comment.getUserId());
+		try {
+			
+			Element nameEle = doc.select(".name").first();
+			user.setUserName(null != nameEle ? nameEle.text().trim() : "");
+			
+			Element vipEle = doc.select(".vip .icon-vip").first();
+			user.setIsVip(null != vipEle ? 1 : 0);
+			
+			Element userLevelEle = doc.select(".user-info .user-rank-rst").first();
+			user.setUserLevel(null != userLevelEle ? userLevelEle.attr("class") : "");
+			
+			Element cityEle = doc.select(".user-groun").first();
+			user.setCity(null != cityEle ? cityEle.text().trim(): "");
+			
+			Element sexEle = doc.select(".user-groun i").first();
+			user.setSex(null != sexEle ? sexEle.attr("class") : "");
+			
+			Elements group1 = doc.select(".container .aside .user_atten ul li");
+			for (Element ele : group1) {
+				String text = ele.text().trim();
+				String strongText = null != ele.select("strong").first() ? ele.select("strong").first().text() : "0";
+				int num = Integer.parseInt(strongText);
+				if (text.contains("关注")) {
+					user.setFocusNum(num);
+				} else if (text.contains("粉丝")) {
+					user.setFansNum(num);
+				} else if (text.contains("互动")) {
+					user.setInteractionNum(num);
+				}
+			}
+			
+			Elements group2 = doc.select(".container .aside .user-time p");
+			for (Element ele : group2) {
+				String text = ele.text().trim();
+				if (text.contains("贡献值")) {
+					user.setContribution(text.replace("贡献值：", "").replace("\"", ""));
+				} else if (text.contains("社区等级")) {
+					user.setCommunityLevel(text.replace("社区等级：", "").replace("\"", ""));
+				} else if (text.contains("注册时间")) {
+					user.setRegistTime(text.replace("注册时间：", "").replace("\"", ""));
+				}
+			}
+	
+			Elements group3 = doc.select(".container .aside .user-message ul li");
+			for (Element ele : group3) {
+				String text = ele.text().trim();
+				if (text.contains("恋爱状况")) {
+					user.setLoveSituation(text.replace("恋爱状况：", "").replace("\"", ""));
+				} else if (text.contains("生日")) {
+					user.setBirthday(text.replace("生日：", "").replace("\"", ""));
+				} else if (text.contains("星座")) {
+					user.setStar(text.replace("星座：", "").replace("\"", ""));
+				}
+			}
+			
+			
+		} catch (Exception e) {
+			log.error("dianping user info parse error", e);
+		}
+		return user;
 	}
 }

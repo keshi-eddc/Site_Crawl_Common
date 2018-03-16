@@ -34,6 +34,8 @@ public class HttpRequestHeader {
 	private String referer;
 	
 	private String upgradeInsecureRequests;
+
+	private String pragma;
 	
 	private String userAgent;
 	
@@ -118,6 +120,14 @@ public class HttpRequestHeader {
 
 	public void setAcceptLanguage(String acceptLanguage) {
 		this.acceptLanguage = acceptLanguage;
+	}
+
+	public String getPragma() {
+		return pragma;
+	}
+
+	public void setPragma(String pragma) {
+		this.pragma = pragma;
 	}
 
 	public String getCacheControl() {

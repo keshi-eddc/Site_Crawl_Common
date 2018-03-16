@@ -180,6 +180,30 @@ create table dbo.Dianping_Shop_Comment (
 
 ALTER TABLE DataCenter.dbo.Dianping_Shop_Comment ADD CONSTRAINT Dianping_Shop_Comment_PK PRIMARY KEY (id);
 
+-- 用户信息
+drop table Dianping_User_Info;
+create table dbo.Dianping_User_Info (
+    user_id varchar(255) not null,
+    user_name varchar(255),
+    user_level varchar(255),
+    is_vip int,
+    sex varchar(20),
+    city varchar(100),
+    focus_num int,
+    fans_num int,
+    interaction_num int,
+    contribution int,
+    community_level varchar(100),
+    regist_time varchar(50),
+    love_situation varchar(50),
+    birthday varchar(50),
+    star varchar(50),
+    update_time datetime,
+    insert_time datetime
+);
+
+ALTER TABLE DataCenter.dbo.Dianping_User_Info ADD CONSTRAINT Dianping_User_Info_PK PRIMARY KEY (user_id);
+
 
 
 

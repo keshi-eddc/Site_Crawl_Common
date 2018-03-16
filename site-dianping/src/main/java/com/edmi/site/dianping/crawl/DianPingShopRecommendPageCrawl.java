@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -49,39 +50,41 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 		header.setUrl("http://www.dianping.com/shop/" + shop.getShopId() +"/dishlist");
 		header.setReferer("http://www.dianping.com/shop/" + shop.getShopId());
 		String html = DianPingCommonRequest.getShopRecommend(header);
-		Document doc = Jsoup.parse(html);
-		
-		int totalPage = DianpingParser.parseShopRecommendTotalPage(doc);
-		List<SqlEntity> sqlEntityList = new ArrayList<>();
-		if (totalPage == 0) {
-			DianpingShopRecommendPage recommendPage = new DianpingShopRecommendPage();
-			recommendPage.setShopId(shop.getShopId());
-			recommendPage.setTotalPage(totalPage);
-			recommendPage.setPage(0);
-			sqlEntityList.add(new SqlEntity(recommendPage, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
-		} else {
-			for (int page = 1; page <= totalPage; page++) {
-				// 解析成功，如果是第一页，先将这一页的推荐菜解析，并且第一个页的状态置为200
+		if(StringUtils.isNotEmpty(html)) {
+			Document doc = Jsoup.parse(html);
+			
+			int totalPage = DianpingParser.parseShopRecommendTotalPage(doc);
+			List<SqlEntity> sqlEntityList = new ArrayList<>();
+			if (totalPage == 0) {
 				DianpingShopRecommendPage recommendPage = new DianpingShopRecommendPage();
 				recommendPage.setShopId(shop.getShopId());
 				recommendPage.setTotalPage(totalPage);
-				recommendPage.setPage(page);
-				if (page == 1) {
-					recommendPage.setStatus(200);
-					
-					List<DianpingShopRecommendInfo> recommendList = DianpingParser.parseShopRecommend(doc, shop, page);
-					for (DianpingShopRecommendInfo recommend : recommendList) {
-						FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(recommend,
-								DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
-					}
-					
-				} else {
-					recommendPage.setStatus(-1);
-				}
+				recommendPage.setPage(0);
 				sqlEntityList.add(new SqlEntity(recommendPage, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+			} else {
+				for (int page = 1; page <= totalPage; page++) {
+					// 解析成功，如果是第一页，先将这一页的推荐菜解析，并且第一个页的状态置为200
+					DianpingShopRecommendPage recommendPage = new DianpingShopRecommendPage();
+					recommendPage.setShopId(shop.getShopId());
+					recommendPage.setTotalPage(totalPage);
+					recommendPage.setPage(page);
+					if (page == 1) {
+						recommendPage.setStatus(200);
+						
+						List<DianpingShopRecommendInfo> recommendList = DianpingParser.parseShopRecommend(doc, shop, page);
+						for (DianpingShopRecommendInfo recommend : recommendList) {
+							FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(recommend,
+									DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+						}
+						
+					} else {
+						recommendPage.setStatus(-1);
+					}
+					sqlEntityList.add(new SqlEntity(recommendPage, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+				}
 			}
+			iGeneralJdbcUtils.batchExecute(sqlEntityList);
 		}
-		iGeneralJdbcUtils.batchExecute(sqlEntityList);
 		
 	}
 	
@@ -105,7 +108,7 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 					DianpingShopInfo.class);
 			if (CollectionUtils.isNotEmpty(urls)) {
 				
-				ExecutorService pool = Executors.newFixedThreadPool(1);
+				ExecutorService pool = Executors.newFixedThreadPool(5);
 				
 				for (DianpingShopInfo shopInfo : urls) {
 					pool.execute(new DianPingShopRecommendPageCrawl(shopInfo));

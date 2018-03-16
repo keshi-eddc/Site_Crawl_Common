@@ -35,6 +35,8 @@ public class DianPingCommonRequest extends HttpClientSupport {
 
 	public final static BlockingQueue<String> COOKIES_SHOPRECOMMEND = new ArrayBlockingQueue<String>(5);
 	
+	public final static BlockingQueue<String> COOKIES_USERINFO = new ArrayBlockingQueue<String>(2);
+	
 	static {
 		COOKIES.add(
 				"showNav=#nav-tab|0|1; navCtgScroll=300; showNav=javascript:; navCtgScroll=0; _hc.v=e21bfd77-23c0-bd96-85cf-adec6aa34747.1509347333; __utma=1.780503649.1510041292.1510041292.1510041292.1; __utmz=1.1510041292.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _lxsdk_cuid=1608bd17337c8-0c6a9a9c51456a-5e183017-100200-1608bd17337c8; _lxsdk=1608bd17337c8-0c6a9a9c51456a-5e183017-100200-1608bd17337c8; aburl=1; cy=16; cye=wuhan; s_ViewType=10; _lxsdk_s=160badf2b55-705-8a3-e77%7C%7C431");
@@ -51,6 +53,8 @@ public class DianPingCommonRequest extends HttpClientSupport {
 				"showNav=javascript:; navCtgScroll=200; showNav=javascript:; navCtgScroll=0; _hc.v=e21bfd77-23c0-bd96-85cf-adec6aa34747.1509347333; __utma=1.780503649.1510041292.1510041292.1510041292.1; __utmz=1.1510041292.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); JSESSIONID=26CEC1B3FCEF371EED7A05E9969BEE13; _lxsdk_cuid=161fa3115fcc8-0538dde0ed830a-5e183017-100200-161fa3115fdc8; _lxsdk=161fa3115fcc8-0538dde0ed830a-5e183017-100200-161fa3115fdc8; _lx_utm=utm_source%3Ddp_pc_other; cy=1; cye=shanghai; s_ViewType=10; _lxsdk_s=161ff1ee5c3-e08-518-197%7C%7C10");
 		COOKIES_SHOPCOMMENT.add(
 				"_lxsdk_cuid=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _lxsdk=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _hc.v=acf7f16c-257a-70d5-d40f-91620a75bb6b.1520571532; s_ViewType=10; cy=1; cye=shanghai; _lxsdk_s=16222b33752-6b5-61f-038%7C%7C21");
+		COOKIES_USERINFO.add(
+				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; _lxsdk_s=1622d721abf-53e-b60-b17%7C%7C12");
 	}
 
 //	@Scheduled(cron = "0 0/5 * * * ?")
@@ -101,7 +105,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		}
 	}
 
-	@Scheduled(cron = "0 0/5 * * * ?")
+//	@Scheduled(cron = "0 0/5 * * * ?")
 	public static void refreshShopCommentCookie() {
 		String url = "http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest";
 		synchronized (COOKIES_SHOPCOMMENT) {
@@ -126,6 +130,23 @@ public class DianPingCommonRequest extends HttpClientSupport {
 					String cookie = WebDriverSupport.getCookies(url);
 					COOKIES_SHOPRECOMMEND.offer(cookie);
 					log.info("当前cookie size " + COOKIES_SHOPRECOMMEND.size());
+				}
+			} catch (Exception e) {
+				log.error("refresh shop recommend cookie error, ", e);
+			}
+		}
+		
+	}
+	
+	@Scheduled(cron = "0 0/5 * * * ?")
+	public static void refreshUserInfoCookie() {
+		String url = "http://www.dianping.com/member/20192274";
+		synchronized (COOKIES_USERINFO) {
+			try {
+				while (COOKIES_USERINFO.size() < 2) {
+					String cookie = WebDriverSupport.getCookies(url);
+					COOKIES_USERINFO.offer(cookie);
+					log.info("当前cookie size " + COOKIES_USERINFO.size());
 				}
 			} catch (Exception e) {
 				log.error("refresh shop recommend cookie error, ", e);
@@ -262,15 +283,53 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setRequestSleepTime(5000);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
-		if (response.getCode() == HttpStatus.SC_OK) {
-			return response.getContent();
-		} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
-			removeInvalideCookie(COOKIES_SHOPRECOMMEND, header.getCookie());
-			header.setCookie(COOKIES_SHOPRECOMMEND.element());
-			return getShopRecommend(header);
-		} else {
-			return "";
+		String html = "";
+		try {
+			if (response.getCode() == HttpStatus.SC_OK) {
+				html = response.getContent();
+			} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
+				removeInvalideCookie(COOKIES_SHOPRECOMMEND, header.getCookie());
+				header.setCookie(COOKIES_SHOPRECOMMEND.element());
+				html = getShopRecommend(header);
+			} else {
+				html = "";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		return html;
+	}
+	
+	public static String getUserInfo(HttpRequestHeader header) {
+		header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+		header.setAcceptEncoding("gzip, deflate");
+		header.setAcceptLanguage("zh-CN,zh;q=0.9,en;q=0.8");
+		header.setCacheControl("no-cache");
+		header.setConnection("keep-alive");
+		header.setHost("www.dianping.com");
+		header.setPragma("no-cache");
+		header.setUpgradeInsecureRequests("1");
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setCookie(COOKIES_USERINFO.element());
+		header.setAutoPcUa(true);
+		header.setRequestSleepTime(5000);
+		header.setMaxTryTimes(1);
+		HttpResponse response = get(header);
+		String html = "";
+		try {
+			if (response.getCode() == HttpStatus.SC_OK) {
+				html = response.getContent();
+			} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
+				removeInvalideCookie(COOKIES_USERINFO, header.getCookie());
+				header.setCookie(COOKIES_USERINFO.element());
+				html = getUserInfo(header);
+			} else {
+				html = "";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return html;
 	}
 
 	private static String test() {

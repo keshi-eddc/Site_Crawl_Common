@@ -130,10 +130,10 @@ public class HttpClientSupport {
 			CloseableHttpResponse response = null;
 			try {
 				response = httpclient.execute(httpGet);
-				List<Cookie> cookies = cookieStore.getCookies();
-				for (int i = 0; i < cookies.size(); i++) {
-					log.info(cookies.get(i).getName() + "    " + cookies.get(i).getValue());
-	            }
+//				List<Cookie> cookies = cookieStore.getCookies();
+//				for (int i = 0; i < cookies.size(); i++) {
+//					log.info(cookies.get(i).getName() + "    " + cookies.get(i).getValue());
+//	            }
 				// 如果响应不为null
 				if (null != response) {
 					
@@ -170,6 +170,7 @@ public class HttpClientSupport {
 				existError = true;
 				log.error(header.getUrl() + " httpclient execute IOException, it will try again.", e);
 				httpResponse.setFailReason(e.getMessage());
+				httpResponse.setCode(0);
 			} finally {
 				if (null != response) {
 					response.close();
@@ -278,6 +279,7 @@ public class HttpClientSupport {
 				// 如果UA不使用自动切换，但没有配置UA，默认UA自动切换
 				httpRequest.addHeader("User-Agent", UserAgentSupport.getUserAgent());
 			}
+			
 			if (StringUtils.isNotEmpty(header.getAccept())) {
 				httpRequest.addHeader("Accept", header.getAccept());			
 			}
@@ -295,6 +297,9 @@ public class HttpClientSupport {
 			}
 			if (StringUtils.isNotEmpty(header.getConnection())) {
 				httpRequest.addHeader("Connection", header.getConnection());
+			}
+			if (StringUtils.isNotEmpty(header.getPragma())) {
+				httpRequest.addHeader("Pragma", header.getPragma());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
