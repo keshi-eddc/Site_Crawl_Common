@@ -11,7 +11,9 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.config.Registry;
@@ -90,10 +92,65 @@ public class StaticProxySupport {
 		proxy = JSONObject.parseObject(json, Proxy.class);
 		return proxy;
 	}
+	
+	public static String getUserInfo() {
+		String proxy = "";
+		
+		CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm).build();
+
+		// CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpget = new HttpGet("http://www.dianping.com/member/1065520725");
+		String json=null;
+		CloseableHttpResponse response=null;
+		try {
+			
+			RequestConfig.Builder builder = RequestConfig.custom()
+					.setSocketTimeout(10000)
+					.setConnectTimeout(10000)
+					.setConnectionRequestTimeout(10000)
+					.setRedirectsEnabled(true);
+			
+			Proxy _proxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
+			System.out.println(_proxy.getIp());
+//			_proxy.setIp("1.196.158.145");
+//			_proxy.setPort(57112);
+			HttpHost temp = new HttpHost(_proxy.getIp(), _proxy.getPort());
+	        builder.setProxy(temp);
+	        
+	        httpget.setConfig(builder.build());
+			
+			response = httpclient.execute(httpget);
+			// System.out.println("Executing request " +
+			// httpget.getRequestLine());
+
+			// Create a custom response handler
+			InputStream in = response.getEntity().getContent();
+			json = IOUtils.toString(in, StandardCharsets.UTF_8);
+			in.close();
+//			String responseBody = httpclient.execute(httpget, responseHandler);
+			// System.out.println("----------------------------------------");
+			System.out.println(json);
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		} finally {
+			try {
+//				httpclient.close();
+				response.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+//		proxy = JSONObject.parseObject(json, Proxy.class);
+		return proxy;
+	}
 
 	public static void main(String[] args) {
 		log.info("start");
-		StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
+//		StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
+		StaticProxySupport.getUserInfo();
 //		ExecutorService pool = Executors.newScheduledThreadPool(100);
 //		int count = 0;
 //		StopWatch stopWatch = new StopWatch();

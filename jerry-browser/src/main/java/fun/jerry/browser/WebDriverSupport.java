@@ -278,15 +278,15 @@ public class WebDriverSupport {
 				
 				DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
 				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 　　Firefox/50.0");
-				if (1 > 0) {//是否使用代理
-					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
-					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
-					proxy.setAutodetect(false);
-					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);//自定义函数，返回代理ip及端口
-					proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
-					desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
-				}
+				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+//				if (1 > 0) {//是否使用代理
+//					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
+//					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
+//					proxy.setAutodetect(false);
+//					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);//自定义函数，返回代理ip及端口
+//					proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
+//					desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
+//				}
 				
 				driver = new PhantomJSDriver(desiredCapabilities);
 				// DesiredCapabilities capability = null;
@@ -308,6 +308,7 @@ public class WebDriverSupport {
 			}
 			driver.manage().timeouts().pageLoadTimeout(100, TimeUnit.SECONDS);
 			driver.get(url);
+//			System.out.println(driver.getPageSource());
 			// 20s用于输入验证码
 			Set<Cookie> cookieSet = driver.manage().getCookies();
 			for (Cookie temp : cookieSet) {
@@ -325,8 +326,9 @@ public class WebDriverSupport {
 
 	public static void main(String[] args) {
 		try {
-			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));;
-			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));;
+//			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
+//			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
+			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/member/1065520725"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

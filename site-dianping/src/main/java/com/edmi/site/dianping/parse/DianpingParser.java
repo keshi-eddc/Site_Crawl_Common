@@ -103,7 +103,7 @@ public class DianpingParser {
 		return totalPage;
 	}
 	
-	public static DianpingUserInfo parseUserInfo(Document doc, DianpingShopComment comment) {
+	public static DianpingUserInfo parseUserInfo_PC(Document doc, DianpingShopComment comment) {
 		DianpingUserInfo user = new DianpingUserInfo();
 		user.setUserId(comment.getUserId());
 		try {
@@ -161,6 +161,17 @@ public class DianpingParser {
 				}
 			}
 			
+			
+		} catch (Exception e) {
+			log.error("dianping user info parse error", e);
+		}
+		return user;
+	}
+	
+	public static DianpingUserInfo parseUserInfo_Mobile(Document doc, DianpingShopComment comment) {
+		DianpingUserInfo user = new DianpingUserInfo();
+		user.setUserId(comment.getUserId());
+		try {
 			
 		} catch (Exception e) {
 			log.error("dianping user info parse error", e);

@@ -141,7 +141,7 @@ public class HttpClientSupport {
 					httpResponse.setCode(response.getStatusLine().getStatusCode());
 					// 如果请求成功
 					if (null != response.getStatusLine() && (response.getStatusLine().getStatusCode() == 200
-							|| response.getStatusLine().getStatusCode() == 404)) {
+							|| response.getStatusLine().getStatusCode() == 404 || response.getStatusLine().getStatusCode() == 403)) {
 						html = getResponseAsString(header, response);
 						httpResponse.setContent(html);
 						existError = false;
@@ -299,7 +299,7 @@ public class HttpClientSupport {
 				httpRequest.addHeader("Connection", header.getConnection());
 			}
 			if (StringUtils.isNotEmpty(header.getPragma())) {
-				httpRequest.addHeader("Pragma", header.getPragma());
+//				httpRequest.addHeader("Pragma", header.getPragma());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

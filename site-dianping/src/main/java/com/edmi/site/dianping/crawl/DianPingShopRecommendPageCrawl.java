@@ -1,6 +1,7 @@
 package com.edmi.site.dianping.crawl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -8,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -60,12 +62,15 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 				recommendPage.setShopId(shop.getShopId());
 				recommendPage.setTotalPage(totalPage);
 				recommendPage.setPage(0);
+				recommendPage.setStatus(200);
+				recommendPage.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 				sqlEntityList.add(new SqlEntity(recommendPage, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
 			} else {
 				for (int page = 1; page <= totalPage; page++) {
 					// 解析成功，如果是第一页，先将这一页的推荐菜解析，并且第一个页的状态置为200
 					DianpingShopRecommendPage recommendPage = new DianpingShopRecommendPage();
 					recommendPage.setShopId(shop.getShopId());
+					recommendPage.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 					recommendPage.setTotalPage(totalPage);
 					recommendPage.setPage(page);
 					if (page == 1) {
@@ -97,7 +102,8 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 		DianPingCommonRequest.refreshShopRecommendCookie();
 		StringBuilder sql = new StringBuilder();
 		sql.append("select top 1000 * from Dianping_ShopInfo A "
-				+ "where not exists (select 1 from Dianping_Shop_Recommend_Page B where A.shop_id = B.shop_id) "
+				+ "where not exists (select 1 from Dianping_Shop_Recommend_Page B where A.shop_id = B.shop_id "
+				+ "and B.page = 1 and B.status = 200) "
 //				+ "and shop_id in ('72351070')"
 				+ "order by shop_id"
 				);
@@ -108,7 +114,7 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 					DianpingShopInfo.class);
 			if (CollectionUtils.isNotEmpty(urls)) {
 				
-				ExecutorService pool = Executors.newFixedThreadPool(5);
+				ExecutorService pool = Executors.newFixedThreadPool(6);
 				
 				for (DianpingShopInfo shopInfo : urls) {
 					pool.execute(new DianPingShopRecommendPageCrawl(shopInfo));

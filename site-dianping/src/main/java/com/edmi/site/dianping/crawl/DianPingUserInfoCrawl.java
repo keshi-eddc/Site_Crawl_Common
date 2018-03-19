@@ -49,8 +49,9 @@ public class DianPingUserInfoCrawl implements Runnable {
 	@Override
 	public void run() {
 		HttpRequestHeader header = new HttpRequestHeader();
-		header.setUrl("http://www.dianping.com/member/" + comment.getUserId());
-		header.setReferer("http://www.dianping.com/shop/" + comment.getShopId());
+//		header.setUrl("http://www.dianping.com/member/" + comment.getUserId());
+		header.setUrl("https://m.dianping.com/userprofile/ajax/profileinfo?id=" + comment.getUserId());
+//		header.setReferer("http://www.dianping.com/shop/" + comment.getShopId());
 		String html = DianPingCommonRequest.getUserInfo(header);
 		if(StringUtils.isNotEmpty(html)) {
 			Document doc = Jsoup.parse(html);
@@ -69,6 +70,7 @@ public class DianPingUserInfoCrawl implements Runnable {
 		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 
 //		DianPingCommonRequest.refreshUserInfoCookie();
+		DianPingCommonRequest.refreshShopRecommendCookie();
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("with comment as ( "
