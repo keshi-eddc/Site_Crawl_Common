@@ -2,6 +2,7 @@ package fun.jerry.browser;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
@@ -277,16 +279,16 @@ public class WebDriverSupport {
 			if (null == driver) {
 				
 				DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
-				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-//				if (1 > 0) {//是否使用代理
-//					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
-//					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
-//					proxy.setAutodetect(false);
-//					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);//自定义函数，返回代理ip及端口
-//					proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
-//					desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
-//				}
+//				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+//				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+				if (1 > 0) {//是否使用代理
+					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
+					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
+					proxy.setAutodetect(false);
+					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);//自定义函数，返回代理ip及端口
+					proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
+					desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
+				}
 				
 				driver = new PhantomJSDriver(desiredCapabilities);
 				// DesiredCapabilities capability = null;
@@ -328,7 +330,10 @@ public class WebDriverSupport {
 		try {
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
-			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/member/1065520725"));
+//			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/member/1065520725"));
+//			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/ajax/member/checkin/checkinList?memberId=4426996"));
+			System.out.println(DateFormatUtils.format(new Date(1483200000000L - 1000), "yyyy-MM-dd HH:mm:ss"));
+//			System.out.println(1483200000000L - 1000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

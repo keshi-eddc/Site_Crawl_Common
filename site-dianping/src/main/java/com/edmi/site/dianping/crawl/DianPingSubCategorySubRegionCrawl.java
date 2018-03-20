@@ -282,9 +282,7 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 						+ "	on A.city_cnname = B.city_cnname  "
 						+ "	where A.num = B.num "
 						+ ") "
-						+ "and cityName in ('北京', '上海', '广州', '深圳', '兰州', '昆明', '成都',  '长春', '沈阳', '西宁', '西安', "
-				+ "'郑州', '济南', '太原', '合肥', '武汉', '长沙', '南京', '贵阳', '南宁', '杭州', '南昌', '福州','台北','海口', '银川','拉萨','澳门',"
-				+ "'香港','天津','重庆','哈尔滨', '石家庄','呼和浩特','乌鲁木齐')",
+						+ "and cityName in ('北京', '上海', '广州', '深圳', '南昌', '太原', '沈阳', '西安', '南宁', '成都', '杭州', '泉州', '潍坊', '吉林', '洛阳', '贵阳', '兰州')",
 				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
 		
 		ExecutorService pool = Executors.newFixedThreadPool(5);

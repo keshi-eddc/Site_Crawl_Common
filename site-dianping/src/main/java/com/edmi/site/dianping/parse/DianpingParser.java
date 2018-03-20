@@ -5,15 +5,18 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.alibaba.fastjson.JSONObject;
 import com.edmi.site.dianping.entity.DianpingShopComment;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingShopRecommendInfo;
 import com.edmi.site.dianping.entity.DianpingUserInfo;
+import com.google.gson.JsonObject;
 
 import fun.jerry.common.LogSupport;
 
@@ -168,14 +171,28 @@ public class DianpingParser {
 		return user;
 	}
 	
-	public static DianpingUserInfo parseUserInfo_Mobile(Document doc, DianpingShopComment comment) {
+	public static DianpingUserInfo parseUserInfo_Mobile(JSONObject jsonObj, DianpingShopComment comment) {
 		DianpingUserInfo user = new DianpingUserInfo();
 		user.setUserId(comment.getUserId());
 		try {
-			
+			if (jsonObj.containsKey("data")) {
+				JSONObject data = jsonObj.getJSONObject("data");
+				user.setUserName(StringUtils.isNotEmpty(data.getString("nickName")) ? data.getString("nickName") : "");
+				user.setIsVip(null != data.getBoolean("isVip") && data.getBoolean("isVip") ? 1 : 0);
+				user.setUserLevel(StringUtils.isNotEmpty(data.getString("level")) ? data.getString("level") : "");
+				user.setSex(StringUtils.isNotEmpty(data.getString("gender")) ? data.getString("gender") : "");
+				user.setCity(StringUtils.isNotEmpty(data.getString("city")) ? data.getString("city") : "");
+				user.setFocusNum(StringUtils.isNotEmpty(data.getString("followCount")) ? Integer.parseInt(data.getString("followCount")) : 0);
+				user.setFansNum(StringUtils.isNotEmpty(data.getString("fansCount")) ? Integer.parseInt(data.getString("fansCount")) : 0);
+//				user.setInteractionNum(StringUtils.isNotEmpty(data.getString("fansCount")) ? Integer.parseInt(data.getString("fansCount")) : 0);
+				user.setStar(StringUtils.isNotEmpty(data.getString("constellation")) ? data.getString("constellation") : "");
+			}
 		} catch (Exception e) {
 			log.error("dianping user info parse error", e);
 		}
 		return user;
+	}
+	
+	public static void main(String[] args) {
 	}
 }

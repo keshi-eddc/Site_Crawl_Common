@@ -71,8 +71,8 @@ public class HttpClientSupport {
 		cm.setDefaultMaxPerRoute(50);
 	}
 	
-	public static String post(HttpRequestHeader header) {
-		String html = "";
+	public static HttpResponse post(HttpRequestHeader header) {
+		HttpResponse rtnResponse = null;
 		try {
 			CloseableHttpClient httpclient = HttpClients.createDefault();
 			
@@ -88,13 +88,13 @@ public class HttpClientSupport {
 			
 			CloseableHttpResponse response = httpclient.execute(httpPost);
 			
-			html = getResponseAsString(header, response);
+			String html = getResponseAsString(header, response);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return html;
+		return rtnResponse;
 	}
 	
 	public static HttpResponse get(HttpRequestHeader header) {
@@ -103,6 +103,12 @@ public class HttpClientSupport {
 	
 	private static HttpResponse execute(HttpRequestHeader header, int tryCount) {
 		HttpResponse httpResponse = new HttpResponse();
+		
+		try {
+			TimeUnit.MILLISECONDS.sleep((long) (header.getRequestSleepTime() + Math.random() * 100 * tryCount));
+		} catch (InterruptedException e) {
+			log.error(header.getUrl() + " InterruptedException ", e);
+		}
 		
 		String html = "";
 		try {
@@ -120,12 +126,6 @@ public class HttpClientSupport {
 					.build();
 			
 			boolean existError = false;
-			
-			try {
-				TimeUnit.MILLISECONDS.sleep((long) (header.getRequestSleepTime() + Math.random() * 100 * tryCount));
-			} catch (InterruptedException e) {
-				log.error(header.getUrl() + " InterruptedException ", e);
-			}
 			
 			CloseableHttpResponse response = null;
 			try {

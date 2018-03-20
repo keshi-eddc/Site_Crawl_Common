@@ -76,12 +76,12 @@ public class DianPingSubCategorySubRegionRefresh implements Runnable {
 	@SuppressWarnings("unchecked")
 	private void crawl() {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select * from Dianping_SubCategory_SubRegion where shop_total_page = 0 ")
-//			.append("and sub_category_id in (select sub_category_id from dbo.Dianping_City_SubCategory ")
-//				.append("where primary_category = '" + primaryCategory + "' ")
-//				.append(StringUtils.isNotEmpty(category) ? "and category = '" + category + "' " : " ")
-//				.append(StringUtils.isNotEmpty(subCategory) ? "and sub_category = '" + subCategory + "' " : " ")
-//				.append(")")
+		sql.append("select * from Dianping_SubCategory_SubRegion where 1 = 1 ")
+			.append("and sub_category_id in (select sub_category_id from dbo.Dianping_City_SubCategory ")
+				.append("where primary_category = '" + primaryCategory + "' ")
+				.append(StringUtils.isNotEmpty(category) ? "and category = '" + category + "' " : " ")
+				.append(StringUtils.isNotEmpty(subCategory) ? "and sub_category = '" + subCategory + "' " : " ")
+				.append(")")
 			.append("and sub_region_id in (select sub_region_id from dbo.Dianping_City_SubRegion ")
 				.append(" where city_cnname = '" + cityCnname + "' ")
 				.append(StringUtils.isNotEmpty(region) ? "and region = '" + region + "' " : " ")
@@ -107,7 +107,7 @@ public class DianPingSubCategorySubRegionRefresh implements Runnable {
 					@Override
 					public void run() {
 						HttpRequestHeader header = new HttpRequestHeader();
-						header.setUrl(sub.getUrl());
+						header.setUrl(sub.getUrl() + "o2"); // o2 按人气排序
 						String html = DianPingCommonRequest.getShopList(header);
 						Document doc = Jsoup.parse(html);
 						Element shopTag = doc.select("#shop-all-list").first();
@@ -156,37 +156,28 @@ public class DianPingSubCategorySubRegionRefresh implements Runnable {
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 		System.out.println(ApplicationContextHolder.getBean(GeneralJdbcUtils.class));
 		IGeneralJdbcUtils<?> iGeneralJdbcUtils = (IGeneralJdbcUtils<?>) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+		// '北京', '上海', '广州', '深圳', '南昌', '太原', '沈阳', '西安', '南宁', '成都', '杭州', '泉州', '潍坊', '吉林', '洛阳', '贵阳', '兰州'
 		
-//		List<Map<String, Object>> mapList = iGeneralJdbcUtils.queryForListMap(new SqlEntity(
-//				"select * from dbo.City_DianPing where cityName in ('北京', '上海', '广州', '深圳', '兰州', '昆明', '成都',  '长春', '沈阳', '西宁', '西安', "
-//				+ "'郑州', '济南', '太原', '合肥', '武汉', '长沙', '南京', '贵阳', '南宁', '杭州', '南昌', '福州','台北','海口', '银川','拉萨','澳门',"
-//				+ "'香港','天津','重庆','哈尔滨', '石家庄','呼和浩特','乌鲁木齐')",
-//				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
-//		
-//		ExecutorService pool = Executors.newFixedThreadPool(5); 
-//		
-//		for (Map<String, Object> map : mapList) {
-//			
-//			pool.submit(new DianPingSubCategorySubRegionRefresh(map.get("cityId").toString(),
-//					map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10"));
-//		}
-//		
-//		pool.shutdown();
-//
-//		while (true) {
-//			if (pool.isTerminated()) {
-//				log.error("大众点评-抓取完成");
-//				break;
-//			} else {
-//				try {
-//					TimeUnit.SECONDS.sleep(10);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
+		ExecutorService pool = Executors.newFixedThreadPool(1); 
 		
-		new DianPingSubCategorySubRegionRefresh("上海", "", "", "美食", "", "").run();
+		for (String city : new String[] {"上海", "北京", "广州", "深圳", "南昌", "太原", "沈阳", "西安", "南宁", "成都", "杭州", "泉州", "潍坊", "吉林", "洛阳", "贵阳", "兰州"}) {
+			pool.execute(new DianPingSubCategorySubRegionRefresh(city, "", "", "美食", "", ""));
+		}
+		
+		pool.shutdown();
+
+		while (true) {
+			if (pool.isTerminated()) {
+				log.error("大众点评-抓取完成");
+				break;
+			} else {
+				try {
+					TimeUnit.SECONDS.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 }

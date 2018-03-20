@@ -22,7 +22,7 @@ import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.httpclient.core.HttpClientSupport;
 import fun.jerry.proxy.enumeration.ProxyType;
 
-@Component
+//@Component
 public class DianPingCommonRequest extends HttpClientSupport {
 
 	private static Logger log = LogSupport.getDianpinglog();
@@ -202,11 +202,11 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 		header.setCookie(COOKIES_SHOPLIST.element());
 		header.setUserAgent(
 				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
-		header.setRequestSleepTime(2000);
+		header.setRequestSleepTime(5000);
 		header.setMaxTryTimes(2);
 		HttpResponse response = get(header);
 		if (response.getCode() == HttpStatus.SC_OK) {
@@ -301,23 +301,24 @@ public class DianPingCommonRequest extends HttpClientSupport {
 	}
 	
 	public static String getUserInfo(HttpRequestHeader header) {
-		header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-		header.setAcceptEncoding("gzip, deflate");
-		header.setAcceptLanguage("zh-CN,zh;q=0.9,en;q=0.8");
-		header.setCacheControl("no-cache");
-		header.setConnection("keep-alive");
-		header.setHost("www.dianping.com");
-		header.setPragma("no-cache");
-		header.setUpgradeInsecureRequests("1");
-		header.setProxyType(ProxyType.PROXY_CLOUD_ABUYUN);
+//		header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+//		header.setAcceptEncoding("gzip, deflate, br");
+//		header.setAcceptLanguage("zh-CN,zh;q=0.9,en;q=0.8");
+//		header.setCacheControl("no-cache");
+//		header.setConnection("keep-alive");
+//		header.setHost("www.dianping.com");
+//		header.setPragma("no-cache");
+//		header.setUpgradeInsecureRequests("1");
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 //		header.setProxyType(ProxyType.NONE);
 //		header.setCookie(COOKIES_USERINFO.element());
-		header.setCookie(COOKIES_SHOPRECOMMEND.element());
-		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; _lxsdk_s=1623ccff17d-216-02e-4c5%7C%7C10");
-		header.setAutoPcUa(false);
-		header.setAutoUa(false);
-		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36");;
-		header.setRequestSleepTime(5000);
+//		header.setCookie(COOKIES_SHOPRECOMMEND.element());
+//		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; m_flash2=1; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTIxNTA3OTI5MTk2XV9b; _lxsdk_s=16240ebf651-c5a-e75-b4d%7C%7C319");
+//		header.setAutoPcUa(false);
+//		header.setAutoUa(false);
+		header.setAutoMobileUa(true);
+//		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36");
+		header.setRequestSleepTime(2000);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
 		String html = "";
@@ -328,6 +329,39 @@ public class DianPingCommonRequest extends HttpClientSupport {
 				removeInvalideCookie(COOKIES_SHOPRECOMMEND, header.getCookie());
 				header.setCookie(COOKIES_SHOPRECOMMEND.element());
 				html = getUserInfo(header);
+			} else {
+				html = "";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return html;
+	}
+	
+	public static String getUserCheckInfo(HttpRequestHeader header) {
+		header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+		header.setAcceptEncoding("gzip, deflate");
+		header.setAcceptLanguage("zh-CN,zh;q=0.9,en;q=0.8");
+		header.setCacheControl("no-cache");
+		header.setConnection("keep-alive");
+		header.setHost("www.dianping.com");
+		header.setPragma("no-cache");
+		header.setUpgradeInsecureRequests("1");
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+//		header.setProxyType(ProxyType.NONE);
+		header.setAutoPcUa(true);
+//		header.setCookie(COOKIES_USERINFO.element());
+//		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; m_flash2=1; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTIxNTA3OTI5MTk2XV9b; _lxsdk_s=16240ebf651-c5a-e75-b4d%7C%7C319");
+		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d." + ((System.currentTimeMillis() / 1000) - 6666) + "\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; m_flash2=1; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTIxNTA3OTI5MTk2XV9b; _lxsdk_s=16240ebf651-c5a-e75-b4d%7C%7C319");
+		header.setRequestSleepTime(2000);
+		header.setMaxTryTimes(1);
+		HttpResponse response = get(header);
+		String html = "";
+		try {
+			if (response.getCode() == HttpStatus.SC_OK) {
+				html = response.getContent();
+			} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
+				html = getUserCheckInfo(header);
 			} else {
 				html = "";
 			}
