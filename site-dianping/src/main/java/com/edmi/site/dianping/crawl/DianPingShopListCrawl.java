@@ -120,8 +120,8 @@ public class DianPingShopListCrawl implements Runnable {
 			sub.setStatus(200);
 			for (Element shop : shopElements) {
 				DianpingShopInfo shopInfo = new DianpingShopInfo();
-				shopInfo.setSubCategoryId(sub.getSubCategoryId());
-				shopInfo.setSubRegionId(sub.getSubRegionId());
+//				shopInfo.setSubCategoryId(sub.getSubCategoryId());
+//				shopInfo.setSubRegionId(sub.getSubRegionId());
 				
 				Element tit = shop.select(".tit").first();
 				if (null != tit) {

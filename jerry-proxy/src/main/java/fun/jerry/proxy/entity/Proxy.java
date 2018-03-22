@@ -6,6 +6,10 @@ package fun.jerry.proxy.entity;
  *
  */
 public class Proxy {
+	
+	public static final String VENDOR_DLY = "DLY";
+	
+	public static final String VENDOR_DUNG = "DUNG";
 
 	private String ip;
 	

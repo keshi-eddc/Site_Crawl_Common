@@ -16,6 +16,7 @@ public class DianpingShopComment extends Model {
 
 	private static final long serialVersionUID = 4217070017854978866L;
 	
+	@LogicalPrimaryKey
 	@ColumnMapping("comment_id")
 	private String commentId;
 	

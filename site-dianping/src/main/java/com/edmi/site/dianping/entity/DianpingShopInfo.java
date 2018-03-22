@@ -53,6 +53,18 @@ public class DianpingShopInfo extends Model {
 	@ColumnMapping("avg_price")
 	private String avgPrice;
 	
+	@ColumnMapping("self_category")
+	private String selfCategory;
+	
+	@ColumnMapping("self_category_id")
+	private String selfCategoryId;
+
+	@ColumnMapping("self_sub_region")
+	private String selfSubRegion;
+	
+	@ColumnMapping("self_sub_region_id")
+	private String selfSubRegionId;
+	
 	@ColumnMapping("address")
 	private String address;
 	
@@ -64,12 +76,6 @@ public class DianpingShopInfo extends Model {
 	
 	@ColumnMapping("service_score")
 	private String serviceScore;
-	
-	@ColumnMapping("sub_category_id")
-	private String subCategoryId;
-
-	@ColumnMapping("sub_region_id")
-	private String subRegionId;
 	
 	@ColumnMapping("update_time")
 	@FieldInsertExclude
@@ -135,6 +141,22 @@ public class DianpingShopInfo extends Model {
 		this.bookSupport = bookSupport;
 	}
 
+	public Integer getHasBranch() {
+		return hasBranch;
+	}
+
+	public void setHasBranch(Integer hasBranch) {
+		this.hasBranch = hasBranch;
+	}
+
+	public String getBrandUrl() {
+		return brandUrl;
+	}
+
+	public void setBrandUrl(String brandUrl) {
+		this.brandUrl = brandUrl;
+	}
+
 	public String getStarLevel() {
 		return starLevel;
 	}
@@ -157,6 +179,46 @@ public class DianpingShopInfo extends Model {
 
 	public void setAvgPrice(String avgPrice) {
 		this.avgPrice = avgPrice;
+	}
+
+	public String getSelfCategory() {
+		return selfCategory;
+	}
+
+	public void setSelfCategory(String selfCategory) {
+		this.selfCategory = selfCategory;
+	}
+
+	public String getSelfCategoryId() {
+		return selfCategoryId;
+	}
+
+	public void setSelfCategoryId(String selfCategoryId) {
+		this.selfCategoryId = selfCategoryId;
+	}
+
+	public String getSelfSubRegion() {
+		return selfSubRegion;
+	}
+
+	public void setSelfSubRegion(String selfSubRegion) {
+		this.selfSubRegion = selfSubRegion;
+	}
+
+	public String getSelfSubRegionId() {
+		return selfSubRegionId;
+	}
+
+	public void setSelfSubRegionId(String selfSubRegionId) {
+		this.selfSubRegionId = selfSubRegionId;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public String getTasteScore() {
@@ -183,22 +245,6 @@ public class DianpingShopInfo extends Model {
 		this.serviceScore = serviceScore;
 	}
 
-	public String getSubCategoryId() {
-		return subCategoryId;
-	}
-
-	public void setSubCategoryId(String subCategoryId) {
-		this.subCategoryId = subCategoryId;
-	}
-
-	public String getSubRegionId() {
-		return subRegionId;
-	}
-
-	public void setSubRegionId(String subRegionId) {
-		this.subRegionId = subRegionId;
-	}
-
 	public String getUpdateTime() {
 		return updateTime;
 	}
@@ -214,28 +260,5 @@ public class DianpingShopInfo extends Model {
 	public void setInsertTime(String insertTime) {
 		this.insertTime = insertTime;
 	}
-
-	public Integer getHasBranch() {
-		return hasBranch;
-	}
-
-	public void setHasBranch(Integer hasBranch) {
-		this.hasBranch = hasBranch;
-	}
-
-	public String getBrandUrl() {
-		return brandUrl;
-	}
-
-	public void setBrandUrl(String brandUrl) {
-		this.brandUrl = brandUrl;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
+	
 }

@@ -150,38 +150,39 @@ public class StaticProxySupport {
 	public static void main(String[] args) {
 		log.info("start");
 //		StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
-		StaticProxySupport.getUserInfo();
-//		ExecutorService pool = Executors.newScheduledThreadPool(100);
-//		int count = 0;
-//		StopWatch stopWatch = new StopWatch();
-//		stopWatch.start();
-//		while (count < 100000) {
-//			pool.submit(new Runnable() {
-//
-//				@Override
-//				public void run() {
-//					StaticProxySupport.getStaticProxy();
-//				}
-//			});
-//
-//			count++;
-//			System.out.println("$$$$$$$$$$$$$$$ " + count);
-//		}
-//		pool.shutdown();
-//		while (true) {
-//			if (!pool.isTerminated()) {
-//				try {
-//					TimeUnit.SECONDS.sleep(20);
-//					log.info("#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$ not stop");
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			} else {
-//				stopWatch.stop();
-//				System.out.println("########## " + stopWatch.getTotalTimeMillis());
-//				break;
-//			}
-//		}
+//		StaticProxySupport.getUserInfo();
+		ExecutorService pool = Executors.newScheduledThreadPool(200);
+		int count = 0;
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		for (int i = 0; i < 1000; i++) {
+			
+			pool.submit(new Runnable() {
+
+				@Override
+				public void run() {
+					StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
+				}
+			});
+
+			count++;
+			System.out.println("$$$$$$$$$$$$$$$ " + count);
+		}
+		pool.shutdown();
+		while (true) {
+			if (!pool.isTerminated()) {
+				try {
+					TimeUnit.SECONDS.sleep(20);
+					log.info("#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$ not stop");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else {
+				stopWatch.stop();
+				System.out.println("########## " + stopWatch.getTotalTimeMillis());
+				break;
+			}
+		}
 	}
 
 }

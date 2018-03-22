@@ -325,10 +325,6 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		try {
 			if (response.getCode() == HttpStatus.SC_OK) {
 				html = response.getContent();
-			} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
-				removeInvalideCookie(COOKIES_SHOPRECOMMEND, header.getCookie());
-				header.setCookie(COOKIES_SHOPRECOMMEND.element());
-				html = getUserInfo(header);
 			} else {
 				html = "";
 			}
@@ -355,6 +351,48 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d." + ((System.currentTimeMillis() / 1000) - 6666) + "\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; m_flash2=1; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTIxNTA3OTI5MTk2XV9b; _lxsdk_s=16240ebf651-c5a-e75-b4d%7C%7C319");
 		header.setRequestSleepTime(2000);
 		header.setMaxTryTimes(1);
+		HttpResponse response = get(header);
+		String html = "";
+		try {
+			if (response.getCode() == HttpStatus.SC_OK) {
+				html = response.getContent();
+			} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
+				html = getUserCheckInfo(header);
+			} else {
+				html = "";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return html;
+	}
+	
+	public static String getRealTimeRank(HttpRequestHeader header) {
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setAutoPcUa(true);
+		header.setRequestSleepTime(5000);
+		header.setMaxTryTimes(5);
+		HttpResponse response = get(header);
+		String html = "";
+		try {
+			if (response.getCode() == HttpStatus.SC_OK) {
+				html = response.getContent();
+			} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
+				html = getUserCheckInfo(header);
+			} else {
+				html = "";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return html;
+	}
+	
+	public static String getDishRank(HttpRequestHeader header) {
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setAutoPcUa(true);
+		header.setRequestSleepTime(5000);
+		header.setMaxTryTimes(5);
 		HttpResponse response = get(header);
 		String html = "";
 		try {

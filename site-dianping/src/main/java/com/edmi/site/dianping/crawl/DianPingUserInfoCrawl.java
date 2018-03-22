@@ -22,6 +22,7 @@ import com.edmi.site.dianping.entity.DianpingShopRecommendInfo;
 import com.edmi.site.dianping.entity.DianpingShopRecommendPage;
 import com.edmi.site.dianping.entity.DianpingUserInfo;
 import com.edmi.site.dianping.http.DianPingCommonRequest;
+import com.edmi.site.dianping.http.DianPingTaskRequest;
 import com.edmi.site.dianping.parse.DianpingParser;
 
 import fun.jerry.browser.WebDriverSupport;
@@ -97,43 +98,47 @@ public class DianPingUserInfoCrawl implements Runnable {
 //		DianPingCommonRequest.refreshUserInfoCookie();
 //		DianPingCommonRequest.refreshShopRecommendCookie();
 		
-		StringBuilder sql = new StringBuilder();
-		sql.append("with comment as ( "
-					+ "	select user_id, user_name, max(shop_id) as shop_id from dbo.Dianping_Shop_Comment "
-					+ "	where len(user_id) > 0 "
-					+ "	group by user_id, user_name "
-					+ ") select top 5000 * from comment A "
-					+ "where not exists (select 1 from dbo.Dianping_User_Info B where A.user_id = B.user_id) "
-				);
-		
-		while (true) {
-			List<DianpingShopComment> urls = iGeneralJdbcUtils.queryForListObject(
-					new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
-					DianpingShopComment.class);
-			if (CollectionUtils.isNotEmpty(urls)) {
-				ExecutorService pool = Executors.newFixedThreadPool(5);
-				for (DianpingShopComment comment : urls) {
-					pool.execute(new DianPingUserInfoCrawl(comment));
-				}
-				
-				pool.shutdown();
+		int count = 0;
+		try {
+			while (true) {
+				count ++;
+				System.out.println("##################" + count);
+				List<DianpingShopComment> list = DianPingTaskRequest.getUserInfoTask();
+				log.info("获取未抓取用户个数：" + list.size());
+				if (CollectionUtils.isNotEmpty(list)) {
+					ExecutorService pool = Executors.newFixedThreadPool(5);
+					for (DianpingShopComment comment : list) {
+						pool.submit(new DianPingUserInfoCrawl(comment));
+					}
+					
+					pool.shutdown();
 
-				while (true) {
-					if (pool.isTerminated()) {
-						log.error("大众点评-refresh user 抓取完成");
-						break;
-					} else {
-						try {
-							TimeUnit.SECONDS.sleep(60);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+					while (true) {
+						if (pool.isTerminated()) {
+							log.error("大众点评-refresh user 抓取完成");
+							break;
+						} else {
+							try {
+								TimeUnit.SECONDS.sleep(60);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					}
+					
+				} else {
+					System.out.println("$$$$$$$$$$$$$$$" + count);
+					try {
+						TimeUnit.MINUTES.sleep(5);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
-				
-			} else {
-				break;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			System.out.println("##################" + count);
 		}
 		
 	}

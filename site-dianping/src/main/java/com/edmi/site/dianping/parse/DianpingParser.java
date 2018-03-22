@@ -7,6 +7,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -15,14 +16,100 @@ import com.alibaba.fastjson.JSONObject;
 import com.edmi.site.dianping.entity.DianpingShopComment;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingShopRecommendInfo;
+import com.edmi.site.dianping.entity.DianpingSubCategorySubRegionPage;
 import com.edmi.site.dianping.entity.DianpingUserInfo;
+import com.edmi.site.dianping.http.DianPingCommonRequest;
 import com.google.gson.JsonObject;
 
+import fun.jerry.cache.holder.FirstCacheHolder;
 import fun.jerry.common.LogSupport;
+import fun.jerry.entity.system.DataSource;
+import fun.jerry.entity.system.SqlEntity;
+import fun.jerry.entity.system.SqlType;
+import fun.jerry.httpclient.bean.HttpRequestHeader;
 
 public class DianpingParser {
 	
 	private static Logger log = LogSupport.getDianpinglog();
+	
+	private void parseShopList(Document doc, int page) {
+		HttpRequestHeader header = new HttpRequestHeader();
+		String html = DianPingCommonRequest.getShopList(header);
+		Elements shopElements = doc.select("#shop-all-list ul li");
+		if (CollectionUtils.isNotEmpty(shopElements)) {
+			for (Element shop : shopElements) {
+				DianpingShopInfo shopInfo = new DianpingShopInfo();
+				
+				Element tit = shop.select(".tit").first();
+				if (null != tit) {
+					Element title = tit.select("a[data-hippo-type*=shop]").first();
+					if (null != title) {
+						shopInfo.setShopName(title.attr("title").trim());
+						shopInfo.setShopUrl(title.attr("href").trim());
+						shopInfo.setShopId(shopInfo.getShopUrl().substring(shopInfo.getShopUrl().lastIndexOf("/") + 1));
+					}
+					// 是否包含团购
+					Element tuan = tit.select("a.igroup").first();
+					shopInfo.setTuanSupport(null != tuan ? 1 : 0);
+					// 是否包含预定
+					Element book = tit.select("a.ibook").first();
+					shopInfo.setBookSupport(null != book ? 1 : 0);
+					// 是否包含外卖
+					Element out = tit.select("a.iout").first();
+					shopInfo.setOutSupport(null != out ? 1 : 0);
+					// 是否包含促销
+					Element promotion = tit.select("a.ipromote").first();
+					shopInfo.setPromotionSupport(null != promotion ? 1 : 0);
+					// 是否包含分店
+					Element branch = tit.select("a.shop-branch").first();
+					if (null != branch) {
+						shopInfo.setHasBranch(1);
+						shopInfo.setBrandUrl(branch.attr("href"));
+					} else {
+						shopInfo.setHasBranch(0);
+						shopInfo.setBrandUrl("");
+					}
+					
+				}
+				Element comment = shop.select(".comment").first();
+				if (null != comment) {
+					// 星级
+					Element level = comment.select("span.sml-rank-stars").first();
+					shopInfo.setStarLevel(null != level ? level.attr("title") : "");
+					// 评论数
+					Element reviewNum = comment.select("a.review-num").first();
+					shopInfo.setReviewNum(null != reviewNum ? (null != reviewNum.select("b").first()
+							? Integer.parseInt(reviewNum.select("b").first().text()) : 0) : 0);
+					// 人均
+					Element avgPrice = comment.select("a.mean-price").first();
+					shopInfo.setAvgPrice(avgPrice.text().replace("人均", "").replace("￥", "").trim());
+				}
+				
+				// 地址
+				Element address = shop.select(".tag-addr .addr").first();
+				shopInfo.setAddress(null != address ? address.text().trim() : "");
+				// 评分
+				Elements scores = shop.select(".comment-list span");
+				if (CollectionUtils.isNotEmpty(scores)) {
+					for (Element score : scores) {
+						String text = score.text();
+						String scoreText = score.select("b").first().text();
+						if (text.contains("口味")) {
+							shopInfo.setTasteScore(scoreText);
+						} else if (text.contains("环境")) {
+							shopInfo.setEnvironmentScore(scoreText);
+						} else if (text.contains("服务")) {
+							shopInfo.setServiceScore(scoreText);
+						}
+					}
+				}
+				FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(shopInfo, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+			}
+		} else if (html.contains("没有找到符合条件的商户") || html.contains("建议您：更改筛选条件重新查找")) {
+		} else {
+		}
+		
+	}
 	
 	/**
 	 * 解析店铺推荐菜
