@@ -5,9 +5,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,10 +14,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.edmi.site.dianping.entity.DianpingShopComment;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingShopRecommendInfo;
-import com.edmi.site.dianping.entity.DianpingSubCategorySubRegionPage;
 import com.edmi.site.dianping.entity.DianpingUserInfo;
 import com.edmi.site.dianping.http.DianPingCommonRequest;
-import com.google.gson.JsonObject;
 
 import fun.jerry.cache.holder.FirstCacheHolder;
 import fun.jerry.common.LogSupport;
@@ -32,9 +28,22 @@ public class DianpingParser {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
-	private void parseShopList(Document doc, int page) {
-		HttpRequestHeader header = new HttpRequestHeader();
-		String html = DianPingCommonRequest.getShopList(header);
+	public static int parseShopListPage (Document doc) {
+		int totalPage = 0;
+		Element shopTag = doc.select("#shop-all-list").first();
+		if (null != shopTag) {
+			Elements shopElements = doc.select("#shop-all-list ul li");
+			// 如果发现有店铺列表，找出有多少页
+			if (CollectionUtils.isNotEmpty(shopElements)) {
+				Element totalPageEle = doc.select(".page .PageLink").last();
+				totalPage = null == totalPageEle ? 1 : Integer.parseInt(totalPageEle.text().trim());
+			}
+		}
+		return totalPage;
+	}
+	
+	public static List<DianpingShopInfo> parseShopList(Document doc, int page) {
+		List<DianpingShopInfo> list = new ArrayList<>();
 		Elements shopElements = doc.select("#shop-all-list ul li");
 		if (CollectionUtils.isNotEmpty(shopElements)) {
 			for (Element shop : shopElements) {
@@ -85,6 +94,16 @@ public class DianpingParser {
 					shopInfo.setAvgPrice(avgPrice.text().replace("人均", "").replace("￥", "").trim());
 				}
 				
+				// 品类
+				Element category = shop.select(".tag-addr a[data-click-name*=shop_tag_cate_click]").first();
+				shopInfo.setSelfCategory(null != category ? category.text().trim() : "");
+				shopInfo.setSelfCategoryId(null != category ? category.attr("href").substring(category.attr("href").lastIndexOf("/") + 1) : "");
+				
+				// 区域
+				Element region = shop.select(".tag-addr a[data-click-name*=shop_tag_region_click]").first();
+				shopInfo.setSelfSubRegion(null != region ? region.text().trim() : "");
+				shopInfo.setSelfSubRegionId(null != region ? region.attr("href").substring(region.attr("href").lastIndexOf("/") + 1) : "");
+				
 				// 地址
 				Element address = shop.select(".tag-addr .addr").first();
 				shopInfo.setAddress(null != address ? address.text().trim() : "");
@@ -103,12 +122,10 @@ public class DianpingParser {
 						}
 					}
 				}
-				FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(shopInfo, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+				list.add(shopInfo);
 			}
-		} else if (html.contains("没有找到符合条件的商户") || html.contains("建议您：更改筛选条件重新查找")) {
-		} else {
 		}
-		
+		return list;
 	}
 	
 	/**

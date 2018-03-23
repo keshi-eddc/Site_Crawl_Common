@@ -206,7 +206,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setCookie(COOKIES_SHOPLIST.element());
 		header.setUserAgent(
 				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
-		header.setRequestSleepTime(5000);
+		header.setRequestSleepTime(2000);
 		header.setMaxTryTimes(2);
 		HttpResponse response = get(header);
 		if (response.getCode() == HttpStatus.SC_OK) {

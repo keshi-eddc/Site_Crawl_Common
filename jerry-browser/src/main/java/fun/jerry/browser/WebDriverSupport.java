@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
+import org.jsoup.select.Selector;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import fun.jerry.browser.entity.WebDriverConfig;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.enumeration.DriverType;
 import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
 import fun.jerry.proxy.enumeration.ProxyType;
@@ -40,19 +42,6 @@ public class WebDriverSupport {
 	public final static String HTML = "html";
 
 	public final static String DRIVER = "driver";
-
-	/* WebDriver页面加载超时时间 */
-	public static final int PAGE_LOAD_TIMEOUT = 60;
-
-	private static final int CHROMEDRIVER_CAPACITY = 3;
-
-	private static final int PhantomJSDriver_Capacity = 10;
-
-	public static final ArrayBlockingQueue<WebDriver> ChromeDriver_List = new ArrayBlockingQueue<>(
-			CHROMEDRIVER_CAPACITY);
-
-	public static final ArrayBlockingQueue<WebDriver> PhantomJS_List = new ArrayBlockingQueue<>(
-			PhantomJSDriver_Capacity);
 
 	private static String phantomjs_path = null;
 
@@ -75,64 +64,25 @@ public class WebDriverSupport {
 			System.setProperty("phantomjs.binary.path", phantomjs_path);
 		}
 	}
-
-	/**
-	 * 获取一个ChromeDriver对象，用于加载页面，执行js
-	 * 
-	 * @return
-	 */
-	private synchronized static WebDriver initChromeDriverList(WebDriverConfig config) {
-		WebDriver driver = null;
-		while (ChromeDriver_List.remainingCapacity() > 0) {
-			try {
-				WebDriver driver_ = getChromeDriverInstance(config);
-				driver_.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIMEOUT, TimeUnit.SECONDS);
-				ChromeDriver_List.add(driver_);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+	
+	public static WebDriver getDriver(WebDriverConfig config) {
+		if (config.getDriverType() == DriverType.DRIVER_TYPE_CHROME) {
+			return getChromeDriverInstance(config);
+		} else if (config.getDriverType() == DriverType.DRIVER_TYPE_FIREFOX) {
+			return getFirefoxDriverInstance(config);
+		} else if (config.getDriverType() == DriverType.DRIVER_TYPE_PHANTOMJS) {
+			return getPhantomJSDriverInstance(config);
+		} else {
+			return getChromeDriverInstance(config);
 		}
-		// driver = ChromeDriver_List.poll();
-		try {
-			driver = ChromeDriver_List.take();
-		} catch (InterruptedException e) {
-			log.error("获取Chrome实例失败：", e);
-		}
-
-		return driver;
-	}
-
-	/**
-	 * 获取一个PhantomJSDriver对象，用于加载页面，执行js
-	 * 
-	 * @return
-	 */
-	public static WebDriver getPhantomJSDriver() {
-		WebDriver driver = null;
-		while (true) {
-			if (PhantomJS_List.remainingCapacity() > 0) {
-				try {
-					WebDriver driver_ = new PhantomJSDriver();
-					driver_.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIMEOUT, TimeUnit.SECONDS);
-					PhantomJS_List.add(driver_);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				break;
-			}
-		}
-		driver = PhantomJS_List.poll();
-		return driver;
 	}
 
 	/**
 	 * 获取一个ChromeDriver实例
-	 * 
-	 * @param config
-	 * @return
+	 * @param webDriverConfig {@link fun.jerry.browser.entity.WebDriverConfig}
+	 * @return {@link org.openqa.selenium.WebDriver}
 	 */
-	public static WebDriver getChromeDriverInstance(WebDriverConfig config) {
+	public static WebDriver getChromeDriverInstance(WebDriverConfig webDriverConfig) {
 
 		WebDriver driver = null;
 
@@ -152,12 +102,12 @@ public class WebDriverSupport {
 
 		Map<String, Object> prefs = new HashMap<String, Object>();
 		prefs.put("profile.default_content_settings.popups", 0);
-		prefs.put("download.default_directory", (null != config ? config.getDownloadPath() : ""));
+		prefs.put("download.default_directory", (null != webDriverConfig ? webDriverConfig.getDownloadPath() : ""));
 		options.setExperimentalOption("prefs", prefs);
 
-		if (config.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
-				|| config.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
-			Proxy proxy = StaticProxySupport.getStaticProxy(config.getProxyType());
+		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType());
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
 			// String proxyIpAndPort =
 			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
@@ -178,7 +128,119 @@ public class WebDriverSupport {
 		capability.setCapability(ChromeOptions.CAPABILITY, options);
 		driver = new ChromeDriver(capability);
 
-		driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIMEOUT, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(webDriverConfig.getTimeOut(), TimeUnit.SECONDS);
+
+		return driver;
+	}
+	
+	/**
+	 * 获取一个FirefoxDriver实例
+	 * @param webDriverConfig {@link fun.jerry.browser.entity.WebDriverConfig}
+	 * @return {@link org.openqa.selenium.WebDriver}
+	 */
+	public static WebDriver getFirefoxDriverInstance(WebDriverConfig webDriverConfig) {
+
+		WebDriver driver = null;
+
+		String filePath = chromedriver_path;
+		File file = new File(filePath);
+		if (!file.exists()) {
+			filePath = "browserDriver/chromedriver.exe";
+		}
+		System.setProperty("webdriver.chrome.driver", filePath);
+
+		DesiredCapabilities capability = null;
+		capability = DesiredCapabilities.chrome();
+
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments(Arrays.asList("allow-running-insecure-content", "ignore-certificate-errors"));
+		options.addArguments("test-type");
+
+		Map<String, Object> prefs = new HashMap<String, Object>();
+		prefs.put("profile.default_content_settings.popups", 0);
+		prefs.put("download.default_directory", (null != webDriverConfig ? webDriverConfig.getDownloadPath() : ""));
+		options.setExperimentalOption("prefs", prefs);
+
+		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType());
+			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
+			// String proxyIpAndPort =
+			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
+			org.openqa.selenium.Proxy driverProxy = new org.openqa.selenium.Proxy();
+			driverProxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
+			// 以下三行是为了避免localhost和selenium driver的也使用代理，务必要加，否则无法与chromedriver通讯
+			capability.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+			capability.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+			System.setProperty("http.nonProxyHosts", "localhost");
+
+			capability.setCapability(CapabilityType.PROXY, driverProxy);
+
+			// options.addArguments("--proxy-server=http://" + proxyIpAndPort);
+		}
+
+		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+
+		capability.setCapability(ChromeOptions.CAPABILITY, options);
+		driver = new ChromeDriver(capability);
+
+		driver.manage().timeouts().pageLoadTimeout(webDriverConfig.getTimeOut(), TimeUnit.SECONDS);
+
+		return driver;
+	}
+	
+	/**
+	 * 获取一个PhantomJSDriver实例
+	 * @param webDriverConfig {@link fun.jerry.browser.entity.WebDriverConfig}
+	 * @return {@link org.openqa.selenium.WebDriver}
+	 */
+	public static WebDriver getPhantomJSDriverInstance(WebDriverConfig webDriverConfig) {
+
+		WebDriver driver = null;
+
+		String filePath = chromedriver_path;
+		File file = new File(filePath);
+		if (!file.exists()) {
+			filePath = "browserDriver/chromedriver.exe";
+		}
+		System.setProperty("webdriver.chrome.driver", filePath);
+
+		DesiredCapabilities capability = null;
+		capability = DesiredCapabilities.chrome();
+
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments(Arrays.asList("allow-running-insecure-content", "ignore-certificate-errors"));
+		options.addArguments("test-type");
+
+		Map<String, Object> prefs = new HashMap<String, Object>();
+		prefs.put("profile.default_content_settings.popups", 0);
+		prefs.put("download.default_directory", (null != webDriverConfig ? webDriverConfig.getDownloadPath() : ""));
+		options.setExperimentalOption("prefs", prefs);
+
+		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType());
+			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
+			// String proxyIpAndPort =
+			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
+			org.openqa.selenium.Proxy driverProxy = new org.openqa.selenium.Proxy();
+			driverProxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
+			// 以下三行是为了避免localhost和selenium driver的也使用代理，务必要加，否则无法与chromedriver通讯
+			capability.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+			capability.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+			System.setProperty("http.nonProxyHosts", "localhost");
+
+			capability.setCapability(CapabilityType.PROXY, driverProxy);
+
+			// options.addArguments("--proxy-server=http://" + proxyIpAndPort);
+		}
+
+		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+
+		capability.setCapability(ChromeOptions.CAPABILITY, options);
+		driver = new ChromeDriver(capability);
+
+		driver.manage().timeouts().pageLoadTimeout(webDriverConfig.getTimeOut(), TimeUnit.SECONDS);
 
 		return driver;
 	}
@@ -201,19 +263,18 @@ public class WebDriverSupport {
 		return html;
 	}
 
-	public static Map<String, Object> load(WebDriverConfig config) {
-		return load(config, 0);
+	public static Map<String, Object> load(WebDriverConfig config, WebDriver driver) {
+		return load(config, driver, 0);
 	}
 
-	private static Map<String, Object> load(WebDriverConfig config, int count) {
+	private static Map<String, Object> load(WebDriverConfig config, WebDriver driver, int count) {
 
 		Map<String, Object> result = new HashMap<>();
 		result.put(HTML, "");
 		result.put(DRIVER, null);
 
-		WebDriver driver = null;
+		driver = null == driver ? getDriver(config) : driver;
 		try {
-			driver = ChromeDriver_List.isEmpty() ? getChromeDriverInstance(config) : ChromeDriver_List.poll();
 			count++;
 			driver.get(config.getUrl());
 			String html = driver.getPageSource();
@@ -225,20 +286,15 @@ public class WebDriverSupport {
 				if (count > config.getMaxTryTimes()) {
 					return result;
 				} else {
-					load(config, count);
+					load(config, driver, count);
 				}
 			}
 			result.put(HTML, html);
 		} catch (TimeoutException e) {
 			stop(driver);
 		} finally {
-			if (null != driver) {
-				ChromeDriver_List.add(driver);
-			}
 			String html = driver.getPageSource();
 			result.put(HTML, html);
-			// driver.close();
-			// driver.quit();
 		}
 
 		result.put(DRIVER, driver);
@@ -253,19 +309,6 @@ public class WebDriverSupport {
 	 */
 	private static void stop(WebDriver driver) {
 		((JavascriptExecutor) driver).executeScript("window.stop()");
-	}
-
-	/**
-	 * 在一个线程中使用完一个driver后，回收以便其他线程使用
-	 * 
-	 * @param driver
-	 */
-	public static void recycle(WebDriver driver) {
-		if (driver instanceof PhantomJSDriver) {
-			PhantomJS_List.add(driver);
-		} else if (driver instanceof ChromeDriver) {
-			ChromeDriver_List.add(driver);
-		}
 	}
 
 	public static String getChromeDriverPath() {

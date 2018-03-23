@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.edmi.site.dianping.crawl.CargillDianPingShopListCrawl;
 import com.edmi.site.dianping.crawl.DianPingSubCategorySubRegionCrawl;
 
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
@@ -48,8 +49,11 @@ public class CargillShopJob {
 		ExecutorService pool = Executors.newFixedThreadPool(5);
 		
 		for (Map<String, Object> map : mapList) {
-			pool.submit(new DianPingSubCategorySubRegionCrawl(map.get("cityId").toString(),
-					map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10"));
+			
+			for (String keyword : keywords) {
+				pool.submit(new CargillDianPingShopListCrawl(2, keyword, map.get("cityId").toString(), null, null, null, "ch10", "", ""));
+			}
+			
 		}
 		
 		pool.shutdown();

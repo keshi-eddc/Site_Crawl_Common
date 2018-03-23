@@ -9,9 +9,7 @@ import fun.jerry.entity.annotation.ColumnMapping;
 import fun.jerry.entity.annotation.FieldInsertExclude;
 import fun.jerry.entity.annotation.FieldUpdateExclude;
 import fun.jerry.entity.annotation.LogicalPrimaryKey;
-import fun.jerry.entity.annotation.TableMapping;
 
-@TableMapping("Dianping_ShopInfo")
 public class DianpingShopInfo extends Model {
 
 	private static final long serialVersionUID = 4217070017854978866L;
