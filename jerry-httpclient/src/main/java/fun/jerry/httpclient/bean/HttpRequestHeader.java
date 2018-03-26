@@ -75,8 +75,6 @@ public class HttpRequestHeader {
 	
 	private RequestType requestType = RequestType.HTTP_GET;
 	
-	private WebDriver driver;
-	
 	public HttpRequestHeader() {
 		super();
 	}
@@ -298,16 +296,11 @@ public class HttpRequestHeader {
 		this.requestType = requestType;
 	}
 
-	public WebDriver getDriver() {
-		return driver;
-	}
-
-	public void setDriver(WebDriver driver) {
-		this.driver = driver;
-	}
-
-
-
+	/**
+	 * post请求参数
+	 * @author conner
+	 *
+	 */
 	public class NameValue {
 		
 		private String key;

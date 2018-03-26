@@ -6,13 +6,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
-import org.jsoup.select.Selector;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -105,8 +103,8 @@ public class WebDriverSupport {
 		prefs.put("download.default_directory", (null != webDriverConfig ? webDriverConfig.getDownloadPath() : ""));
 		options.setExperimentalOption("prefs", prefs);
 
-		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
-				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
+		if (null != webDriverConfig && (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN))) {
 			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType());
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
 			// String proxyIpAndPort =
@@ -128,7 +126,7 @@ public class WebDriverSupport {
 		capability.setCapability(ChromeOptions.CAPABILITY, options);
 		driver = new ChromeDriver(capability);
 
-		driver.manage().timeouts().pageLoadTimeout(webDriverConfig.getTimeOut(), TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(null != webDriverConfig ? webDriverConfig.getTimeOut() : 60, TimeUnit.SECONDS);
 
 		return driver;
 	}
