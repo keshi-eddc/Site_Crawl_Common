@@ -1,6 +1,5 @@
 package com.edmi.site.dianping.crawl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -8,9 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingShopInfo_Cargill;
@@ -100,6 +98,18 @@ public class CargillDianPingShopListCrawl implements Runnable {
 				String pageHtml = DianPingCommonRequest.getShopList(header);
 				
 				Document pageDoc = Jsoup.parse(pageHtml);
+				
+				// 如果没有发现店铺列表，说明没有抓取成功，继续抓取
+				if (pageHtml.contains("没有找到符合条件的商户")) {
+					log.info(header.getUrl() + " 请求成功，没有找到符合条件的商户,停止抓取");
+					break;
+				} else {
+					Elements shopElements = pageDoc.select("#shop-all-list ul li");
+					if (CollectionUtils.isEmpty(shopElements)) {
+						log.info(header.getUrl() + " 请求成功，未发现店铺列表,继续抓取");
+						continue;
+					}
+				}
 				
 				if (page == 1) {
 					totalPage = DianpingParser.parseShopListPage(pageDoc);

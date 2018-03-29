@@ -48,7 +48,6 @@ public class DianpingParser {
 		if (CollectionUtils.isNotEmpty(shopElements)) {
 			for (Element shop : shopElements) {
 				DianpingShopInfo shopInfo = new DianpingShopInfo();
-				
 				Element tit = shop.select(".tit").first();
 				if (null != tit) {
 					Element title = tit.select("a[data-hippo-type*=shop]").first();

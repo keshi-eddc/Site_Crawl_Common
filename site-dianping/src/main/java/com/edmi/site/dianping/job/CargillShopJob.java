@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.edmi.site.dianping.crawl.CargillDianPingShopListCrawl;
-import com.edmi.site.dianping.crawl.DianPingSubCategorySubRegionCrawl;
 
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
@@ -50,8 +49,12 @@ public class CargillShopJob {
 		
 		for (Map<String, Object> map : mapList) {
 			
-			for (String keyword : keywords) {
-				pool.submit(new CargillDianPingShopListCrawl(2, keyword, map.get("cityId").toString(), null, null, null, "ch10", "", ""));
+//			for (String keyword : keywords) {
+//				pool.submit(new CargillDianPingShopListCrawl(2, keyword, map.get("cityId").toString(), null, null, null, "ch10", "", ""));
+//			}
+			
+			for (String categoryId : categories) {
+				pool.submit(new CargillDianPingShopListCrawl(1, null, map.get("cityId").toString(), map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10", "", categoryId));
 			}
 			
 		}

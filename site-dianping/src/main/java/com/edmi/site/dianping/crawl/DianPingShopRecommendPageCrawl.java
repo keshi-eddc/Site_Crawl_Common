@@ -46,6 +46,7 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 		this.iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		HttpRequestHeader header = new HttpRequestHeader();

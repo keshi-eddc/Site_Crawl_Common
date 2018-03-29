@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import fun.jerry.browser.entity.WebDriverConfig;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.UserAgentSupport;
 import fun.jerry.common.enumeration.DriverType;
 import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
@@ -322,12 +323,16 @@ public class WebDriverSupport {
 				DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
 //				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
 //				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+				String ua = UserAgentSupport.getPCUserAgent();
+				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", ua);
+				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", ua);
 				if (1 > 0) {//是否使用代理
 					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
 					proxy.setAutodetect(false);
 					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);//自定义函数，返回代理ip及端口
 					proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
+					System.out.println(staticProxy.getIp() + ":" + staticProxy.getPort());
 					desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
 				}
 				
@@ -351,7 +356,7 @@ public class WebDriverSupport {
 			}
 			driver.manage().timeouts().pageLoadTimeout(100, TimeUnit.SECONDS);
 			driver.get(url);
-//			System.out.println(driver.getPageSource());
+			System.out.println(driver.getPageSource());
 			// 20s用于输入验证码
 			Set<Cookie> cookieSet = driver.manage().getCookies();
 			for (Cookie temp : cookieSet) {
@@ -371,9 +376,9 @@ public class WebDriverSupport {
 		try {
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
-//			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/member/1065520725"));
+			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/91018291/dishlist"));
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/ajax/member/checkin/checkinList?memberId=4426996"));
-			System.out.println(DateFormatUtils.format(new Date(1483200000000L - 1000), "yyyy-MM-dd HH:mm:ss"));
+//			System.out.println(DateFormatUtils.format(new Date(1483200000000L - 1000), "yyyy-MM-dd HH:mm:ss"));
 //			System.out.println(1483200000000L - 1000);
 		} catch (Exception e) {
 			e.printStackTrace();
