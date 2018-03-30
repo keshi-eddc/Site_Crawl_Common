@@ -11,16 +11,17 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import fun.jerry.browser.WebDriverSupport;
 import fun.jerry.browser.entity.WebDriverConfig;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
 import fun.jerry.common.enumeration.RequestType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.httpclient.core.HttpClientSupport;
-import fun.jerry.proxy.enumeration.ProxyType;
 
 //@Component
 public class DianPingCommonRequest extends HttpClientSupport {
@@ -410,6 +411,14 @@ public class DianPingCommonRequest extends HttpClientSupport {
 			e.printStackTrace();
 		}
 		return html;
+	}
+	
+	public static void main(String[] args) {
+		HttpRequestHeader header = new HttpRequestHeader();
+		header.setUrl("http://www.dianping.com/shanghai/ch10/g110r2");
+		header.setProject(Project.CARGILL);
+		header.setSite(Site.DIANPING);
+		getShopList(header);
 	}
 
 	private static String test() {

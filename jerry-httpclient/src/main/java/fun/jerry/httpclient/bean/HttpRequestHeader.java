@@ -2,12 +2,10 @@ package fun.jerry.httpclient.bean;
 
 import java.util.List;
 
-import org.openqa.selenium.WebDriver;
-
+import fun.jerry.common.entity.StatisticsCommon;
 import fun.jerry.common.enumeration.RequestType;
-import fun.jerry.proxy.enumeration.ProxyType;
 
-public class HttpRequestHeader {
+public class HttpRequestHeader extends StatisticsCommon{
 	
 	private String url;
 	
@@ -60,8 +58,6 @@ public class HttpRequestHeader {
 	
 	/** 页面加载时候的超时时间 */
 	private int timeOut = 2000;
-	
-	private ProxyType proxyType;
 	
 	/**
 	 * 请求最大重试次数
@@ -270,14 +266,6 @@ public class HttpRequestHeader {
 
 	public void setMaxTryTimes(int maxTryTimes) {
 		this.maxTryTimes = maxTryTimes;
-	}
-
-	public ProxyType getProxyType() {
-		return proxyType;
-	}
-
-	public void setProxyType(ProxyType proxyType) {
-		this.proxyType = proxyType;
 	}
 
 	public int getRequestSleepTime() {

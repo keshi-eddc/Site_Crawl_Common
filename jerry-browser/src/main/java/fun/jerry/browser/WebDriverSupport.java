@@ -2,14 +2,12 @@ package fun.jerry.browser;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
@@ -26,9 +24,11 @@ import fun.jerry.browser.entity.WebDriverConfig;
 import fun.jerry.common.LogSupport;
 import fun.jerry.common.UserAgentSupport;
 import fun.jerry.common.enumeration.DriverType;
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
-import fun.jerry.proxy.enumeration.ProxyType;
 
 @Component
 public class WebDriverSupport {
@@ -106,7 +106,7 @@ public class WebDriverSupport {
 
 		if (null != webDriverConfig && (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
 				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN))) {
-			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType());
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
 			// String proxyIpAndPort =
 			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
@@ -162,7 +162,7 @@ public class WebDriverSupport {
 
 		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
 				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
-			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType());
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
 			// String proxyIpAndPort =
 			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
@@ -218,7 +218,7 @@ public class WebDriverSupport {
 
 		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
 				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
-			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType());
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
 			// String proxyIpAndPort =
 			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
@@ -330,7 +330,7 @@ public class WebDriverSupport {
 					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
 					proxy.setAutodetect(false);
-					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);//自定义函数，返回代理ip及端口
+					Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY, Project.CARGILL, Site.DIANPING);//自定义函数，返回代理ip及端口
 					proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
 					System.out.println(staticProxy.getIp() + ":" + staticProxy.getPort());
 					desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);

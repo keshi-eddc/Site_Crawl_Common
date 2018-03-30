@@ -11,9 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.config.Registry;
@@ -30,8 +28,10 @@ import org.springframework.util.StopWatch;
 
 import com.alibaba.fastjson.JSONObject;
 
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.proxy.entity.Proxy;
-import fun.jerry.proxy.enumeration.ProxyType;
 
 public class StaticProxySupport {
 	
@@ -55,13 +55,13 @@ public class StaticProxySupport {
 		cm.setDefaultMaxPerRoute(50);
 	}
 
-	public static Proxy getStaticProxy(ProxyType proxyType) {
+	public static Proxy getStaticProxy(ProxyType proxyType, Project project, Site site) {
 		Proxy proxy = null;
 		
 		CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm).build();
 
 		// CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpget = new HttpGet("http://localhost:9090/ip/proxy/get/" + proxyType + "/dianping/dianping");
+		HttpGet httpget = new HttpGet("http://localhost:9090/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
 		String json=null;
 		CloseableHttpResponse response=null;
 		try {
@@ -93,96 +93,43 @@ public class StaticProxySupport {
 		return proxy;
 	}
 	
-	public static String getUserInfo() {
-		String proxy = "";
-		
-		CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm).build();
-
-		// CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpget = new HttpGet("http://www.dianping.com/member/1065520725");
-		String json=null;
-		CloseableHttpResponse response=null;
-		try {
-			
-			RequestConfig.Builder builder = RequestConfig.custom()
-					.setSocketTimeout(10000)
-					.setConnectTimeout(10000)
-					.setConnectionRequestTimeout(10000)
-					.setRedirectsEnabled(true);
-			
-			Proxy _proxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
-			System.out.println(_proxy.getIp());
-//			_proxy.setIp("1.196.158.145");
-//			_proxy.setPort(57112);
-			HttpHost temp = new HttpHost(_proxy.getIp(), _proxy.getPort());
-	        builder.setProxy(temp);
-	        
-	        httpget.setConfig(builder.build());
-			
-			response = httpclient.execute(httpget);
-			// System.out.println("Executing request " +
-			// httpget.getRequestLine());
-
-			// Create a custom response handler
-			InputStream in = response.getEntity().getContent();
-			json = IOUtils.toString(in, StandardCharsets.UTF_8);
-			in.close();
-//			String responseBody = httpclient.execute(httpget, responseHandler);
-			// System.out.println("----------------------------------------");
-			System.out.println(json);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-			log.info(e.getMessage());
-		} finally {
-			try {
-//				httpclient.close();
-				response.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-//		proxy = JSONObject.parseObject(json, Proxy.class);
-		return proxy;
-	}
-
 	public static void main(String[] args) {
 		log.info("start");
+		StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY, Project.CARGILL, Site.DIANPING);
 //		StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
 //		StaticProxySupport.getUserInfo();
-		ExecutorService pool = Executors.newScheduledThreadPool(200);
-		int count = 0;
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
-		for (int i = 0; i < 1000; i++) {
-			
-			pool.submit(new Runnable() {
-
-				@Override
-				public void run() {
-					StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY);
-				}
-			});
-
-			count++;
-			System.out.println("$$$$$$$$$$$$$$$ " + count);
-		}
-		pool.shutdown();
-		while (true) {
-			if (!pool.isTerminated()) {
-				try {
-					TimeUnit.SECONDS.sleep(20);
-					log.info("#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$ not stop");
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} else {
-				stopWatch.stop();
-				System.out.println("########## " + stopWatch.getTotalTimeMillis());
-				break;
-			}
-		}
+//		ExecutorService pool = Executors.newScheduledThreadPool(200);
+//		int count = 0;
+//		StopWatch stopWatch = new StopWatch();
+//		stopWatch.start();
+//		for (int i = 0; i < 100; i++) {
+//			
+//			pool.submit(new Runnable() {
+//
+//				@Override
+//				public void run() {
+//					StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY, Project.CARGILL, Site.DIANPING);
+//				}
+//			});
+//
+//			count++;
+//			System.out.println("$$$$$$$$$$$$$$$ " + count);
+//		}
+//		pool.shutdown();
+//		while (true) {
+//			if (!pool.isTerminated()) {
+//				try {
+//					TimeUnit.SECONDS.sleep(20);
+//					log.info("#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$ not stop");
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			} else {
+//				stopWatch.stop();
+//				System.out.println("########## " + stopWatch.getTotalTimeMillis());
+//				break;
+//			}
+//		}
 	}
 
 }

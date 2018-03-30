@@ -1,6 +1,5 @@
 package com.edmi.site.dianping.crawl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,22 +10,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
 import com.edmi.site.dianping.entity.DianpingShopComment;
-import com.edmi.site.dianping.entity.DianpingShopInfo;
-import com.edmi.site.dianping.entity.DianpingShopRecommendInfo;
-import com.edmi.site.dianping.entity.DianpingShopRecommendPage;
 import com.edmi.site.dianping.entity.DianpingUserInfo;
 import com.edmi.site.dianping.http.DianPingCommonRequest;
 import com.edmi.site.dianping.http.DianPingTaskRequest;
 import com.edmi.site.dianping.parse.DianpingParser;
 
-import fun.jerry.browser.WebDriverSupport;
-import fun.jerry.browser.entity.WebDriverConfig;
 import fun.jerry.cache.holder.FirstCacheHolder;
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
@@ -36,7 +29,6 @@ import fun.jerry.entity.system.DataSource;
 import fun.jerry.entity.system.SqlEntity;
 import fun.jerry.entity.system.SqlType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
-import fun.jerry.proxy.enumeration.ProxyType;
 
 public class DianPingUserInfoCrawl implements Runnable {
 	

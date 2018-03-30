@@ -6,9 +6,9 @@ import java.util.List;
 import com.alibaba.fastjson.JSONArray;
 import com.edmi.site.dianping.entity.DianpingShopComment;
 
+import fun.jerry.common.enumeration.ProxyType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.core.HttpClientSupport;
-import fun.jerry.proxy.enumeration.ProxyType;
 
 public class DianPingTaskRequest extends HttpClientSupport {
 	

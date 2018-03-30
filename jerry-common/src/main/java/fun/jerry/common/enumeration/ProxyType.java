@@ -1,4 +1,4 @@
-package fun.jerry.proxy.enumeration;
+package fun.jerry.common.enumeration;
 
 public enum ProxyType {
 	

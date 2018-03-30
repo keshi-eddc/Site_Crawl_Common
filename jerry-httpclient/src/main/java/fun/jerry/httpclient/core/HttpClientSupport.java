@@ -12,6 +12,8 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -32,7 +34,6 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -43,11 +44,13 @@ import org.apache.log4j.Logger;
 
 import fun.jerry.common.LogSupport;
 import fun.jerry.common.UserAgentSupport;
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.proxy.StaticProxySupport;
 import fun.jerry.proxy.entity.Proxy;
-import fun.jerry.proxy.enumeration.ProxyType;
 
 public class HttpClientSupport {
 	
@@ -220,7 +223,16 @@ public class HttpClientSupport {
 		return entityStringBuilder.toString();
 	}
 	
-	private static HttpRequestBase buildHeader(HttpRequestHeader header, String method) {
+	private static HttpRequestBase buildHeader(HttpRequestHeader header, String method) throws Exception {
+		if (!EnumUtils.isValidEnum(ProxyType.class, null != header.getProxyType() ? header.getProxyType().toString() : "")) {
+			throw new Exception("HttpRequestHeader proxyType must not be null");
+		}
+		if (!EnumUtils.isValidEnum(Project.class, null != header.getProject() ? header.getProject().toString() : "")) {
+			throw new Exception("HttpRequestHeader project must not be null");
+		}
+		if (!EnumUtils.isValidEnum(Site.class, null != header.getSite() ? header.getSite().toString() : "")) {
+			throw new Exception("HttpRequestHeader site must not be null");
+		}
 		HttpRequestBase httpRequest = null;
 		try {
 			if (method.equalsIgnoreCase("get")) {
@@ -244,7 +256,7 @@ public class HttpClientSupport {
 			if (ArrayUtils.contains(new ProxyType[] { ProxyType.PROXY_STATIC_AUTO, ProxyType.PROXY_STATIC_DLY,
 					ProxyType.PROXY_STATIC_DUNG }, header.getProxyType())) {
 				//普通代理IP设置
-				Proxy _proxy = StaticProxySupport.getStaticProxy(header.getProxyType());
+				Proxy _proxy = StaticProxySupport.getStaticProxy(header.getProxyType(), header.getProject(), header.getSite());
 //				_proxy.setIp("1.196.158.145");
 //				_proxy.setPort(57112);
 				HttpHost proxy = new HttpHost(_proxy.getIp(), _proxy.getPort());

@@ -1,21 +1,15 @@
 package fun.jerry.browser.entity;
 
+import fun.jerry.common.entity.StatisticsCommon;
 import fun.jerry.common.enumeration.DriverType;
-import fun.jerry.proxy.enumeration.ProxyType;
 
-public class WebDriverConfig {
+public class WebDriverConfig extends StatisticsCommon{
 	
 	private String url;
 	
 	private String downloadPath;
 	
 	private DriverType driverType;
-	
-	/**
-	 * driver使用哪种代理IP，默认不使用任何代理IP<br>
-	 * 如需使用代理，参考 {@link fun.jerry.proxy.enumeration.ProxyType}
-	 */
-	private ProxyType proxyType = ProxyType.NONE;
 	
 	/**
 	 * 是否加载图片，默认值 false<br/>
@@ -45,14 +39,6 @@ public class WebDriverConfig {
 
 	public void setDownloadPath(String downloadPath) {
 		this.downloadPath = downloadPath;
-	}
-
-	public ProxyType getProxyType() {
-		return proxyType;
-	}
-
-	public void setProxyType(ProxyType proxyType) {
-		this.proxyType = proxyType;
 	}
 
 	public int getMaxTryTimes() {
