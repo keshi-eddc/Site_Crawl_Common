@@ -132,6 +132,7 @@ public class HttpClientSupport {
 			
 			CloseableHttpResponse response = null;
 			try {
+				tryCount ++;
 				response = httpclient.execute(httpGet);
 //				List<Cookie> cookies = cookieStore.getCookies();
 //				for (int i = 0; i < cookies.size(); i++) {
@@ -161,8 +162,6 @@ public class HttpClientSupport {
 					existError = true;
 				}
 				
-				tryCount ++;
-				
 				//达到最大次数的时候直接返回
 				if (tryCount > header.getMaxTryTimes()) {
 					log.error(header.getUrl() + " has tried " + header.getMaxTryTimes() + " times.");
@@ -180,7 +179,7 @@ public class HttpClientSupport {
 				}
 			}
 			
-			if (existError) {
+			if (existError && tryCount <= header.getMaxTryTimes()) {
 				execute(header, tryCount);
 			}
 			
@@ -236,7 +235,8 @@ public class HttpClientSupport {
 		HttpRequestBase httpRequest = null;
 		try {
 			if (method.equalsIgnoreCase("get")) {
-				httpRequest = new HttpGet(header.getUrl().replace("|", "&brvbar;")); 
+//				httpRequest = new HttpGet(header.getUrl().replace("|", "&brvbar;"));
+				httpRequest = new HttpGet(header.getUrl());
 			} else if (method.equalsIgnoreCase("post")) {
 				httpRequest = new HttpPost(header.getUrl());
 			}
@@ -311,7 +311,7 @@ public class HttpClientSupport {
 				httpRequest.addHeader("Connection", header.getConnection());
 			}
 			if (StringUtils.isNotEmpty(header.getPragma())) {
-//				httpRequest.addHeader("Pragma", header.getPragma());
+				httpRequest.addHeader("Pragma", header.getPragma());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

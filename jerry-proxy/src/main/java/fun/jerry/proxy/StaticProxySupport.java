@@ -63,7 +63,8 @@ public class StaticProxySupport {
 		CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm).build();
 
 		// CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpget = new HttpGet("http://192.168.3.236:9090/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
+//		HttpGet httpget = new HttpGet("http://192.168.3.236:9090/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
+		HttpGet httpget = new HttpGet("http://122.226.223.139:9091/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
 		String json=null;
 		CloseableHttpResponse response=null;
 		try {
