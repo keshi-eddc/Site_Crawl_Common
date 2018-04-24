@@ -30,6 +30,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.config.SocketConfig.Builder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
@@ -59,6 +61,7 @@ public class HttpClientSupport {
 	private static PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 
 	static {
+		Builder buider = SocketConfig.custom().setSoTimeout(10000);
 		LayeredConnectionSocketFactory sslsf = null;
 		try {
 			sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault());
@@ -72,6 +75,7 @@ public class HttpClientSupport {
 		cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		cm.setMaxTotal(200);
 		cm.setDefaultMaxPerRoute(50);
+		cm.setDefaultSocketConfig(buider.build());
 	}
 	
 	public static HttpResponse post(HttpRequestHeader header) {
