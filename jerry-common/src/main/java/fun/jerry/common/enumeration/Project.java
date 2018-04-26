@@ -11,6 +11,11 @@ public enum Project {
 	 * 项目-嘉吉-抓取点评数据
 	 */
 	CARGILL,
+	
+	/**
+	 * 项目-嘉吉-抓取点评数据
+	 */
+	BUDWEISER,
 
 	/**
 	 * 项目-其他
