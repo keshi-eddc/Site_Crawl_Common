@@ -40,6 +40,12 @@ public class DianpingCitySubRegion extends Model {
 	@ColumnMapping("city_enname")
 	private String cityEnname;
 	
+	@ColumnMapping("primary_category")
+	private String primaryCategory;
+	
+	@ColumnMapping("primary_category_id")
+	private String primaryCategoryId;
+	
 	@ColumnMapping("update_time")
 	@FieldInsertExclude
 	private String updateTime = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
@@ -119,5 +125,20 @@ public class DianpingCitySubRegion extends Model {
 	public void setInsertTime(String insertTime) {
 		this.insertTime = insertTime;
 	}
-		
+
+	public String getPrimaryCategory() {
+		return primaryCategory;
+	}
+
+	public void setPrimaryCategory(String primaryCategory) {
+		this.primaryCategory = primaryCategory;
+	}
+
+	public String getPrimaryCategoryId() {
+		return primaryCategoryId;
+	}
+
+	public void setPrimaryCategoryId(String primaryCategoryId) {
+		this.primaryCategoryId = primaryCategoryId;
+	}
 }

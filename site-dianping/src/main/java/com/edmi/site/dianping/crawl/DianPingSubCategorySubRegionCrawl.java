@@ -257,6 +257,8 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 				sub.setCityId(cityId);
 				sub.setCityCnname(cityCnName);
 				sub.setCityEnname(cityEnName);
+				sub.setPrimaryCategory(primaryCategory);
+				sub.setPrimaryCategoryId(primaryCategoryId);
 				subRegionList.add(sub);
 			}
 			citySubRegionList.addAll(subRegionList);
@@ -276,22 +278,24 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		System.out.println(ApplicationContextHolder.getBean(GeneralJdbcUtils.class));
 		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 		
-		String primaryCategory = "美食";
-		String primaryCategoryId = "ch10";
+//		String primaryCategory = "美食";
+//		String primaryCategoryId = "ch10";
 		
-//		String primaryCategory = "休闲娱乐";
-//		String primaryCategoryId = "ch30";
+		String primaryCategory = "休闲娱乐";
+		String primaryCategoryId = "ch30";
 		
 		List<DianpingCityInfo> mapList = iGeneralJdbcUtils.queryForListObject(new SqlEntity(
 				"with sub_category as ( "
 						+ "	select city_cnname, count(distinct sub_category_id) as sub_cate_num from dbo.Dianping_City_SubCategory  "
-						+ "	where primary_category = '美食' "
+						+ "	where primary_category = '" + primaryCategory + "' "
 						+ "	GROUP by city_cnname  "
 						+ "), sub_region as ( "
 						+ "	select city_cnname, count(distinct sub_region_id) as sub_region_num from dbo.Dianping_City_SubRegion  "
+						+ "	where primary_category = '" + primaryCategory + "' "
 						+ "	GROUP by city_cnname  "
 						+ "), subcategory_subregion as ( "
 						+ "	select city_cnname, count(1) as num from dbo.Dianping_SubCategory_SubRegion  "
+						+ "	where primary_category = '" + primaryCategory + "' "
 						+ "	group by city_cnname  "
 						+ "), temp as (  "
 						+ "	select A.city_cnname as city_cnname, A.sub_cate_num * B.sub_region_num as num  "
