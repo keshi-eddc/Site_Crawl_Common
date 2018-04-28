@@ -2,7 +2,6 @@ package com.edmi.site.dianping.crawl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +15,7 @@ import org.jsoup.select.Elements;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.edmi.site.dianping.entity.DianpingCityInfo;
 import com.edmi.site.dianping.entity.DianpingCitySubCategory;
 import com.edmi.site.dianping.entity.DianpingCitySubRegion;
 import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
@@ -27,6 +27,9 @@ import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.cache.utils.ClassUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.entity.system.DataSource;
 import fun.jerry.entity.system.SqlEntity;
 import fun.jerry.entity.system.SqlType;
@@ -127,6 +130,9 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		log.info("开始抓取Category和Region");
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl("http://www.dianping.com/" + cityEnName + "/" + primaryCategoryId);
+		header.setProject(Project.BUDWEISER);
+		header.setSite(Site.DIANPING);
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 		String html = DianPingCommonRequest.getSubCategorySubRegion(header);
 		Document doc = Jsoup.parse(html);
 		Elements categories = doc.select("#classfy a");
@@ -159,6 +165,9 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		for (String[] category : cityCategoryList) {
 			List<DianpingCitySubCategory> subCategoryList = new ArrayList<>();
 			header.setUrl("http://www.dianping.com/" + cityEnName + "/" + primaryCategoryId + "/" + category[0]);
+			header.setProject(Project.BUDWEISER);
+			header.setSite(Site.DIANPING);
+			header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 			log.info("开始抓取 SubCategory " + cityEnName + " " + category[1]);
 			String html = DianPingCommonRequest.getSubCategorySubRegion(header);
 			Document doc = Jsoup.parse(html);
@@ -211,6 +220,9 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		for (String[] region : cityRegionList) {
 			List<DianpingCitySubRegion> subRegionList = new ArrayList<>();
 			header.setUrl("http://www.dianping.com/" + cityEnName + "/" + primaryCategoryId + "/" + region[0]);
+			header.setProject(Project.BUDWEISER);
+			header.setSite(Site.DIANPING);
+			header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 			log.info("开始抓取 SubCategory " + cityEnName + " " + region[1]);
 			String html = DianPingCommonRequest.getSubCategorySubRegion(header);
 			Document doc = Jsoup.parse(html);
@@ -258,38 +270,51 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		iGeneralJdbcUtils.batchExecute(sqlEntityList);
 	}
 	
-	@SuppressWarnings({ "unused", "resource" })
+	@SuppressWarnings({ "unused", "resource", "rawtypes", "unchecked" })
 	public static void main(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 		System.out.println(ApplicationContextHolder.getBean(GeneralJdbcUtils.class));
-		IGeneralJdbcUtils<?> iGeneralJdbcUtils = (IGeneralJdbcUtils<?>) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 		
-		List<Map<String, Object>> mapList = iGeneralJdbcUtils.queryForListMap(new SqlEntity(
+		String primaryCategory = "美食";
+		String primaryCategoryId = "ch10";
+		
+//		String primaryCategory = "休闲娱乐";
+//		String primaryCategoryId = "ch30";
+		
+		List<DianpingCityInfo> mapList = iGeneralJdbcUtils.queryForListObject(new SqlEntity(
 				"with sub_category as ( "
-						+ "	select city_cnname, count(distinct sub_category_id) as sub_cate_num from dbo.Dianping_City_SubCategory "
-						+ "	GROUP by city_cnname "
+						+ "	select city_cnname, count(distinct sub_category_id) as sub_cate_num from dbo.Dianping_City_SubCategory  "
+						+ "	where primary_category = '美食' "
+						+ "	GROUP by city_cnname  "
 						+ "), sub_region as ( "
-						+ "	select city_cnname, count(distinct sub_region_id) as sub_region_num from dbo.Dianping_City_SubRegion "
-						+ "	GROUP by city_cnname "
+						+ "	select city_cnname, count(distinct sub_region_id) as sub_region_num from dbo.Dianping_City_SubRegion  "
+						+ "	GROUP by city_cnname  "
 						+ "), subcategory_subregion as ( "
-						+ "	select city_cnname, count(1) as num from dbo.Dianping_SubCategory_SubRegion "
-						+ "	group by city_cnname "
-						+ "), temp as ( "
-						+ "	select A.city_cnname as city_cnname, A.sub_cate_num * B.sub_region_num as num "
-						+ "	from sub_category A left join sub_region B on A.city_cnname = B.city_cnname "
-						+ ") select * from dbo.City_DianPing where cityName not in ( "
-						+ "	select A.city_cnname from temp A left join subcategory_subregion B " 
-						+ "	on A.city_cnname = B.city_cnname  "
-						+ "	where A.num = B.num "
-						+ ") "
-						+ "and cityName in ('北京', '上海', '广州', '深圳', '南昌', '太原', '沈阳', '西安', '南宁', '成都', '杭州', '泉州', '潍坊', '吉林', '洛阳', '贵阳', '兰州')",
-				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
+						+ "	select city_cnname, count(1) as num from dbo.Dianping_SubCategory_SubRegion  "
+						+ "	group by city_cnname  "
+						+ "), temp as (  "
+						+ "	select A.city_cnname as city_cnname, A.sub_cate_num * B.sub_region_num as num  "
+						+ "	from sub_category A left join sub_region B on A.city_cnname = B.city_cnname  "
+						+ ") select * from dbo.Dianping_CityInfo where cityName not in (  "
+						+ "	select A.city_cnname from temp A left join subcategory_subregion B  "
+						+ "	on A.city_cnname = B.city_cnname   "
+						+ "	where A.num = B.num  "
+						+ ")  "
+						+ "and activeCity = 1 and provinceName not in ('香港', '澳门', '台湾') "
+						,
+				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingCityInfo.class);
 		
-		ExecutorService pool = Executors.newFixedThreadPool(5);
+		ExecutorService pool = Executors.newFixedThreadPool(10);
 		
-		for (Map<String, Object> map : mapList) {
-			pool.submit(new DianPingSubCategorySubRegionCrawl(map.get("cityId").toString(),
-					map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10"));
+//		for (Map<String, Object> map : mapList) {
+//			pool.submit(new DianPingSubCategorySubRegionCrawl(map.get("cityId").toString(),
+//					map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10"));
+//		}
+		
+		for (DianpingCityInfo city : mapList) {
+			pool.submit(new DianPingSubCategorySubRegionCrawl(city.getCityId(),
+					city.getCityEnName(), city.getCityName(), primaryCategory, primaryCategoryId));
 		}
 		
 		pool.shutdown();

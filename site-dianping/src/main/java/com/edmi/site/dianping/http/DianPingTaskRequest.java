@@ -5,8 +5,11 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
 import com.edmi.site.dianping.entity.DianpingShopComment;
+import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
 
+import fun.jerry.common.enumeration.Project;
 import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.core.HttpClientSupport;
 
@@ -19,6 +22,18 @@ public class DianPingTaskRequest extends HttpClientSupport {
 		List<DianpingShopComment> list = new ArrayList<>();
 		String html = get(header).getContent();
 		list = JSONArray.parseArray(html, DianpingShopComment.class);
+		return list;
+	}
+	
+	public static List<DianpingSubCategorySubRegion> getSubCategorySubRegionTask() {
+		HttpRequestHeader header = new HttpRequestHeader();
+		header.setUrl("http://localhost:9091/task/dianping/shoplist/get");
+		header.setProxyType(ProxyType.NONE);
+		header.setProject(Project.BUDWEISER);
+		header.setSite(Site.DIANPING);
+		List<DianpingSubCategorySubRegion> list = new ArrayList<>();
+		String html = get(header).getContent();
+		list = JSONArray.parseArray(html, DianpingSubCategorySubRegion.class);
 		return list;
 	}
 	

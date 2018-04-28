@@ -13,6 +13,7 @@ public class DianpingShopInfo_Common extends DianpingShopInfo {
 	@ColumnMapping("total_page")
 	private Integer totalPage;
 	
+	@LogicalPrimaryKey
 	@ColumnMapping("sub_category_id")
 	private String subCategoryId;
 	
@@ -23,6 +24,7 @@ public class DianpingShopInfo_Common extends DianpingShopInfo {
 	@ColumnMapping("primary_category_id")
 	private String primaryCategoryId;
 	
+	@LogicalPrimaryKey
 	@ColumnMapping("sub_region_id")
 	private String subRegionId;
 	
