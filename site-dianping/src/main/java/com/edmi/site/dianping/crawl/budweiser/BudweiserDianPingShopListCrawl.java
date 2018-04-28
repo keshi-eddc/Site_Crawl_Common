@@ -166,7 +166,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 				} else {
 					System.out.println("$$$$$$$$$$$$$$$" + count);
 					try {
-						TimeUnit.MINUTES.sleep(5);
+						TimeUnit.MINUTES.sleep(2);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

@@ -1,7 +1,10 @@
 package com.edmi.site.dianping.http;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.conn.ConnectTimeoutException;
 
 import com.alibaba.fastjson.JSONArray;
 import com.edmi.site.dianping.entity.DianpingShopComment;
@@ -25,16 +28,24 @@ public class DianPingTaskRequest extends HttpClientSupport {
 		return list;
 	}
 	
+	@SuppressWarnings("finally")
 	public static List<DianpingSubCategorySubRegion> getSubCategorySubRegionTask() {
-		HttpRequestHeader header = new HttpRequestHeader();
-		header.setUrl("http://localhost:9091/task/dianping/shoplist/get");
-		header.setProxyType(ProxyType.NONE);
-		header.setProject(Project.BUDWEISER);
-		header.setSite(Site.DIANPING);
 		List<DianpingSubCategorySubRegion> list = new ArrayList<>();
-		String html = get(header).getContent();
-		list = JSONArray.parseArray(html, DianpingSubCategorySubRegion.class);
-		return list;
+		try {
+			HttpRequestHeader header = new HttpRequestHeader();
+			header.setUrl("http://192.168.3.236:9091/task/dianping/shoplist/get");
+			header.setProxyType(ProxyType.NONE);
+			header.setProject(Project.BUDWEISER);
+			header.setSite(Site.DIANPING);
+			String html = get(header).getContent();
+			list = JSONArray.parseArray(html, DianpingSubCategorySubRegion.class);
+		} catch (Exception e) {
+//			e.printStackTrace();
+			list = new ArrayList<>();
+		} finally {
+			return new ArrayList<>();
+		}
+//		return list;
 	}
 	
 	public static void main(String[] args) {
