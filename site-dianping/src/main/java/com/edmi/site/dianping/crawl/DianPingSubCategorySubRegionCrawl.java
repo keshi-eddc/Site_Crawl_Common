@@ -95,7 +95,8 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		
 		List<DianpingCitySubRegion> subRegionList = iGeneralJdbcUtils.queryForListObject(
 				new SqlEntity("select * from " + ClassUtils.getTableName(DianpingCitySubRegion.class)
-						+ " where city_id = '" + cityId + "'", DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
+						+ " where city_id = '" + cityId + "' and primary_category_id = '" + primaryCategoryId + "'", 
+						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
 				DianpingCitySubRegion.class);
 		
 		List<SqlEntity> sqlEntityList = new ArrayList<>();
@@ -242,7 +243,8 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 						sub.setCityId(cityId);
 						sub.setCityCnname(cityCnName);
 						sub.setCityEnname(cityEnName);
-						
+						sub.setPrimaryCategory(primaryCategory);
+						sub.setPrimaryCategoryId(primaryCategoryId);
 //						log.info(sub);
 						subRegionList.add(sub);
 					}

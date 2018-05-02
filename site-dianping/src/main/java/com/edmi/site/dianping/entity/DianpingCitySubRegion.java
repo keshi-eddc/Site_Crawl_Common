@@ -43,6 +43,7 @@ public class DianpingCitySubRegion extends Model {
 	@ColumnMapping("primary_category")
 	private String primaryCategory;
 	
+	@LogicalPrimaryKey
 	@ColumnMapping("primary_category_id")
 	private String primaryCategoryId;
 	

@@ -4,6 +4,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.conn.ConnectTimeoutException;
 
 import com.alibaba.fastjson.JSONArray;
@@ -33,7 +34,7 @@ public class DianPingTaskRequest extends HttpClientSupport {
 		List<DianpingSubCategorySubRegion> list = new ArrayList<>();
 		try {
 			HttpRequestHeader header = new HttpRequestHeader();
-			header.setUrl("http://192.168.3.236:9091/task/dianping/shoplist/get");
+			header.setUrl("http://localhost:9091/task/dianping/shoplist/get");
 			header.setProxyType(ProxyType.NONE);
 			header.setProject(Project.BUDWEISER);
 			header.setSite(Site.DIANPING);
@@ -43,7 +44,11 @@ public class DianPingTaskRequest extends HttpClientSupport {
 //			e.printStackTrace();
 			list = new ArrayList<>();
 		} finally {
-			return new ArrayList<>();
+			if (CollectionUtils.isEmpty(list)) {
+				return new ArrayList<>();
+			} else {
+				return list;
+			}
 		}
 //		return list;
 	}
