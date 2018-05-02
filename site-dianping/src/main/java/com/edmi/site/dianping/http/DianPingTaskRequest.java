@@ -34,7 +34,7 @@ public class DianPingTaskRequest extends HttpClientSupport {
 		List<DianpingSubCategorySubRegion> list = new ArrayList<>();
 		try {
 			HttpRequestHeader header = new HttpRequestHeader();
-			header.setUrl("http://localhost:9091/task/dianping/shoplist/get");
+			header.setUrl("http://203.156.252.196:9091/task/dianping/shoplist/get");
 			header.setProxyType(ProxyType.NONE);
 			header.setProject(Project.BUDWEISER);
 			header.setSite(Site.DIANPING);

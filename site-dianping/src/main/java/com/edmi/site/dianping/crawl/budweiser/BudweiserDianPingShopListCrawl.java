@@ -94,7 +94,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 						tempSS.setUrl(ss.getUrl());
 						tempSS.setShopTotalPage(totalPage);
 						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-						break;
+						continue;
 					}
 				}
 				
