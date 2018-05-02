@@ -36,7 +36,9 @@ public class AddFirstCacheThread implements Runnable {
 
 	@Override
 	public void run() {
-		FirstSqlCache.add(sqlEntity);
+		if (null != sqlEntity) {
+			FirstSqlCache.add(sqlEntity);
+		}
 		FirstSqlCache.add(list);
 	}
 	

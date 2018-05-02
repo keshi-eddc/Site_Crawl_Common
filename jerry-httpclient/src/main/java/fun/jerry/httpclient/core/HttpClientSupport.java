@@ -125,6 +125,9 @@ public class HttpClientSupport {
 			if (header.getProxyType() == ProxyType.PROXY_CLOUD_ABUYUN) {
 				credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("H26U3Y18CA6L02YD", "0567219ED7DF3592"));
 			}
+			if (header.getProxyType() == ProxyType.PROXY_STATIC_DLY) {
+				credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("379862802", "infopower"));
+			}
 			CookieStore cookieStore = new BasicCookieStore();
 			CloseableHttpClient httpclient = HttpClients.custom()
 					.setConnectionManager(cm)
@@ -145,7 +148,7 @@ public class HttpClientSupport {
 				// 如果响应不为null
 				if (null != response) {
 					
-//					log.info(header.getUrl() + " response " + response.getStatusLine().getStatusCode());
+					log.info(header.getUrl() + " response " + response.getStatusLine().getStatusCode());
 					httpResponse.setCode(response.getStatusLine().getStatusCode());
 					// 如果请求成功
 					if (null != response.getStatusLine() && (response.getStatusLine().getStatusCode() == 200

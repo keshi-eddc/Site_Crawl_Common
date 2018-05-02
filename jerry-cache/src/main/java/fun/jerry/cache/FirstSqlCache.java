@@ -80,7 +80,9 @@ public class FirstSqlCache {
 	public static void add(List<SqlEntity> list) {
 		if (CollectionUtils.isNotEmpty(list)) {
 			for (SqlEntity obj : list) {
-				add(obj);
+				if (null != obj) {
+					add(obj);
+				}
 			}
 		}
 	}
