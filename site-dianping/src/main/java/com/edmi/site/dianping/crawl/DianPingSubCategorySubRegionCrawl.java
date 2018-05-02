@@ -209,7 +209,7 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		}
 		List<SqlEntity> sqlEntityList = new ArrayList<>();
 		for (DianpingCitySubCategory sub : citySubCategoryList) {
-			SqlEntity sqlEntity = new SqlEntity(sub, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS);
+			SqlEntity sqlEntity = new SqlEntity(sub, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT);
 			sqlEntityList.add(sqlEntity);
 		}
 		iGeneralJdbcUtils.batchExecute(sqlEntityList);
@@ -268,7 +268,7 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		
 		List<SqlEntity> sqlEntityList = new ArrayList<>();
 		for (DianpingCitySubRegion sub : citySubRegionList) {
-			SqlEntity sqlEntity = new SqlEntity(sub, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS);
+			SqlEntity sqlEntity = new SqlEntity(sub, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT);
 			sqlEntityList.add(sqlEntity);
 		}
 		iGeneralJdbcUtils.batchExecute(sqlEntityList);
@@ -280,63 +280,69 @@ public class DianPingSubCategorySubRegionCrawl implements Runnable {
 		System.out.println(ApplicationContextHolder.getBean(GeneralJdbcUtils.class));
 		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 		
-//		String primaryCategory = "美食";
-//		String primaryCategoryId = "ch10";
-		
-		String primaryCategory = "休闲娱乐";
-		String primaryCategoryId = "ch30";
-		
-		List<DianpingCityInfo> mapList = iGeneralJdbcUtils.queryForListObject(new SqlEntity(
-				"with sub_category as ( "
-						+ "	select city_cnname, count(distinct sub_category_id) as sub_cate_num from dbo.Dianping_City_SubCategory  "
-						+ "	where primary_category = '" + primaryCategory + "' "
-						+ "	GROUP by city_cnname  "
-						+ "), sub_region as ( "
-						+ "	select city_cnname, count(distinct sub_region_id) as sub_region_num from dbo.Dianping_City_SubRegion  "
-						+ "	where primary_category = '" + primaryCategory + "' "
-						+ "	GROUP by city_cnname  "
-						+ "), subcategory_subregion as ( "
-						+ "	select city_cnname, count(1) as num from dbo.Dianping_SubCategory_SubRegion  "
-						+ "	where primary_category = '" + primaryCategory + "' "
-						+ "	group by city_cnname  "
-						+ "), temp as (  "
-						+ "	select A.city_cnname as city_cnname, A.sub_cate_num * B.sub_region_num as num  "
-						+ "	from sub_category A left join sub_region B on A.city_cnname = B.city_cnname  "
-						+ ") select * from dbo.Dianping_CityInfo where cityName not in (  "
-						+ "	select A.city_cnname from temp A left join subcategory_subregion B  "
-						+ "	on A.city_cnname = B.city_cnname   "
-						+ "	where A.num = B.num  "
-						+ ")  "
-						+ "and activeCity = 1 and provinceName not in ('香港', '澳门', '台湾') "
-						,
-				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingCityInfo.class);
-		
-		ExecutorService pool = Executors.newFixedThreadPool(10);
-		
-//		for (Map<String, Object> map : mapList) {
-//			pool.submit(new DianPingSubCategorySubRegionCrawl(map.get("cityId").toString(),
-//					map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10"));
-//		}
-		
-		for (DianpingCityInfo city : mapList) {
-			pool.submit(new DianPingSubCategorySubRegionCrawl(city.getCityId(),
-					city.getCityEnName(), city.getCityName(), primaryCategory, primaryCategoryId));
-		}
-		
-		pool.shutdown();
+		String[][] temp = new String[][] {{"美食", "ch10"}, {"休闲娱乐", "ch30"}};
+		for (String[] array : temp) {
+			String primaryCategory = array[0];
+			String primaryCategoryId = array[1];
+			
+//			List<DianpingCityInfo> mapList = iGeneralJdbcUtils.queryForListObject(new SqlEntity(
+//					"with sub_category as ( "
+//							+ "	select city_cnname, count(distinct sub_category_id) as sub_cate_num from dbo.Dianping_City_SubCategory  "
+//							+ "	where primary_category = '" + primaryCategory + "' "
+//							+ "	GROUP by city_cnname  "
+//							+ "), sub_region as ( "
+//							+ "	select city_cnname, count(distinct sub_region_id) as sub_region_num from dbo.Dianping_City_SubRegion  "
+//							+ "	where primary_category = '" + primaryCategory + "' "
+//							+ "	GROUP by city_cnname  "
+//							+ "), subcategory_subregion as ( "
+//							+ "	select city_cnname, count(1) as num from dbo.Dianping_SubCategory_SubRegion  "
+//							+ "	where primary_category = '" + primaryCategory + "' "
+//							+ "	group by city_cnname  "
+//							+ "), temp as (  "
+//							+ "	select A.city_cnname as city_cnname, A.sub_cate_num * B.sub_region_num as num  "
+//							+ "	from sub_category A left join sub_region B on A.city_cnname = B.city_cnname  "
+//							+ ") select * from dbo.Dianping_CityInfo where cityName not in (  "
+//							+ "	select A.city_cnname from temp A left join subcategory_subregion B  "
+//							+ "	on A.city_cnname = B.city_cnname   "
+//							+ "	where A.num = B.num  "
+//							+ ")  "
+//							+ "and activeCity = 1 and provinceName not in ('香港', '澳门', '台湾') "
+//							,
+//					DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingCityInfo.class);
+			
+			List<DianpingCityInfo> mapList = iGeneralJdbcUtils.queryForListObject(new SqlEntity(
+					"select * from dbo.Dianping_CityInfo where activeCity = 1 and provinceName not in ('香港', '澳门', '台湾') "
+							,
+					DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingCityInfo.class);
+			
+			ExecutorService pool = Executors.newFixedThreadPool(10);
+			
+//			for (Map<String, Object> map : mapList) {
+//				pool.submit(new DianPingSubCategorySubRegionCrawl(map.get("cityId").toString(),
+//						map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10"));
+//			}
+			
+			for (DianpingCityInfo city : mapList) {
+				pool.submit(new DianPingSubCategorySubRegionCrawl(city.getCityId(),
+						city.getCityEnName(), city.getCityName(), primaryCategory, primaryCategoryId));
+			}
+			
+			pool.shutdown();
 
-		while (true) {
-			if (pool.isTerminated()) {
-				log.error("大众点评-抓取完成");
-				break;
-			} else {
-				try {
-					TimeUnit.SECONDS.sleep(10);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			while (true) {
+				if (pool.isTerminated()) {
+					log.error("大众点评-抓取完成");
+					break;
+				} else {
+					try {
+						TimeUnit.SECONDS.sleep(10);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
+		
 	}
 	
 }

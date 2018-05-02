@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
@@ -79,10 +80,21 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 					iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
 					break;
 				} else {
-					Elements shopElements = pageDoc.select("#shop-all-list ul li");
-					if (CollectionUtils.isEmpty(shopElements)) {
-						log.info(header.getUrl() + " 请求成功，未发现店铺列表,继续抓取");
-						continue;
+					Element shopList = pageDoc.select("#shop-all-list").first();
+					if (null != shopList) {
+						Elements shopElements = pageDoc.select("#shop-all-list ul li");
+						if (CollectionUtils.isEmpty(shopElements)) {
+							log.info(header.getUrl() + " 请求成功，未发现店铺列表,继续抓取");
+							continue;
+						}
+					} else {
+						log.info(header.getUrl() + " 请求成功，按说应该有店铺列表，但是没有找到");
+						totalPage = -2;
+						DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
+						tempSS.setUrl(ss.getUrl());
+						tempSS.setShopTotalPage(totalPage);
+						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
+						break;
 					}
 				}
 				
@@ -143,7 +155,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
 				log.info("获取未抓取用户个数：" + list.size());
 				if (CollectionUtils.isNotEmpty(list)) {
-					ExecutorService pool = Executors.newFixedThreadPool(5);
+					ExecutorService pool = Executors.newFixedThreadPool(3);
 					for (DianpingSubCategorySubRegion ss : list) {
 						pool.submit(new BudweiserDianPingShopListCrawl(ss));
 					}
