@@ -7,13 +7,13 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
+		<module>jerry-entity</module>
 		<module>jerry-common</module>
-		<module>jerry-httpclient</module>
+		<module>jerry-proxy</module>
 		<module>jerry-cache</module>
+		<module>jerry-httpclient</module>
 		<module>jerry-browser</module>
 		<module>jerry-jdbc</module>
-		<module>jerry-entity</module>
-		<module>jerry-proxy</module>
 		<module>site-dianping</module>
 	</modules>
 
