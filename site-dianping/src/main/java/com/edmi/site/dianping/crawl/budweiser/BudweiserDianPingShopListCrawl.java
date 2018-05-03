@@ -155,7 +155,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
 				log.info("获取未抓取用户个数：" + list.size());
 				if (CollectionUtils.isNotEmpty(list)) {
-					ExecutorService pool = Executors.newFixedThreadPool(3);
+					ExecutorService pool = Executors.newFixedThreadPool(10);
 					for (DianpingSubCategorySubRegion ss : list) {
 						pool.submit(new BudweiserDianPingShopListCrawl(ss));
 					}
