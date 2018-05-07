@@ -1,5 +1,9 @@
 package com.edmi.site.dianping.entity;
 
+import java.util.Date;
+
+import org.apache.commons.lang3.time.DateFormatUtils;
+
 import fun.jerry.entity.annotation.ColumnMapping;
 import fun.jerry.entity.annotation.LogicalPrimaryKey;
 import fun.jerry.entity.annotation.TableMapping;
@@ -25,6 +29,9 @@ public class DianpingShopInfo_Cargill extends DianpingShopInfo_Common {
 	@ColumnMapping("keyword")
 	private String keyword;
 	
+	@ColumnMapping("version")
+	private String version = DateFormatUtils.format(new Date(), "yyyy-MM");
+	
 	public String getSource() {
 		return source;
 	}
@@ -39,6 +46,14 @@ public class DianpingShopInfo_Cargill extends DianpingShopInfo_Common {
 
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	
 }

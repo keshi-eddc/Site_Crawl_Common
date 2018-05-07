@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
+import org.apache.http.TruncatedChunkException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CookieStore;
@@ -42,6 +43,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import fun.jerry.common.LogSupport;
@@ -175,7 +177,7 @@ public class HttpClientSupport {
 					return httpResponse;
 				}
 				
-			} catch (IOException e) {
+			} catch (Exception e) {
 				existError = true;
 				log.error(header.getUrl() + " httpclient execute IOException, it will try again.", e);
 				httpResponse.setFailReason(e.getMessage());
@@ -197,22 +199,24 @@ public class HttpClientSupport {
 		return httpResponse;
 	}
 	
-	private static String getResponseAsString(HttpRequestHeader header, CloseableHttpResponse response) {
+	private static String getResponseAsString(HttpRequestHeader header, CloseableHttpResponse response) throws Exception {
 		StringBuilder entityStringBuilder = new StringBuilder();
 		HttpEntity entity = null;
 //		if (response.getStatusLine().getStatusCode() == 200) {
 			entity = response.getEntity();
 			if (null != entity) {
 				try {
-					BufferedReader bufferedReader = new BufferedReader(
-							new InputStreamReader(entity.getContent(), 
-									(StringUtils.isNotEmpty(header.getEncode()) ? header.getEncode() : "UTF-8")), 12 * 1024);
-					String line = null;
-					while ((line = bufferedReader.readLine()) != null) {
-						entityStringBuilder.append(line + "\n");
-					}
+//					BufferedReader bufferedReader = new BufferedReader(
+//							new InputStreamReader(entity.getContent(), 
+//									(StringUtils.isNotEmpty(header.getEncode()) ? header.getEncode() : "UTF-8")), 12 * 1024);
+//					String line = null;
+//					while ((line = bufferedReader.readLine()) != null) {
+//						entityStringBuilder.append(line + "\n");
+//					}
+					entityStringBuilder = new StringBuilder(EntityUtils.toString(entity));
 				} catch (Exception e) {
-					e.printStackTrace();
+//					log.error("getResponseAsString error ", e);
+					throw new Exception(e);
 				} finally {
 					if (null != response) {
 						try {

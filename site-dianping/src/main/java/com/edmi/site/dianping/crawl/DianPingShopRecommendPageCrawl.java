@@ -27,6 +27,9 @@ import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.entity.system.DataSource;
 import fun.jerry.entity.system.SqlEntity;
 import fun.jerry.entity.system.SqlType;
@@ -52,11 +55,16 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl("http://www.dianping.com/shop/" + shop.getShopId() +"/dishlist");
 		header.setReferer("http://www.dianping.com/shop/" + shop.getShopId());
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setProject(Project.CARGILL);
+		header.setSite(Site.DIANPING);
+		header.setMaxTryTimes(10);
 		String html = DianPingCommonRequest.getShopRecommend(header);
 		if(StringUtils.isNotEmpty(html)) {
 			Document doc = Jsoup.parse(html);
 			
 			int totalPage = DianpingParser.parseShopRecommendTotalPage(doc);
+//			totalPage = (totalPage > 1 ? 1 : totalPage);
 			List<SqlEntity> sqlEntityList = new ArrayList<>();
 			if (totalPage == 0) {
 				DianpingShopRecommendPage recommendPage = new DianpingShopRecommendPage();
@@ -100,19 +108,18 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 
-		DianPingCommonRequest.refreshShopRecommendCookie();
+//		DianPingCommonRequest.refreshShopRecommendCookie();
+		
 		StringBuilder sql = new StringBuilder();
-		sql.append("select top 1000 * from Dianping_ShopInfo A "
-				+ "where not exists (select 1 from Dianping_Shop_Recommend_Page B where A.shop_id = B.shop_id "
-				+ "and B.page = 1 and B.status = 200) "
-//				+ "and shop_id in ('72351070')"
-				+ "order by shop_id"
+		sql.append("select distinct shop_id, shop_url from Dianping_ShopInfo_Cargill A "
+				+ "where version = '2018-05' "
+				+ "and shop_id not in (select shop_id from dbo.Dianping_Shop_Recommend_Page where page = 1 and status = 200)"
 				);
 		
-		while (true) {
-			List<DianpingShopInfo> urls = iGeneralJdbcUtils.queryForListObject(
-					new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
-					DianpingShopInfo.class);
+		List<DianpingShopInfo> urls = iGeneralJdbcUtils.queryForListObject(
+				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
+				DianpingShopInfo.class);
+//		while (true) {
 			if (CollectionUtils.isNotEmpty(urls)) {
 				
 				ExecutorService pool = Executors.newFixedThreadPool(6);
@@ -125,7 +132,7 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 
 				while (true) {
 					if (pool.isTerminated()) {
-						log.error("大众点评-refresh shop comment total page 抓取完成");
+						log.error("大众点评-refresh shop recommend total page 抓取完成");
 						break;
 					} else {
 						try {
@@ -137,9 +144,9 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 				}
 				
 			} else {
-				break;
+//				break;
 			}
-		}
+//		}
 		
 	}
 	

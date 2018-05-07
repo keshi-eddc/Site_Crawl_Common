@@ -24,16 +24,17 @@ create table dbo.Dianping_ShopInfo_Cargill (
     service_score varchar(50),
     page int,
     total_page int,
-    sub_category_id varchar(50),
+    sub_category_id varchar(50) not null,
     category_id varchar(50) not null,
     primary_category_id varchar(50),
-    sub_region_id varchar(50),
+    sub_region_id varchar(50) not null,
     region_id varchar(50),
     city_id varchar(50),
     source varchar(50) not null,
     keyword varchar(50) not null,
+    version varchar(50) not null,
     update_time datetime,
     insert_time datetime
 );
 
-ALTER TABLE DataCenter.dbo.Dianping_ShopInfo_Cargill ADD CONSTRAINT Dianping_ShopInfo_Cargill_PK PRIMARY KEY (shop_id, source, keyword, category_id);
+--ALTER TABLE DataCenter.dbo.Dianping_ShopInfo_Cargill ADD CONSTRAINT Dianping_ShopInfo_Cargill_PK PRIMARY KEY (shop_id, sub_category_id, sub_region_id, source, keyword, version);

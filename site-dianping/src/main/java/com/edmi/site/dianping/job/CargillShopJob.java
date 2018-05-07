@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.edmi.site.dianping.crawl.CargillDianPingShopListCrawl;
+import com.edmi.site.dianping.entity.DianpingCityInfo;
 
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
@@ -32,29 +33,32 @@ public class CargillShopJob {
 	
 	public static void main(String[] args) {
 		
-		String[] keywords = new String[] {"汉堡", "鸡排", "鸡块", "鸡翅", "鸡柳"};
+		String[] keywords = new String[] {"汉堡", "鸡排", "鸡块", "鸡翅", "鸡柳", "鸡腿", "鸡爪", "烤鸡"};
+//		String[] keywords = new String[] {"汉堡"};
 		
-		// 韩国料理,咖啡厅,面包甜点,日本菜,台湾菜,西餐,粤菜
-		String[] categories = new String[] {"g114", "g132", "g117", "g113", "g107", "g116", "g103"};
+		// 西餐、韩国料理、日本菜、面包甜点、咖啡店、粤菜、台湾菜、川菜、东南亚菜、小吃面食
+		String[] categories = new String[] {"g116", "g114", "g113", "g117", "g132", "g103", "g103", "g102", "g115", "g217"};
+//		String[] categories = new String[] {"g116"};
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		IGeneralJdbcUtils<?> iGeneralJdbcUtils = (IGeneralJdbcUtils<?>) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils<?>) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 		
-		List<Map<String, Object>> mapList = iGeneralJdbcUtils.queryForListMap(new SqlEntity(
-				"select * from dbo.City_DianPing where cityName in ("
-				+ "'北京', '上海', '广州', '深圳', '南昌', '太原', '沈阳', '西安', '南宁', '成都', '杭州', '泉州', '潍坊', '吉林', '洛阳', '贵阳', '兰州')",
-				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
+		List<DianpingCityInfo> cityList = iGeneralJdbcUtils.queryForListObject(new SqlEntity(
+				"select * from dbo.Dianping_CityInfo where cityName in ("
+				+ "'北京', '上海', '广州', '深圳')",
+//				+ "'北京')",
+				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingCityInfo.class);
 		
-		ExecutorService pool = Executors.newFixedThreadPool(5);
+		ExecutorService pool = Executors.newFixedThreadPool(10);
 		
-		for (Map<String, Object> map : mapList) {
+		for (DianpingCityInfo cityInfo : cityList) {
 			
-//			for (String keyword : keywords) {
-//				pool.submit(new CargillDianPingShopListCrawl(2, keyword, map.get("cityId").toString(), null, null, null, "ch10", "", ""));
-//			}
+			for (String keyword : keywords) {
+				pool.submit(new CargillDianPingShopListCrawl(2, keyword, cityInfo.getCityId(), null, null, null, "ch10", "", ""));
+			}
 			
 			for (String categoryId : categories) {
-				pool.submit(new CargillDianPingShopListCrawl(1, null, map.get("cityId").toString(), map.get("cityEnName").toString(), map.get("cityName").toString(), "美食", "ch10", "", categoryId));
+				pool.submit(new CargillDianPingShopListCrawl(1, categoryId, cityInfo.getCityId(), cityInfo.getCityEnName(), cityInfo.getCityName(), "美食", "ch10", "", categoryId));
 			}
 			
 		}

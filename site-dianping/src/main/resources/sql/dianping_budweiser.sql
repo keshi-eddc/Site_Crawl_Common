@@ -63,4 +63,5 @@ create table dbo.Dianping_ShopInfo_Budweiser (
     insert_time datetime
 );
 
-ALTER TABLE DataCenter.dbo.Dianping_ShopInfo_Budweiser ADD CONSTRAINT Dianping_ShopInfo_Budweiser_PK PRIMARY KEY (shop_id, sub_category_id, sub_region_id);
+ALTER TABLE DataCenter.dbo.Dianping_ShopInfo_Budweiser 
+ADD CONSTRAINT Dianping_ShopInfo_Budweiser_PK PRIMARY KEY (shop_id, sub_category_id, sub_region_id);
