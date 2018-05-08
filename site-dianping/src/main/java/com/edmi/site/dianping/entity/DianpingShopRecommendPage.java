@@ -32,6 +32,9 @@ public class DianpingShopRecommendPage extends Model {
 	@ColumnMapping("total_page")
 	private Integer totalPage;
 	
+	@ColumnMapping("version")
+	private String version = Version.version_last_month;
+	
 	@ColumnMapping("update_time")
 	@FieldInsertExclude
 	private String updateTime = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
@@ -78,6 +81,14 @@ public class DianpingShopRecommendPage extends Model {
 
 	public void setTotalPage(Integer totalPage) {
 		this.totalPage = totalPage;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 	public String getUpdateTime() {

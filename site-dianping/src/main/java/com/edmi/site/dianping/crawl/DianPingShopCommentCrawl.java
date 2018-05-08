@@ -27,26 +27,39 @@ import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.entity.system.DataSource;
 import fun.jerry.entity.system.SqlEntity;
 import fun.jerry.entity.system.SqlType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 
+/**
+ * 店铺-评论抓取
+ * @author conner
+ *
+ */
 public class DianPingShopCommentCrawl implements Runnable {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
-	private DianpingSubCategorySubRegion subCategorySubRegion;
+	/**
+	 * 是否开启增量抓取
+	 */
+	private boolean increment;
+	
+	private DianpingShopInfo dianpingShopInfo;
 	
 	private IGeneralJdbcUtils iGeneralJdbcUtils;
 
-	public DianPingShopCommentCrawl(DianpingSubCategorySubRegion subCategorySubRegion) {
+	public DianPingShopCommentCrawl(DianpingShopInfo dianpingShopInfo, boolean increment) {
 		super();
-		this.subCategorySubRegion = subCategorySubRegion;
+		this.dianpingShopInfo = dianpingShopInfo;
+		this.increment = increment;
 		this.iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 //		StringBuilder sql = new StringBuilder();
@@ -80,6 +93,7 @@ public class DianPingShopCommentCrawl implements Runnable {
 //				break;
 //			}
 //		}
+//		DianPingCommonRequest.refreshShopCommentCookie();
 		crawl();
 	}
 	
@@ -88,6 +102,10 @@ public class DianPingShopCommentCrawl implements Runnable {
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl("http://www.dianping.com/shop/" + shopInfo.getShopId() +"/review_all?queryType=sortType&queryVal=latest");
 		header.setReferer("http://www.dianping.com/shop/" + shopInfo.getShopId() + "/review_all");
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setProject(Project.CARGILL);
+		header.setSite(Site.DIANPING);
+		header.setMaxTryTimes(10);
 		String html = DianPingCommonRequest.getShopCommentTotalPage(header);
 		Document doc = Jsoup.parse(html);
 		if (null != doc.select(".reviews-items")) {
@@ -106,60 +124,34 @@ public class DianPingShopCommentCrawl implements Runnable {
 	}
 	
 	private void crawl() {
-		DianPingCommonRequest.refreshShopCommentCookie();
-		StringBuilder sql = new StringBuilder();
-		sql.append("select top 1000 * from Dianping_Shop_Comment_Page where status <> 200 ")
-//			.append("and sub_category_id in (select sub_category_id from dbo.Dianping_City_SubCategory ")
-//				.append("where primary_category = '" + primaryCategory + "' ")
-//				.append(StringUtils.isNotEmpty(category) ? "and category = '" + category + "' " : " ")
-//				.append(StringUtils.isNotEmpty(subCategory) ? "and sub_category = '" + subCategory + "' " : " ")
-//				.append(")")
-//			.append("and sub_region_id in (select sub_region_id from dbo.Dianping_City_SubRegion ")
-//				.append(" where city_cnname = '" + cityCnname + "' ")
-//				.append(StringUtils.isNotEmpty(region) ? "and region = '" + region + "' " : " ")
-//				.append(StringUtils.isNotEmpty(subRegion) ? "and sub_region = '" + subRegion + "' " : " ")
-//				.append(")")
-			;
+			
+		ExecutorService pool = Executors.newFixedThreadPool(5);
 		
-		while (true) {
+		int totalPage = getTotalPage(dianpingShopInfo);
+		
+		for (DianpingShopCommentPage page : pageList) {
+			page.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			
-			List<DianpingShopCommentPage> pageList = iGeneralJdbcUtils.queryForListObject(
-					new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
-					DianpingShopCommentPage.class);
-			
-			if (CollectionUtils.isNotEmpty(pageList)) {
-//				DianPingCommonRequest.refreshShopCommentTotalPageCookie();
-			} else {
-				log.info("店铺评论抓取完成");
-				break;
-			}
-			
-			ExecutorService pool = Executors.newFixedThreadPool(5);
-			
-			for (DianpingShopCommentPage page : pageList) {
-				page.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			pool.submit(new Runnable() {
 				
-				pool.submit(new Runnable() {
-					
-					@Override
-					public void run() {
-						parseComment(page);
-					}
-				});
-			}
-			
-			pool.shutdown();
+				@Override
+				public void run() {
+					parseComment(page);
+				}
+			});
+		}
+		
+		pool.shutdown();
 
-			while (true) {
-				if (pool.isTerminated()) {
-					log.error("大众点评-抓取完成");
-					break;
-				} else {
-					try {
-						TimeUnit.SECONDS.sleep(60);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+		while (true) {
+			if (pool.isTerminated()) {
+				log.error("大众点评-抓取完成");
+				break;
+			} else {
+				try {
+					TimeUnit.SECONDS.sleep(60);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -288,7 +280,7 @@ public class DianPingShopCommentCrawl implements Runnable {
 //		}
 //		iGeneralJdbcUtils.batchExecute(sqlEntityList);
 		
-		new DianPingShopCommentCrawl(null).run();
+		new DianPingShopCommentCrawl(null, false).run();
 	}
 	
 }

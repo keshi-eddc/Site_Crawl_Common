@@ -321,11 +321,11 @@ public class WebDriverSupport {
 			if (null == driver) {
 				
 				DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
-//				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-//				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-				String ua = UserAgentSupport.getPCUserAgent();
-				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", ua);
-				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", ua);
+				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+//				String ua = UserAgentSupport.getPCUserAgent();
+//				desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", ua);
+//				desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", ua);
 				if (1 > 0) {//是否使用代理
 					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 					proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
