@@ -37,15 +37,16 @@ public class DianPingShopRecommendCrawl implements Runnable {
 	
 	private DianpingShopInfo shop;
 	
+	@SuppressWarnings("rawtypes")
 	private IGeneralJdbcUtils iGeneralJdbcUtils;
 
+	@SuppressWarnings("rawtypes")
 	public DianPingShopRecommendCrawl(DianpingShopInfo shop) {
 		super();
 		this.shop = shop;
 		this.iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		crawl();
@@ -56,7 +57,7 @@ public class DianPingShopRecommendCrawl implements Runnable {
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl("http://www.dianping.com/shop/" + shopInfo.getShopId() +"/review_all?queryType=sortType&queryVal=latest");
 		header.setReferer("http://www.dianping.com/shop/" + shopInfo.getShopId() + "/review_all");
-		String html = DianPingCommonRequest.getShopCommentTotalPage(header);
+		String html = DianPingCommonRequest.getShopComment(header);
 		Document doc = Jsoup.parse(html);
 		if (null != doc.select(".reviews-items")) {
 			// 发现有评论列表的，看是否包含评论
@@ -144,7 +145,7 @@ public class DianPingShopRecommendCrawl implements Runnable {
 			header.setReferer("http://www.dianping.com/shop/" + page.getShopId() 
 				+ "/review_all/p" + (page.getPage() - 1) + "?queryType=sortType&queryVal=latest");
 		}
-		String html = DianPingCommonRequest.getShopCommentTotalPage(header);
+		String html = DianPingCommonRequest.getShopComment(header);
 //		log.info(html);
 		Document doc = Jsoup.parse(html);
 		Elements commentList = doc.select(".reviews-items ul li");

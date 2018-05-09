@@ -58,8 +58,10 @@ public class DianPingCommonRequest extends HttpClientSupport {
 //				"navCtgScroll=0; navCtgScroll=0; _hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; cy=1; cye=shanghai; _lxsdk_s=1630170dedd-a6f-bc0-b88%7C%7C27");
 //		COOKIES_SHOPCOMMENT.add(
 //				"_lxsdk_cuid=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _lxsdk=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _hc.v=acf7f16c-257a-70d5-d40f-91620a75bb6b.1520571532; s_ViewType=10; cy=1; cye=shanghai; _lxsdk_s=16222b33752-6b5-61f-038%7C%7C21");
+//		COOKIES_SHOPCOMMENT.add(
+//				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; ctu=946223b20ade88cd1373a6270d8145bf597317dc26283c0037951afea594f4f5; uamo=13651952625; ctu=57f4fba19c4400d8ada2e815a0bacf8fce54e87a3d02c10b2aed3825d4e628c438a9e5c34a19d907eff29da2985c6199; _dp.ac.v=569d57b1-f0d5-487d-9abb-64ec5135020a; dper=2b77b9d675a89e5d46ca3857f188dee3f74f858b7a38eb5a5d614c007bcff76fb023b2baefbd4d627c772d98e210e42d2ce9409f5581626456da1cf789f6809b2bf8c760e2d4109773b0b389e97d46082ae41522b7e741e557bff80863834088; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; _lxsdk_s=1633dcba184-648-246-fab%7C%7C644");
 		COOKIES_SHOPCOMMENT.add(
-				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; ctu=946223b20ade88cd1373a6270d8145bf597317dc26283c0037951afea594f4f5; uamo=13651952625; ctu=57f4fba19c4400d8ada2e815a0bacf8fce54e87a3d02c10b2aed3825d4e628c438a9e5c34a19d907eff29da2985c6199; _dp.ac.v=569d57b1-f0d5-487d-9abb-64ec5135020a; dper=2b77b9d675a89e5d46ca3857f188dee3f74f858b7a38eb5a5d614c007bcff76fb023b2baefbd4d627c772d98e210e42d2ce9409f5581626456da1cf789f6809b2bf8c760e2d4109773b0b389e97d46082ae41522b7e741e557bff80863834088; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; _lxsdk_s=1633dcba184-648-246-fab%7C%7C644");
+				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; ctu=946223b20ade88cd1373a6270d8145bf597317dc26283c0037951afea594f4f5; uamo=13651952625; _dp.ac.v=569d57b1-f0d5-487d-9abb-64ec5135020a; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTI1NzY1ODY2NjU4XV9b; m_flash2=1; default_ab=shop%3AA%3A1%7Cindex%3AA%3A1%7Cshopreviewlist%3AA%3A1; ctu=6ab31e9e35277eecb49b56212b013f8bd5c82033b9a3bca036afac4d59f920ec97cfc5903e35a5c992d4d32e079c1a8e; dper=9d4e7f08fb20ed89be32fb466886701eca8dcf3ea6ad3deedf672fafd72870589d0778b17f35ce924039db07ba53aa246a6b8766a7b7be8f995a1bb313362421cdf7874accacd94f957dd2eacdc622343c447e7b4645fd2823eabb5b08f38a97; ll=7fd06e815b796be3df069dec7836c3df; ua=15046322240; _lxsdk_s=1633f2c2b84-681-1a6-b01%7C%7C491");
 		
 		COOKIES_SHOPRECOMMEND.add(
 				"s_ViewType=10; _lxsdk_cuid=1626676e642c8-0b365ec638e135-3b7c015b-100200-1626676e642c8; _lxsdk=1626676e642c8-0b365ec638e135-3b7c015b-100200-1626676e642c8; _hc.v=16d8fc83-49b3-4a56-b0c4-b123697eafd8.1522137491; cy=1; cye=shanghai; _lxsdk_s=1626b212b0d-25b-ad6-093%7C%7C70");
@@ -256,7 +258,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		}
 	}
 
-	public static String getShopCommentTotalPage(HttpRequestHeader header) {
+	public static String getShopComment(HttpRequestHeader header) {
 		header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 		header.setAcceptEncoding("gzip, deflate");
 		header.setAcceptLanguage("zh-CN,zh;q=0.9,en;q=0.8");
@@ -275,7 +277,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
 //			removeInvalideCookie(COOKIES_SHOPCOMMENT, header.getCookie());
 //			header.setCookie(COOKIES_SHOPCOMMENT.element());
-			return getShopCommentTotalPage(header);
+			return getShopComment(header);
 		} else {
 			return "";
 		}

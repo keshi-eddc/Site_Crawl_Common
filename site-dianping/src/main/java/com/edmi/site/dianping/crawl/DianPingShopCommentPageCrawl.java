@@ -106,7 +106,7 @@ public class DianPingShopCommentPageCrawl implements Runnable {
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl("http://www.dianping.com/shop/" + shopInfo.getShopId() +"/review_all?queryType=sortType&queryVal=latest");
 		header.setReferer("http://www.dianping.com/shop/" + shopInfo.getShopId() + "/review_all");
-		String html = DianPingCommonRequest.getShopCommentTotalPage(header);
+		String html = DianPingCommonRequest.getShopComment(header);
 		Document doc = Jsoup.parse(html);
 		if (null != doc.select(".reviews-items")) {
 			// 发现有评论列表的，看是否包含评论
