@@ -4,12 +4,16 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fun.jerry.browser.WebDriverSupport;
@@ -51,7 +55,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		// aburl=1; cy=1; cye=shanghai; s_ViewType=10;
 		// _lxsdk_s=161e55c7af9-bc2-a76-b58%7C%7C29");
 		COOKIES_SHOPLIST.add(
-				"showNav=javascript:; navCtgScroll=200; showNav=javascript:; navCtgScroll=0; _hc.v=e21bfd77-23c0-bd96-85cf-adec6aa34747.1509347333; __utma=1.780503649.1510041292.1510041292.1510041292.1; __utmz=1.1510041292.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); JSESSIONID=26CEC1B3FCEF371EED7A05E9969BEE13; _lxsdk_cuid=161fa3115fcc8-0538dde0ed830a-5e183017-100200-161fa3115fdc8; _lxsdk=161fa3115fcc8-0538dde0ed830a-5e183017-100200-161fa3115fdc8; _lx_utm=utm_source%3Ddp_pc_other; cy=1; cye=shanghai; s_ViewType=10; _lxsdk_s=161ff1ee5c3-e08-518-197%7C%7C10");
+				"cy=1; cye=shanghai; _lxsdk_cuid=16343eafd7cc8-001136ed022711-3f3c5501-100200-16343eafd7dc8; _lxsdk=16343eafd7cc8-001136ed022711-3f3c5501-100200-16343eafd7dc8; _hc.v=3de1209d-8b3c-28f3-c95e-2e5e2f238af6.1525852864; ua=17080236415; ctu=8547636063072e202fea44548b5b3241979c905f0c71e7449133fea379a43c40; s_ViewType=10; ctu=ef465fa585085559ed3dd7f50cf57cda30cdbed9fd08251016753e0af318de8657fce0f3f5ecc91cd5c7555a183ade48; _lxsdk_s=163443d8497-a7a-89b-dc9%7C%7C62");
 //		COOKIES_SHOPLIST.add(
 //				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; _lxsdk_s=16338ac8183-ca-250-c20%7C%7C85");
 //		COOKIES_SHOPLIST.add(
@@ -60,8 +64,8 @@ public class DianPingCommonRequest extends HttpClientSupport {
 //				"_lxsdk_cuid=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _lxsdk=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _hc.v=acf7f16c-257a-70d5-d40f-91620a75bb6b.1520571532; s_ViewType=10; cy=1; cye=shanghai; _lxsdk_s=16222b33752-6b5-61f-038%7C%7C21");
 //		COOKIES_SHOPCOMMENT.add(
 //				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; ctu=946223b20ade88cd1373a6270d8145bf597317dc26283c0037951afea594f4f5; uamo=13651952625; ctu=57f4fba19c4400d8ada2e815a0bacf8fce54e87a3d02c10b2aed3825d4e628c438a9e5c34a19d907eff29da2985c6199; _dp.ac.v=569d57b1-f0d5-487d-9abb-64ec5135020a; dper=2b77b9d675a89e5d46ca3857f188dee3f74f858b7a38eb5a5d614c007bcff76fb023b2baefbd4d627c772d98e210e42d2ce9409f5581626456da1cf789f6809b2bf8c760e2d4109773b0b389e97d46082ae41522b7e741e557bff80863834088; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; _lxsdk_s=1633dcba184-648-246-fab%7C%7C644");
-		COOKIES_SHOPCOMMENT.add(
-				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; ctu=946223b20ade88cd1373a6270d8145bf597317dc26283c0037951afea594f4f5; uamo=13651952625; _dp.ac.v=569d57b1-f0d5-487d-9abb-64ec5135020a; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTI1NzY1ODY2NjU4XV9b; m_flash2=1; default_ab=shop%3AA%3A1%7Cindex%3AA%3A1%7Cshopreviewlist%3AA%3A1; ctu=6ab31e9e35277eecb49b56212b013f8bd5c82033b9a3bca036afac4d59f920ec97cfc5903e35a5c992d4d32e079c1a8e; dper=9d4e7f08fb20ed89be32fb466886701eca8dcf3ea6ad3deedf672fafd72870589d0778b17f35ce924039db07ba53aa246a6b8766a7b7be8f995a1bb313362421cdf7874accacd94f957dd2eacdc622343c447e7b4645fd2823eabb5b08f38a97; ll=7fd06e815b796be3df069dec7836c3df; ua=15046322240; _lxsdk_s=1633f2c2b84-681-1a6-b01%7C%7C491");
+//		COOKIES_SHOPCOMMENT.add(
+//				"cy=1; cye=shanghai; _lxsdk_cuid=16343eafd7cc8-001136ed022711-3f3c5501-100200-16343eafd7dc8; _lxsdk=16343eafd7cc8-001136ed022711-3f3c5501-100200-16343eafd7dc8; _hc.v=3de1209d-8b3c-28f3-c95e-2e5e2f238af6.1525852864; lgtoken=0c3b4ed96-79a5-4f08-9938-45536d36d385; dper=2b77b9d675a89e5d46ca3857f188dee3b2b0829aee92184261191c5201d44d469ababefc3b54bc5de667be00b1a94f6b30419786a500b826bd95ae9aec5cb23c2e5f8e402ce22c13fba01e8e9116d9e863c704e4f77fc7b9060dac5895ab269e; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241979c905f0c71e7449133fea379a43c40; s_ViewType=10; _lxsdk_s=16343eafd7e-f54-ef7-664%7C%7C337");
 		
 		COOKIES_SHOPRECOMMEND.add(
 				"s_ViewType=10; _lxsdk_cuid=1626676e642c8-0b365ec638e135-3b7c015b-100200-1626676e642c8; _lxsdk=1626676e642c8-0b365ec638e135-3b7c015b-100200-1626676e642c8; _hc.v=16d8fc83-49b3-4a56-b0c4-b123697eafd8.1522137491; cy=1; cye=shanghai; _lxsdk_s=1626b212b0d-25b-ad6-093%7C%7C70");
@@ -117,23 +121,60 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		}
 	}
 
-//	@Scheduled(cron = "0 0/5 * * * ?")
+//	@Scheduled(cron = "0 0/10 * * * ?")
 	public static void refreshShopCommentCookie() {
-		String url = "http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest";
 		synchronized (COOKIES_SHOPCOMMENT) {
+			WebDriverConfig config = new WebDriverConfig();
+			config.setProxyType(ProxyType.NONE);
+//			WebDriver driver = WebDriverSupport.getPhantomJSDriverInstance(config);
+			WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
 			try {
-				while (COOKIES_SHOPCOMMENT.size() < 5) {
-					String cookie = WebDriverSupport.getCookies(url);
-					COOKIES_SHOPCOMMENT.add(cookie);
-					log.info("当前cookie size " + COOKIES_SHOPCOMMENT.size());
+				driver.manage().timeouts().pageLoadTimeout(100, TimeUnit.SECONDS);
+				driver.get("https://www.dianping.com/login?redir=http%3A%2F%2Fwww.dianping.com%2F");
+				
+				WebElement passwordLogin = driver.findElement(By.className("bottom-password-login"));
+				if (null != passwordLogin) {
+					passwordLogin.click();
+					
+					WebElement tab_account = driver.findElement(By.id("tab-account"));
+					if (null != tab_account) {
+						tab_account.click();
+					}
 				}
+				
+				WebElement userName = driver.findElement(By.id("account-textbox"));
+				userName.sendKeys("17080236415");
+				
+				// 密码
+				WebElement password = driver.findElement(By.id("password-textbox"));
+				password.sendKeys("123abc123");
+				//20s用于输入验证码
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				
+				WebElement btnLogin = driver.findElement(By.id("login-button-account"));
+				btnLogin.click();
+		        
+		        driver.get("http://www.dianping.com/shop/2278378/review_all/p2?queryType=sortType&queryVal=latest");
+		        
+		        StringBuilder cookies = new StringBuilder();
+				Set<Cookie> cookieSet = driver.manage().getCookies();
+		        for (Cookie temp : cookieSet) {
+		        	cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
+		        }
+		        COOKIES_SHOPCOMMENT.add(cookies.toString());
 			} catch (Exception e) {
-				log.error("refresh shop comment cookie error, ", e);
+				e.printStackTrace();
+			} finally {
+				driver.quit();
 			}
 		}
 	}
 	
-	@Scheduled(cron = "0 0/5 * * * ?")
+//	@Scheduled(cron = "0 0/5 * * * ?")
 	public static void refreshShopRecommendCookie() {
 		String url = "http://www.dianping.com/shop/72351070/dishlist/p3";
 		synchronized (COOKIES_SHOPRECOMMEND) {
@@ -150,7 +191,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		
 	}
 	
-	@Scheduled(cron = "0 0/5 * * * ?")
+//	@Scheduled(cron = "0 0/5 * * * ?")
 	public static void refreshUserInfoCookie() {
 		String url = "http://www.dianping.com/member/20192274";
 		synchronized (COOKIES_USERINFO) {
@@ -167,6 +208,9 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		
 	}
 	
+	/**
+	 * 获取Cookie
+	 */
 	private static String getCookie(BlockingQueue<String> queue) {
 		String cookie = "";
 		while (StringUtils.isEmpty(cookie)) {
@@ -178,8 +222,14 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		return cookie;
 	}
 	
+	/**
+	 * 将失效的Cookie移除
+	 */
 	public static void removeInvalideCookie(BlockingQueue<String> queue, String cookie) {
-		queue.remove(cookie);
+		synchronized (queue) {
+			log.error(queue + " 移除失效的Cookie" + cookie);
+			queue.remove(cookie);
+		}
 	}
 
 	public static String getSubCategorySubRegion(HttpRequestHeader header) {
@@ -267,16 +317,16 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
 		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
-		header.setCookie(COOKIES_SHOPCOMMENT.element());
+		header.setCookie(getCookie(COOKIES_SHOPCOMMENT));
 		header.setAutoPcUa(true);
 		header.setRequestSleepTime(2000);
-		header.setMaxTryTimes(1);
+		header.setMaxTryTimes(10);
 		HttpResponse response = get(header);
 		if (response.getCode() == HttpStatus.SC_OK) {
 			return response.getContent();
 		} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
-//			removeInvalideCookie(COOKIES_SHOPCOMMENT, header.getCookie());
-//			header.setCookie(COOKIES_SHOPCOMMENT.element());
+			removeInvalideCookie(COOKIES_SHOPCOMMENT, header.getCookie());
+			header.setCookie(getCookie(COOKIES_SHOPCOMMENT));
 			return getShopComment(header);
 		} else {
 			return "";
