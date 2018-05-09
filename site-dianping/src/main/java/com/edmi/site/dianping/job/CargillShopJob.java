@@ -1,7 +1,6 @@
 package com.edmi.site.dianping.job;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +30,7 @@ public class CargillShopJob {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void main(String[] args) {
 		
 		String[] keywords = new String[] {"汉堡", "鸡排", "鸡块", "鸡翅", "鸡柳", "鸡腿", "鸡爪", "烤鸡"};
