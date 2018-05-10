@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,11 +15,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.edmi.site.dianping.crawl.DianPingUserInfoCrawl;
-import com.edmi.site.dianping.entity.DianpingShopComment;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingShopInfo_Budweiser;
-import com.edmi.site.dianping.entity.DianpingShopInfo_Cargill;
 import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
 import com.edmi.site.dianping.http.DianPingCommonRequest;
 import com.edmi.site.dianping.http.DianPingTaskRequest;
@@ -59,12 +55,8 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 		int totalPage = 50;
 
 		// 有的时候会返回状态200，但是是假页面，找不到店铺列表也找不到“没有找到符合条件的商户”
-		boolean fakePage = false;
 		
 		for (int page = 1; page <= totalPage; page ++) {
-			if (fakePage) {
-				break;
-			}
 			while (true) {
 				HttpRequestHeader header = new HttpRequestHeader();
 				header.setUrl(ss.getUrl() + "p" + page);
@@ -101,7 +93,6 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 						tempSS.setUrl(ss.getUrl());
 						tempSS.setShopTotalPage(totalPage);
 						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-						fakePage = true;
 						break;
 					}
 				}
@@ -112,7 +103,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 					tempSS.setUrl(ss.getUrl());
 					tempSS.setShopTotalPage(totalPage);
 					iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-					log.info("总页数 " + totalPage + " " + header.getUrl());
+//					log.info("总页数 " + totalPage + " " + header.getUrl());
 				}
 				log.info("总页数 " + totalPage + " 当前页数 " + page + header.getUrl());
 				List<DianpingShopInfo> list = DianpingParser.parseShopList(pageDoc, page);
