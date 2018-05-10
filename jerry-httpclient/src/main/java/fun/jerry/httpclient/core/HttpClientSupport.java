@@ -236,13 +236,18 @@ public class HttpClientSupport {
 	private static HttpRequestBase buildHeader(HttpRequestHeader header, String method) throws Exception {
 		if (!EnumUtils.isValidEnum(ProxyType.class, null != header.getProxyType() ? header.getProxyType().toString() : "")) {
 			throw new Exception("HttpRequestHeader proxyType must not be null");
+		} else {
+			// 暂时只有使用代理云的代理IP时，才必须设置Project和Site，便于统计，其他的代理IP统计暂时不做
+			if (ArrayUtils.contains(new ProxyType[] {ProxyType.PROXY_STATIC_DLY}, header.getProxyType())) {
+				if (!EnumUtils.isValidEnum(Project.class, null != header.getProject() ? header.getProject().toString() : "")) {
+					throw new Exception("HttpRequestHeader project must not be null");
+				}
+				if (!EnumUtils.isValidEnum(Site.class, null != header.getSite() ? header.getSite().toString() : "")) {
+					throw new Exception("HttpRequestHeader site must not be null");
+				}
+			}
 		}
-		if (!EnumUtils.isValidEnum(Project.class, null != header.getProject() ? header.getProject().toString() : "")) {
-			throw new Exception("HttpRequestHeader project must not be null");
-		}
-		if (!EnumUtils.isValidEnum(Site.class, null != header.getSite() ? header.getSite().toString() : "")) {
-			throw new Exception("HttpRequestHeader site must not be null");
-		}
+		
 		HttpRequestBase httpRequest = null;
 		try {
 			if (method.equalsIgnoreCase("get")) {

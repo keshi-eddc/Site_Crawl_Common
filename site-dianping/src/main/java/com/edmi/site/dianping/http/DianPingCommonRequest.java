@@ -270,10 +270,9 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 //		header.setProxyType(ProxyType.PROXY_CLOUD_ABUYUN);
 		header.setCookie(COOKIES_SHOPLIST.element());
-//		header.setUserAgent(
-//				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
 		header.setUserAgent(
-				"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
+				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
+//		header.setUserAgent(UserAgentSupport.getPCUserAgent());
 //		header.setUserAgent(UserAgentSupport.getPCUserAgent());
 //		header.setAutoPcUa(true);
 //		header.setAutoMobileUa(true);

@@ -57,8 +57,14 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 	public void run() {
 		
 		int totalPage = 50;
+
+		// 有的时候会返回状态200，但是是假页面，找不到店铺列表也找不到“没有找到符合条件的商户”
+		boolean fakePage = false;
 		
 		for (int page = 1; page <= totalPage; page ++) {
+			if (fakePage) {
+				break;
+			}
 			while (true) {
 				HttpRequestHeader header = new HttpRequestHeader();
 				header.setUrl(ss.getUrl() + "p" + page);
@@ -95,6 +101,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 						tempSS.setUrl(ss.getUrl());
 						tempSS.setShopTotalPage(totalPage);
 						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
+						fakePage = true;
 						break;
 					}
 				}
@@ -107,7 +114,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 					iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
 					log.info("总页数 " + totalPage + " " + header.getUrl());
 				}
-				
+				log.info("总页数 " + totalPage + " 当前页数 " + page + header.getUrl());
 				List<DianpingShopInfo> list = DianpingParser.parseShopList(pageDoc, page);
 //				if (list.size() == 15 || page == totalPage) {
 				if (CollectionUtils.isNotEmpty(list)) {
@@ -152,7 +159,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 		try {
 			while (true) {
 				count ++;
-				System.out.println("##################" + count);
+				log.info("##################" + count);
 				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
 				log.info("获取未抓取用户个数：" + list.size());
 				if (CollectionUtils.isNotEmpty(list)) {
