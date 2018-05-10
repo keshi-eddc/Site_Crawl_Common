@@ -63,11 +63,12 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 				HttpRequestHeader header = new HttpRequestHeader();
 				header.setUrl(ss.getUrl() + "p" + page);
 				header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+//				header.setProxyType(ProxyType.NONE);
 				header.setProject(Project.BUDWEISER);
 				header.setSite(Site.DIANPING);
 				
 				String pageHtml = DianPingCommonRequest.getShopList(header);
-				
+//				log.info(pageHtml);
 				Document pageDoc = Jsoup.parse(pageHtml);
 				
 				// 如果没有发现店铺列表，说明没有抓取成功，继续抓取

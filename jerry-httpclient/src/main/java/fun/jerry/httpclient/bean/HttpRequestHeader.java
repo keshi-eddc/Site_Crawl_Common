@@ -40,7 +40,7 @@ public class HttpRequestHeader extends StatisticsCommon{
 	/**
 	 * 是否自动切换UserAgent
 	 */
-	private boolean autoUa = true;
+	private boolean autoUa = false;
 	
 	private boolean autoPcUa = false;
 	
