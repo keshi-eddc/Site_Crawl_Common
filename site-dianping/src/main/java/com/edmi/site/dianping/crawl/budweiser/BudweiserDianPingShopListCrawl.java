@@ -55,6 +55,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 		int totalPage = 50;
 		
 		int count = 0;
+		int count1 = 0;
 
 		// 有的时候会返回状态200，但是是假页面，找不到店铺列表也找不到“没有找到符合条件的商户”
 		
@@ -108,7 +109,13 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 //						tempSS.setShopTotalPage(totalPage);
 //						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
 //						break;
-						continue;
+						count1 ++;
+						if (count1 < 10) {
+							continue;
+						} else {
+							break;
+						}
+//						continue;
 					}
 				}
 				
