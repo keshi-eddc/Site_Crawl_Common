@@ -105,7 +105,7 @@ public class DianPingShopRecommendCrawl implements Runnable {
 			
 			ExecutorService pool = Executors.newFixedThreadPool(5);
 			
-			for (DianpingShopCommentPage page : pageList) {
+			for (final DianpingShopCommentPage page : pageList) {
 				page.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 				
 				pool.submit(new Runnable() {
