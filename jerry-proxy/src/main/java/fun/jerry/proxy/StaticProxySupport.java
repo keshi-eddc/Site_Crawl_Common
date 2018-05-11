@@ -17,6 +17,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.config.SocketConfig.Builder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
@@ -42,6 +44,7 @@ public class StaticProxySupport {
 	private static PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 
 	static {
+		Builder buider = SocketConfig.custom().setSoTimeout(10000);
 		LayeredConnectionSocketFactory sslsf = null;
 		try {
 			sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault());
@@ -55,6 +58,7 @@ public class StaticProxySupport {
 		cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		cm.setMaxTotal(200);
 		cm.setDefaultMaxPerRoute(50);
+		cm.setDefaultSocketConfig(buider.build());
 	}
 
 	public static Proxy getStaticProxy(ProxyType proxyType, Project project, Site site) {
@@ -82,21 +86,26 @@ public class StaticProxySupport {
 //            in.close();
 //			String responseBody = httpclient.execute(httpget, responseHandler);
 			// System.out.println("----------------------------------------");
-			System.out.println(json);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
 			log.info(e.getMessage());
 		} finally {
 			try {
 //				httpclient.close();
-				response.close();
+				if (null != response) {
+					response.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		proxy = JSONObject.parseObject(json, Proxy.class);
+//		if (null == proxy) {
+//			proxy = new Proxy();
+//			proxy.setIp("127.0.0.1");
+//			proxy.setPort(8080);
+//		}
 		return proxy;
 	}
 	

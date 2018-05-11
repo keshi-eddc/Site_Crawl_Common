@@ -15,6 +15,25 @@ create table dbo.Dianping_City_SubCategory (
 
 ALTER TABLE DataCenter.dbo.Dianping_City_SubCategory ADD CONSTRAINT Dianping_City_SubCategory_PK PRIMARY KEY (sub_category_id,category_id,city_id);
 
+drop table Dianping_HotSearch_Rank;
+create table dbo.Dianping_HotSearch_Rank (
+    city_cnname varchar(50) not null,
+    batch_time varchar(50) not null,
+    batch_week_day int,
+    batch_week int,
+    batch_month int,
+    rank int,
+    keyword varchar(500) not null,
+    search_count int,
+    data_type varchar(50),
+    update_time datetime,
+    insert_time datetime
+);
+
+ALTER TABLE DataCenter.dbo.Dianping_HotSearch_Rank 
+ADD CONSTRAINT Dianping_HotSearch_Rank_PK PRIMARY KEY (city_cnname, batch_time, keyword, data_type);
+
+
 drop table Dianping_City_SubRegion;
 create table dbo.Dianping_City_SubRegion (
     sub_region varchar(255),

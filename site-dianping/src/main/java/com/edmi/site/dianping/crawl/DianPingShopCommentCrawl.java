@@ -54,7 +54,7 @@ public class DianPingShopCommentCrawl implements Runnable {
 	public void run() {
 		int totalPage = getTotalPage();
 		for (int page = 1; page <= totalPage; page ++) {
-			parseComment(page);
+			parseComment(page, totalPage);
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class DianPingShopCommentCrawl implements Runnable {
 		return totalPage;
 	}
 	
-	private void parseComment(int page) {
+	private void parseComment(int page, int totalPage) {
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl("http://www.dianping.com/shop/" + dianpingShopInfo.getShopId() 
 				+ "/review_all/p" + page + "?queryType=sortType&queryVal=latest");

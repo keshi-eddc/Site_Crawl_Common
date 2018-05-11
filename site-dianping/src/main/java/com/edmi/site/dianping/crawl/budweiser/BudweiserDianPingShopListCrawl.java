@@ -83,7 +83,7 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
 						break;
 					} else {
-						log.info(header.getUrl() + "\n" + pageHtml);
+//						log.info(header.getUrl() + "\n" + pageHtml);
 						log.info(header.getUrl() + " " + totalPage + " 当前页数 " + page + " 请求成功，没有找到符合条件的商户,不是第一页，应该有数据，继续请求");
 						count ++;
 						if (count < 10) {

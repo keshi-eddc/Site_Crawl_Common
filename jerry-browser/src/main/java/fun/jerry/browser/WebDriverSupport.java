@@ -197,11 +197,7 @@ public class WebDriverSupport {
 
 		WebDriver driver = null;
 
-		String filePath = chromedriver_path;
-		File file = new File(filePath);
-		if (!file.exists()) {
-			filePath = "browserDriver/chromedriver.exe";
-		}
+		String filePath = phantomjs_path;
 		System.setProperty("webdriver.chrome.driver", filePath);
 
 		DesiredCapabilities capability = null;
