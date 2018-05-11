@@ -81,7 +81,7 @@ public class DianPingShopListCrawl implements Runnable {
 			
 			ExecutorService pool = Executors.newFixedThreadPool(20);
 			
-			for (DianpingSubCategorySubRegionPage sub : urls) {
+			for (final DianpingSubCategorySubRegionPage sub : urls) {
 				sub.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 				
 				pool.submit(new Runnable() {
