@@ -99,7 +99,7 @@ public class DianPingSubCategorySubRegionRefresh implements Runnable {
 			
 			ExecutorService pool = Executors.newFixedThreadPool(30); 
 			
-			for (DianpingSubCategorySubRegion sub : urls) {
+			for (final DianpingSubCategorySubRegion sub : urls) {
 				sub.setUpdateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 				
 				pool.submit(new Runnable() {
