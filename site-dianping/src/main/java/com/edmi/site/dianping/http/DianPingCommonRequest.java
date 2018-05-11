@@ -275,7 +275,8 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
 //		header.setAutoPcUa(true);
 //		header.setAutoMobileUa(true);
-		header.setRequestSleepTime(2000);
+		header.setRequestSleepTime(1000);
+		header.setMaxTryTimes(1);
 		if (header.getProject() == Project.CARGILL) {
 			header.setMaxTryTimes(10);
 		}

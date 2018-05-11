@@ -61,7 +61,7 @@ public class DianPingShopCommentPageCrawl implements Runnable {
 				
 				ExecutorService pool = Executors.newFixedThreadPool(5);
 				
-				for (DianpingShopInfo shopInfo : urls) {
+				for (final DianpingShopInfo shopInfo : urls) {
 					pool.submit(new Runnable() {
 						public void run() {
 							List<SqlEntity> sqlEntityList = new ArrayList<>();
