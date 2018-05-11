@@ -53,6 +53,8 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 	public void run() {
 		
 		int totalPage = 50;
+		
+		int count = 0;
 
 		// 有的时候会返回状态200，但是是假页面，找不到店铺列表也找不到“没有找到符合条件的商户”
 		
@@ -71,13 +73,25 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 				
 				// 如果没有发现店铺列表，说明没有抓取成功，继续抓取
 				if (pageHtml.contains("没有找到符合条件的商户")) {
-					log.info(header.getUrl() + " 请求成功，没有找到符合条件的商户,停止抓取");
-					totalPage = 0;
-					DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
-					tempSS.setUrl(ss.getUrl());
-					tempSS.setShopTotalPage(totalPage);
-					iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-					break;
+					// 有的时候再请求不是第一页的时候也会出现 “没有找到符合条件的商户”，但其实应该有数据
+					if (page == 1) {
+						log.info(header.getUrl() + " 请求成功，没有找到符合条件的商户,停止抓取");
+						totalPage = 0;
+						DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
+						tempSS.setUrl(ss.getUrl());
+						tempSS.setShopTotalPage(totalPage);
+						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
+						break;
+					} else {
+						log.info(header.getUrl() + "\n" + pageHtml);
+						log.info(header.getUrl() + " " + totalPage + " 当前页数 " + page + " 请求成功，没有找到符合条件的商户,不是第一页，应该有数据，继续请求");
+						count ++;
+						if (count < 10) {
+							continue;
+						} else {
+							break;
+						}
+					}
 				} else {
 					Element shopList = pageDoc.select("#shop-all-list").first();
 					if (null != shopList) {
@@ -88,12 +102,13 @@ public class BudweiserDianPingShopListCrawl implements Runnable {
 						}
 					} else {
 						log.info(header.getUrl() + " 请求成功，按说应该有店铺列表，但是没有找到");
-						totalPage = -2;
-						DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
-						tempSS.setUrl(ss.getUrl());
-						tempSS.setShopTotalPage(totalPage);
-						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-						break;
+//						totalPage = -2;
+//						DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
+//						tempSS.setUrl(ss.getUrl());
+//						tempSS.setShopTotalPage(totalPage);
+//						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
+//						break;
+						continue;
 					}
 				}
 				
