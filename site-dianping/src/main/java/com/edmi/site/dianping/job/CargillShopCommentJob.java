@@ -41,32 +41,41 @@ public class CargillShopCommentJob {
 		
 //		DianPingCommonRequest.refreshShopRecommendCookie();
 		StringBuilder sql = new StringBuilder();
+//		sql.append("with temp as ( "
+//				+ "	select row_number() over (partition by shop_id order by review_num desc) rn, * "
+//				+ "	from dbo.Dianping_ShopInfo_Cargill "
+//				+ "), comment as ( "
+//				+ "	select count(1) as num, shop_id from dbo.Dianping_Shop_Comment "
+//				+ "	group by shop_id "
+//				+ ") "
+//				+ "select distinct shop_id, review_num from temp "
+//				+ "where shop_id not in ( "
+//				+ "	select temp.shop_id "
+//				+ "	from temp RIGHT join comment  "
+//				+ "	on temp.shop_id = comment.shop_id  "
+//				+ "	and review_num <= num  "
+//				+ "	where rn = 1 "
+//				+ ") and rn = 1 order by review_num desc");
+		
 		sql.append("with temp as ( "
-				+ "	select row_number() over (partition by shop_id order by shop_id) rn, * "
+				+ "	select row_number() over (partition by shop_id order by review_num desc) rn, * "
 				+ "	from dbo.Dianping_ShopInfo_Cargill "
-				+ "), comment as ( "
-				+ "	select count(1) as num, shop_id from dbo.Dianping_Shop_Comment "
-				+ "	group by shop_id "
-				+ ") "
-				+ "select * from temp "
+				+ ") select distinct shop_id, review_num from temp "
 				+ "where shop_id not in ( "
-				+ "	select temp.shop_id from temp right join comment  "
-				+ "	on temp.shop_id = comment.shop_id and review_num > num  "
-				+ "	where rn = 1 "
-				+ ") and review_num > 0 and rn = 1 "
-				+ "order by review_num asc "
-			);
+				+ "select distinct shop_id from dbo.Dianping_Shop_Comment "
+				+ ") and rn = 1 order by review_num desc");
 		
 		List<DianpingShopInfo> shopList = iGeneralJdbcUtils.queryForListObject(
 				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
 				DianpingShopInfo.class);
 		
-		ExecutorService pool = Executors.newFixedThreadPool(1);
-		
-		DianPingCommonRequest.refreshShopCommentCookie();
+		ExecutorService pool = Executors.newFixedThreadPool(3);
+//		
+////		DianPingCommonRequest.refreshShopCommentCookie();
 		
 		for (DianpingShopInfo shop : shopList) {
 			pool.execute(new DianPingShopCommentCrawl(shop, false));
+//			new DianPingShopCommentCrawl(shop, false).run();
 		}
 		
 		pool.shutdown();

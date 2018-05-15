@@ -1,7 +1,17 @@
 package com.edmi.site.dianping.crawl;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,6 +26,7 @@ import fun.jerry.cache.holder.FirstCacheHolder;
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
+import fun.jerry.common.DateFormatSupport;
 import fun.jerry.common.LogSupport;
 import fun.jerry.common.enumeration.Project;
 import fun.jerry.common.enumeration.ProxyType;
@@ -53,46 +64,20 @@ public class DianPingShopCommentCrawl implements Runnable {
 	@Override
 	public void run() {
 		int totalPage = getTotalPage();
+		List<Integer> pageList = new ArrayList<>();
 		for (int page = 1; page <= totalPage; page ++) {
-			parseComment(page, totalPage);
+			pageList.add(page);
 		}
-	}
-	
-	private int getTotalPage () {
-		int totalPage = -1;
-		HttpRequestHeader header = new HttpRequestHeader();
-		header.setUrl("http://www.dianping.com/shop/" + dianpingShopInfo.getShopId() +"/review_all?queryType=sortType&queryVal=latest");
-		header.setReferer("http://www.dianping.com/shop/" + dianpingShopInfo.getShopId() + "/review_all");
-		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
-		header.setProject(Project.CARGILL);
-		header.setSite(Site.DIANPING);
-		header.setMaxTryTimes(10);
-		String html = DianPingCommonRequest.getShopComment(header);
-		Document doc = Jsoup.parse(html);
-//		log.info(html);
-		if (null == doc.select(".no-review-item")) {
-			totalPage = 0;
-		} else if (null != doc.select(".reviews-items")) {
-			// 发现有评论列表的，看是否包含评论
-			if (CollectionUtils.isNotEmpty(doc.select(".reviews-items ul li"))) {
-				Element pageEle = doc.select(".reviews-pages .PageLink").last();
-				totalPage = null != pageEle ? Integer.parseInt(pageEle.text().trim()) : 1;
-			} else {
-				log.info(header.getUrl() + " 应该有评论，但是没有找到，重新请求");
-				log.info(html);
-				// 未发现评论列表的，没有评论，总页数为0
-				totalPage = getTotalPage();
+		for (int page = 2; page <= totalPage; page ++) {
+			if (parseComment(page, totalPage)) {
+				break;
 			}
-		} else {
-			log.info(header.getUrl() + " 应该有页数，但是没有找到，重新请求");
-			log.info(html);
-			// 未发现评论列表的，没有评论，总页数为0
-			totalPage = getTotalPage();
 		}
-		return totalPage;
+		
 	}
 	
-	private void parseComment(int page, int totalPage) {
+	private boolean parseComment(int page, int totalPage) {
+		boolean flag = false;
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl("http://www.dianping.com/shop/" + dianpingShopInfo.getShopId() 
 				+ "/review_all/p" + page + "?queryType=sortType&queryVal=latest");
@@ -110,6 +95,9 @@ public class DianPingShopCommentCrawl implements Runnable {
 		Document doc = Jsoup.parse(html);
 		Elements commentList = doc.select(".reviews-items ul li .main-review");
 		if (CollectionUtils.isNotEmpty(commentList)) {
+			
+			log.info("总页数 " + totalPage + " 当前页数 " + page + " 该页有 " + commentList.size() + " 条记录");
+			
 			for (Element shop : commentList) {
 				try {
 
@@ -166,7 +154,19 @@ public class DianPingShopCommentCrawl implements Runnable {
 					}
 					
 					Element commentTimeEle = shop.select(".misc-info .time").first();
-					comment.setCommentTime(null != commentTimeEle ? commentTimeEle.text().trim() : "");
+					String commentTime = null != commentTimeEle ? commentTimeEle.text().trim() : "";
+					if (commentTime.contains("更新于")) {
+						comment.setFirstCommentTime(commentTime.substring(0, 10).trim());
+						comment.setCommentTime(commentTime.substring(commentTime.indexOf("更新于") + 3).trim());
+					} else {
+						comment.setCommentTime(commentTime);
+					}
+					
+					if (DateFormatSupport.before(comment.getCommentTime(), DateFormatSupport.YYYY_MM_DD, new java.util.Date(1483200000000L))) {
+						flag = true;
+						log.info(dianpingShopInfo.getShopId() + " 页数 " + page + " 评论时间早于指定截止时间，中断抓取 " + comment.getCommentTime());
+						break;
+					}
 					
 					Element commentIdEle = shop.select(".actions a[data-id]").first();
 					comment.setCommentId(null != commentIdEle ? commentIdEle.attr("data-id") : "");
@@ -189,6 +189,46 @@ public class DianPingShopCommentCrawl implements Runnable {
 					e.printStackTrace();
 				}
 			}
+		} else {
+			log.info("总页数 " + totalPage + " 当前页数 " + page + " 该页应该有数据，但是没有发现, 重新请求");
+			parseComment(page, totalPage);
 		}
+		
+		return flag;
+	}
+	
+	private int getTotalPage () {
+		int totalPage = -1;
+		HttpRequestHeader header = new HttpRequestHeader();
+		header.setUrl("http://www.dianping.com/shop/" + dianpingShopInfo.getShopId() +"/review_all?queryType=sortType&queryVal=latest");
+		header.setReferer("http://www.dianping.com/shop/" + dianpingShopInfo.getShopId() + "/review_all");
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setProject(Project.CARGILL);
+		header.setSite(Site.DIANPING);
+		header.setMaxTryTimes(10);
+		String html = DianPingCommonRequest.getShopComment(header);
+		Document doc = Jsoup.parse(html);
+//		log.info(html);
+		if (null == doc.select(".no-review-item")) {
+			totalPage = 0;
+		} else if (null != doc.select(".reviews-items")) {
+			// 发现有评论列表的，看是否包含评论
+			if (CollectionUtils.isNotEmpty(doc.select(".reviews-items ul li"))) {
+				Element pageEle = doc.select(".reviews-pages .PageLink").last();
+				totalPage = null != pageEle ? Integer.parseInt(pageEle.text().trim()) : 1;
+				parseComment(1, totalPage);
+			} else {
+				log.info(header.getUrl() + " 应该有评论，但是没有找到，重新请求");
+				log.info(html);
+				// 未发现评论列表的，没有评论，总页数为0
+				totalPage = getTotalPage();
+			}
+		} else {
+			log.info(header.getUrl() + " 应该有页数，但是没有找到，重新请求");
+			log.info(html);
+			// 未发现评论列表的，没有评论，总页数为0
+			totalPage = getTotalPage();
+		}
+		return totalPage;
 	}
 }

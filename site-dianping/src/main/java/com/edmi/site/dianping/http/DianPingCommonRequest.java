@@ -62,8 +62,8 @@ public class DianPingCommonRequest extends HttpClientSupport {
 //				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; _lxsdk_s=16338ac8183-ca-250-c20%7C%7C85");
 //		COOKIES_SHOPLIST.add(
 //				"s_ViewType=10; _lxsdk_cuid=163480ddcf9c8-0b11f9fac3033b-3f3c5501-100200-163480ddcf9c8; _lxsdk=163480ddcf9c8-0b11f9fac3033b-3f3c5501-100200-163480ddcf9c8; _hc.v=4f22ca3b-c915-4b3a-50d3-bdcc7e9602db.1525922258; _lxsdk_s=163480ddcfb-48-d6f-804%7C%7C6");
-//		COOKIES_SHOPCOMMENT.add(
-//				"_lxsdk_cuid=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _lxsdk=162092006a9c8-0ff1a8d5dd70ec-393d5f0e-1fa400-162092006aac8; _hc.v=acf7f16c-257a-70d5-d40f-91620a75bb6b.1520571532; s_ViewType=10; cy=1; cye=shanghai; _lxsdk_s=16222b33752-6b5-61f-038%7C%7C21");
+		COOKIES_SHOPCOMMENT.add(
+				"s_ViewType=10; _lxsdk_cuid=163480ddcf9c8-0b11f9fac3033b-3f3c5501-100200-163480ddcf9c8; _lxsdk=163480ddcf9c8-0b11f9fac3033b-3f3c5501-100200-163480ddcf9c8; _hc.v=4f22ca3b-c915-4b3a-50d3-bdcc7e9602db.1525922258; cy=1; cye=shanghai; lgtoken=082dcb83d-e8f3-4e20-89d2-a15184f9d83f; dper=2b77b9d675a89e5d46ca3857f188dee3e5def0b7ae2367a03b7cf29dd4ee26ace7035f06d8336de40f47a0474ee038698b9f0ec4ea04b7d29b583f1fa125ff0cc65b9d6a43bd987beb5dddd742711eee5ae1275b8125921bd7f0beaa29351730; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241a5b2a84891461ec3ab7be525ae453d48; _lxsdk_s=1635d834fa9-372-cd7-988%7C%7C325");
 //		COOKIES_SHOPCOMMENT.add(
 //				"_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; s_ViewType=10; cityid=1; __utma=1.1005717286.1524907683.1524907683.1524907683.1; __utmz=1.1524907683.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); cy=1; cye=shanghai; ctu=946223b20ade88cd1373a6270d8145bf597317dc26283c0037951afea594f4f5; uamo=13651952625; ctu=57f4fba19c4400d8ada2e815a0bacf8fce54e87a3d02c10b2aed3825d4e628c438a9e5c34a19d907eff29da2985c6199; _dp.ac.v=569d57b1-f0d5-487d-9abb-64ec5135020a; dper=2b77b9d675a89e5d46ca3857f188dee3f74f858b7a38eb5a5d614c007bcff76fb023b2baefbd4d627c772d98e210e42d2ce9409f5581626456da1cf789f6809b2bf8c760e2d4109773b0b389e97d46082ae41522b7e741e557bff80863834088; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; _lxsdk_s=1633dcba184-648-246-fab%7C%7C644");
 //		COOKIES_SHOPCOMMENT.add(
@@ -214,6 +214,11 @@ public class DianPingCommonRequest extends HttpClientSupport {
 	 * 获取Cookie
 	 */
 	private static String getCookie(BlockingQueue<String> queue) {
+		queue.clear();
+		queue.add("cy=1; cye=shanghai; _lxsdk_cuid=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _lxsdk=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _hc.v=2725c736-98fd-868d-44f2-bd11965864c0.1526295303; dper=2b77b9d675a89e5d46ca3857f188dee355599a967b78fe239baf27592a1b54c1cc173547b9de59cc4dbc45d3c7c9ecf06d37d94c9b6d9f51aa16d97feeff9f9481148fca223b824626709c47a30cc9d38f6323ef89bac9b72af5355462655b86; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241caba2053d5b42a9557a4610f9ad4ca92; _lxsdk_s=1635e4a04ed-a-c7c-498%7C%7C"
+				+ new Random().nextInt(2000) + 100);
+//		queue.add("_lxsdk_s=1635dfd1790-2b2-dce-cfd%7C%7C365; ctu=c9b7da1fc6ef7267940b3205785999ae93436f1cbd2ff1ba4a1cf3fcffc59013; cy=1; cye=shanghai; _lxsdk_cuid=1635dfd178ec8-04f1c0752bd161-17347840-1fa400-1635dfd1790c8; _lxsdk=1635dfd178ec8-04f1c0752bd161-17347840-1fa400-1635dfd1790c8; _hc.v=ffb555f9-dcf2-f25b-2b5f-5b163476a686.1526290258; dper=d53c28ee19e0ffaa8a3d3393127536d0b92fb8f9401a9e2f3b5bc4f94153f3be7b96ba6f56523c35209ce67a79914e50d597155ef81deff2e6190185a465ce77aedeaec7128351a776889d3eae07a93b183c202ad5ad102c927361c27fa94379; ll=7fd06e815b796be3df069dec7836c3df; ua=15046321964");
+//		queue.add("ll=7fd06e815b796be3df069dec7836c3df; _lxsdk_s=1635e32d1d6-310-c9-27e%7C%7C223; _lxsdk_cuid=1635e09408fc8-057ef4928081b88-1b317773-1fa400-1635e094091c8; _lxsdk=1635e09408fc8-057ef4928081b88-1b317773-1fa400-1635e094091c8; _hc.v=cd4ce8f3-2b24-6dd1-6a20-5b490b4ccc2c.1526291055; cy=1; cye=shanghai; lgtoken=0f8ed12a1-d0b0-46d6-bd93-97b4110329d5; dper=9d4e7f08fb20ed89be32fb466886701ec11f4ed3cf3ad9daad4fbcb12a2402062c63829a471c319936ab28209d7c9c681a0763a9c39f6717de2e69f926b5254b9aec296f47d3f334714ef2b5396e60b08344cf2f3fbe2b212e1498cc98ce814f; ua=15046322240; ctu=6733198afe88e194c6793c1f3e4a0cfada759e36c59bd8f4d3c7592866fd570b");
 		String cookie = "";
 		while (StringUtils.isEmpty(cookie)) {
 			cookie = queue.poll();
@@ -324,18 +329,25 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setUpgradeInsecureRequests("1");
 		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
 		header.setCookie(getCookie(COOKIES_SHOPCOMMENT));
+		int temp = new Random().nextInt(2000) + 100;
+//		log.info("##############################  " + temp);
+//		header.setCookie("cy=1; cye=shanghai; _lxsdk_cuid=1635e81d5a075-09058d3f43fb66-3f3c5501-100200-1635e81d5a1c8; "
+//				+ "_lxsdk=1635e81d5a075-09058d3f43fb66-3f3c5501-100200-1635e81d5a1c8; "
+//				+ "_hc.v=33d000db-e502-ea26-0b9f-5b9d922c26cf.;" + System.currentTimeMillis() / 1000 + " lgtoken=0e29cde03-9f96-471f-a65d-65064f1a090b; dper=2b77b9d675a89e5d46ca3857f188dee39b157643607744d23557342b23c3684a6afac73e3e33e885bb710a2c1daadb3c6f8a0cf30c6309ed05a0efe3f170e3a65c6d25f460fb7975ece2875a9c80766c8a7e54207a04af79186b784a1c5aa8f6; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241fe96563d09252696b65f932541e8aeac; _lxsdk_s=1635e81d5a2-07f-870-5b0%7C%7C"
+//				+ temp);
+		header.setCookie("cy=1; cye=shanghai; _lxsdk_cuid=16361f56537c8-076b40e8b2661e-3f3c5501-100200-16361f5653722; _lxsdk=16361f56537c8-076b40e8b2661e-3f3c5501-100200-16361f5653722; _hc.v=52f0b13e-a0a1-30a5-8f56-164b80cc3a6f."+(System.currentTimeMillis() / 1000)+"; dper=2b77b9d675a89e5d46ca3857f188dee348cd2be61ee58d11c5d6bd347af6ca87ccaa3ba69bfe5a153ed52b7b06b95a10b3d0c1c3c5114591564662cf330885e41238fd46b23dcc068445400bf0c605c821d4b4f72b63431562974b41fcb05d77; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b32414024c5e9922150f706d7cedca4d0e32c; _lxsdk_s=16361f56539-034-6d7-ba6%7C%7C10565");
+//		header.setCookie("cy=2; cye=beijing; _lxsdk_cuid=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _lxsdk=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _hc.v=2725c736-98fd-868d-44f2-bd11965864c0.1526295303; dper=2b77b9d675a89e5d46ca3857f188dee355599a967b78fe239baf27592a1b54c1cc173547b9de59cc4dbc45d3c7c9ecf06d37d94c9b6d9f51aa16d97feeff9f9481148fca223b824626709c47a30cc9d38f6323ef89bac9b72af5355462655b86; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241caba2053d5b42a9557a4610f9ad4ca92; _lxsdk_s=1635e4a04ed-a-c7c-498%7C%7C"
+//				+ new Random().nextInt(2000) + 100);
 		header.setAutoPcUa(true);
-		header.setRequestSleepTime(2000);
+//		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
+//		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+		header.setRequestSleepTime(9000);
 		header.setMaxTryTimes(10);
 		HttpResponse response = get(header);
 		if (response.getCode() == HttpStatus.SC_OK) {
 			return response.getContent();
-		} else if (response.getCode() == HttpStatus.SC_FORBIDDEN) {
-			removeInvalideCookie(COOKIES_SHOPCOMMENT, header.getCookie());
-			header.setCookie(getCookie(COOKIES_SHOPCOMMENT));
-			return getShopComment(header);
 		} else {
-			return "";
+			return getShopComment(header);
 		}
 	}
 	

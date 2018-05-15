@@ -71,6 +71,9 @@ public class DianpingShopComment extends Model {
 	@ColumnMapping("page")
 	private Integer page;
 	
+	@ColumnMapping("first_comment_time")
+	private String firstCommentTime;
+	
 	@ColumnMapping("update_time")
 	@FieldInsertExclude
 	private String updateTime = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
@@ -197,6 +200,14 @@ public class DianpingShopComment extends Model {
 
 	public void setCollectNum(Integer collectNum) {
 		this.collectNum = collectNum;
+	}
+
+	public String getFirstCommentTime() {
+		return firstCommentTime;
+	}
+
+	public void setFirstCommentTime(String firstCommentTime) {
+		this.firstCommentTime = firstCommentTime;
 	}
 
 	public String getUpdateTime() {

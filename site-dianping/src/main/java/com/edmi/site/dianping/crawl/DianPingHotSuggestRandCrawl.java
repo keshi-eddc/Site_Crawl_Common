@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
@@ -53,6 +54,7 @@ public class DianPingHotSuggestRandCrawl {
 				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingCityInfo.class);
 	}
 	
+	@Scheduled(cron="0 30 7,12,15,19 * * ? ")
 	public void realTimeRank() {
 		for (DianpingCityInfo city : cityList) {
 			HttpRequestHeader header = new HttpRequestHeader();
@@ -99,6 +101,7 @@ public class DianPingHotSuggestRandCrawl {
 		}
 	}
 	
+	@Scheduled(cron="0 30 12 * * ? ")
 	public void dishRank() {
 		for (DianpingCityInfo city : cityList) {
 			HttpRequestHeader header = new HttpRequestHeader();
@@ -149,12 +152,12 @@ public class DianPingHotSuggestRandCrawl {
 	public static void main(String[] args) {
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
-		
+//		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+//		
 		new DianPingHotSuggestRandCrawl().realTimeRank();
 		new DianPingHotSuggestRandCrawl().dishRank();
-		
-		((AbstractApplicationContext) context).registerShutdownHook();
+//		
+//		((AbstractApplicationContext) context).registerShutdownHook();
 	}
 	
 }
