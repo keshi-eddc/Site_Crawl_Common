@@ -59,17 +59,17 @@ public class CargillShopCommentJob {
 		
 		sql.append("with temp as ( "
 				+ "	select row_number() over (partition by shop_id order by review_num desc) rn, * "
-				+ "	from dbo.Dianping_ShopInfo_Cargill "
+				+ "	from dbo.Dianping_ShopInfo_Cargill where review_num > 20"
 				+ ") select distinct shop_id, review_num from temp "
 				+ "where shop_id not in ( "
 				+ "select distinct shop_id from dbo.Dianping_Shop_Comment "
-				+ ") and rn = 1 order by review_num desc");
+				+ ") and rn = 1 order by review_num asc");
 		
 		List<DianpingShopInfo> shopList = iGeneralJdbcUtils.queryForListObject(
 				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
 				DianpingShopInfo.class);
 		
-		ExecutorService pool = Executors.newFixedThreadPool(3);
+		ExecutorService pool = Executors.newFixedThreadPool(10);
 //		
 ////		DianPingCommonRequest.refreshShopCommentCookie();
 		

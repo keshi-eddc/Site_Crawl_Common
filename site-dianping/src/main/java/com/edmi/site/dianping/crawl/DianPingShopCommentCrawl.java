@@ -96,7 +96,7 @@ public class DianPingShopCommentCrawl implements Runnable {
 		Elements commentList = doc.select(".reviews-items ul li .main-review");
 		if (CollectionUtils.isNotEmpty(commentList)) {
 			
-			log.info("总页数 " + totalPage + " 当前页数 " + page + " 该页有 " + commentList.size() + " 条记录");
+			log.info(dianpingShopInfo.getShopId() + " 总页数 " + totalPage + " 当前页数 " + page + " 该页有 " + commentList.size() + " 条记录");
 			
 			for (Element shop : commentList) {
 				try {
@@ -209,7 +209,7 @@ public class DianPingShopCommentCrawl implements Runnable {
 		String html = DianPingCommonRequest.getShopComment(header);
 		Document doc = Jsoup.parse(html);
 //		log.info(html);
-		if (null == doc.select(".no-review-item")) {
+		if (null != doc.select(".no-review-item").first()) {
 			totalPage = 0;
 		} else if (null != doc.select(".reviews-items")) {
 			// 发现有评论列表的，看是否包含评论
