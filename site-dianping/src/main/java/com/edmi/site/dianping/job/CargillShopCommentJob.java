@@ -92,7 +92,7 @@ public class CargillShopCommentJob {
 							break;
 						} else {
 							try {
-								TimeUnit.SECONDS.sleep(5);
+								TimeUnit.SECONDS.sleep(90);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -101,7 +101,7 @@ public class CargillShopCommentJob {
 				} else {
 					System.out.println("$$$$$$$$$$$$$$$" + count);
 					try {
-						TimeUnit.SECONDS.sleep(30);
+						TimeUnit.SECONDS.sleep(90);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
