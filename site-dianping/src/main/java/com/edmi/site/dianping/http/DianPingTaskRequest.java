@@ -9,6 +9,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 
 import com.alibaba.fastjson.JSONArray;
 import com.edmi.site.dianping.entity.DianpingShopComment;
+import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
 
 import fun.jerry.common.enumeration.Project;
@@ -40,6 +41,30 @@ public class DianPingTaskRequest extends HttpClientSupport {
 			header.setSite(Site.DIANPING);
 			String html = get(header).getContent();
 			list = JSONArray.parseArray(html, DianpingSubCategorySubRegion.class);
+		} catch (Exception e) {
+//			e.printStackTrace();
+			list = new ArrayList<>();
+		} finally {
+			if (CollectionUtils.isEmpty(list)) {
+				return new ArrayList<>();
+			} else {
+				return list;
+			}
+		}
+//		return list;
+	}
+	
+	@SuppressWarnings("finally")
+	public static List<DianpingShopInfo> getCommentShop() {
+		List<DianpingShopInfo> list = new ArrayList<>();
+		try {
+			HttpRequestHeader header = new HttpRequestHeader();
+			header.setUrl("http://101.231.74.144:9091/task/dianping/comment/get");
+			header.setProxyType(ProxyType.NONE);
+			header.setProject(Project.BUDWEISER);
+			header.setSite(Site.DIANPING);
+			String html = get(header).getContent();
+			list = JSONArray.parseArray(html, DianpingShopInfo.class);
 		} catch (Exception e) {
 //			e.printStackTrace();
 			list = new ArrayList<>();

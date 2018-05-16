@@ -349,7 +349,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setAutoPcUa(true);
 		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 		Map<String, Object> map = iGeneralJdbcUtils
-				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '15046321964'",
+				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '17080236415'",
 						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
 		if (map.containsKey("cookie")) {
 			header.setCookie(map.get("cookie").toString());
@@ -357,7 +357,7 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		}
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-		header.setRequestSleepTime(100);
+		header.setRequestSleepTime(5000);
 		header.setMaxTryTimes(10);
 		HttpResponse response = get(header);
 		if (response.getCode() == HttpStatus.SC_OK) {

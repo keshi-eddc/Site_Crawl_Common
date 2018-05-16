@@ -5,18 +5,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.edmi.site.dianping.crawl.DianPingShopCommentCrawl;
+import com.edmi.site.dianping.crawl.budweiser.BudweiserDianPingShopListCrawl;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
-import com.edmi.site.dianping.entity.DianpingShopInfo_Cargill;
-import com.edmi.site.dianping.http.DianPingCommonRequest;
+import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
+import com.edmi.site.dianping.http.DianPingTaskRequest;
 
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
-import fun.jerry.cache.utils.ClassUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
 import fun.jerry.entity.system.DataSource;
@@ -57,40 +58,59 @@ public class CargillShopCommentJob {
 //				+ "	where rn = 1 "
 //				+ ") and rn = 1 order by review_num desc");
 		
-		sql.append("with temp as ( "
-				+ "	select row_number() over (partition by shop_id order by review_num desc) rn, * "
-				+ "	from dbo.Dianping_ShopInfo_Cargill where review_num > 20"
-				+ ") select distinct shop_id, review_num from temp "
-				+ "where shop_id not in ( "
-				+ "select distinct shop_id from dbo.Dianping_Shop_Comment "
-				+ ") and rn = 1 order by review_num asc");
+//		sql.append("with temp as ( "
+//				+ "	select row_number() over (partition by shop_id order by review_num desc) rn, * "
+//				+ "	from dbo.Dianping_ShopInfo_Cargill where review_num > 20"
+//				+ ") select distinct shop_id, review_num from temp "
+//				+ "where shop_id not in ( "
+//				+ "select distinct shop_id from dbo.Dianping_Shop_Comment "
+//				+ ") and rn = 1 order by review_num asc");
 		
-		List<DianpingShopInfo> shopList = iGeneralJdbcUtils.queryForListObject(
-				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
-				DianpingShopInfo.class);
+//		List<DianpingShopInfo> shopList = iGeneralJdbcUtils.queryForListObject(
+//				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
+//				DianpingShopInfo.class);
 		
-		ExecutorService pool = Executors.newFixedThreadPool(10);
-//		
-////		DianPingCommonRequest.refreshShopCommentCookie();
-		
-		for (DianpingShopInfo shop : shopList) {
-			pool.execute(new DianPingShopCommentCrawl(shop, false));
-//			new DianPingShopCommentCrawl(shop, false).run();
-		}
-		
-		pool.shutdown();
+		int count = 0;
+		try {
+			while (true) {
+				count ++;
+				log.info("##################" + count);
+				List<DianpingShopInfo> shopList = DianPingTaskRequest.getCommentShop();
+				log.info("获取未抓取评论的店铺个数：" + shopList.size());
+				if (CollectionUtils.isNotEmpty(shopList)) {
+					ExecutorService pool = Executors.newFixedThreadPool(1);
+//					
+					for (DianpingShopInfo shop : shopList) {
+						pool.execute(new DianPingShopCommentCrawl(shop, false));
+					}
+					
+					pool.shutdown();
 
-		while (true) {
-			if (pool.isTerminated()) {
-				log.error("嘉吉-点评-店铺评论-抓取完成");
-				break;
-			} else {
-				try {
-					TimeUnit.SECONDS.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+					while (true) {
+						if (pool.isTerminated()) {
+							log.error("嘉吉-点评-店铺评论-抓取完成");
+							break;
+						} else {
+							try {
+								TimeUnit.SECONDS.sleep(5);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				} else {
+					System.out.println("$$$$$$$$$$$$$$$" + count);
+					try {
+						TimeUnit.SECONDS.sleep(30);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			System.out.println("##################" + count);
 		}
 	}
 }
