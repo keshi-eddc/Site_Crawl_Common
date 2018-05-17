@@ -11,18 +11,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.edmi.site.dianping.crawl.DianPingShopCommentCrawl;
-import com.edmi.site.dianping.crawl.budweiser.BudweiserDianPingShopListCrawl;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
-import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
 import com.edmi.site.dianping.http.DianPingTaskRequest;
 
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
-import fun.jerry.entity.system.DataSource;
-import fun.jerry.entity.system.SqlEntity;
-import fun.jerry.entity.system.SqlType;
 
 /**
  * 项目-嘉吉
@@ -34,7 +29,7 @@ public class CargillShopCommentJob {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
-	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
+	@SuppressWarnings({ "rawtypes", "unused" })
 	public static void main(String[] args) {
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
