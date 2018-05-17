@@ -98,6 +98,8 @@ public class WebDriverSupport {
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments(Arrays.asList("allow-running-insecure-content", "ignore-certificate-errors"));
 		options.addArguments("test-type");
+		// options.addArguments("user-data-dir=C:/Users/user_name/AppData/Local/Google/Chrome/User Data");
+		options.addArguments("user-data-dir=" + webDriverConfig.getUserDataDir());
 
 		Map<String, Object> prefs = new HashMap<String, Object>();
 		prefs.put("profile.default_content_settings.popups", 0);
@@ -197,43 +199,21 @@ public class WebDriverSupport {
 
 		WebDriver driver = null;
 
-		String filePath = phantomjs_path;
-		System.setProperty("webdriver.chrome.driver", filePath);
-
-		DesiredCapabilities capability = null;
-		capability = DesiredCapabilities.chrome();
-
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments(Arrays.asList("allow-running-insecure-content", "ignore-certificate-errors"));
-		options.addArguments("test-type");
-
-		Map<String, Object> prefs = new HashMap<String, Object>();
-		prefs.put("profile.default_content_settings.popups", 0);
-		prefs.put("download.default_directory", (null != webDriverConfig ? webDriverConfig.getDownloadPath() : ""));
-		options.setExperimentalOption("prefs", prefs);
-
+		DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
+		desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+		desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
 		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
-				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {
-			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
-			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
-			// String proxyIpAndPort =
-			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
-			org.openqa.selenium.Proxy driverProxy = new org.openqa.selenium.Proxy();
-			driverProxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
-			// 以下三行是为了避免localhost和selenium driver的也使用代理，务必要加，否则无法与chromedriver通讯
-			capability.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
-			capability.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
-			System.setProperty("http.nonProxyHosts", "localhost");
-
-			capability.setCapability(CapabilityType.PROXY, driverProxy);
-
-			// options.addArguments("--proxy-server=http://" + proxyIpAndPort);
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {//是否使用代理
+			org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
+			proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
+			proxy.setAutodetect(false);
+			Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY, Project.CARGILL, Site.DIANPING);//自定义函数，返回代理ip及端口
+			proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
+//			System.out.println(staticProxy.getIp() + ":" + staticProxy.getPort());
+			desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
 		}
-
-		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-
-		capability.setCapability(ChromeOptions.CAPABILITY, options);
-		driver = new ChromeDriver(capability);
+		
+		driver = new PhantomJSDriver(desiredCapabilities);
 
 		driver.manage().timeouts().pageLoadTimeout(webDriverConfig.getTimeOut(), TimeUnit.SECONDS);
 

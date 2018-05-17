@@ -12,6 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.edmi.site.dianping.crawl.DianPingShopCommentCrawl;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
+import com.edmi.site.dianping.http.DianPingCommonRequest;
 import com.edmi.site.dianping.http.DianPingTaskRequest;
 
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
@@ -29,7 +30,7 @@ public class CargillShopCommentJob {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
-	@SuppressWarnings({ "rawtypes", "unused" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	public static void main(String[] args) {
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -65,6 +66,8 @@ public class CargillShopCommentJob {
 //				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
 //				DianpingShopInfo.class);
 		
+//		DianPingCommonRequest.refreshShopCommentCookie();
+		
 		int count = 0;
 		try {
 			while (true) {
@@ -73,7 +76,7 @@ public class CargillShopCommentJob {
 				List<DianpingShopInfo> shopList = DianPingTaskRequest.getCommentShop();
 				log.info("获取未抓取评论的店铺个数：" + shopList.size());
 				if (CollectionUtils.isNotEmpty(shopList)) {
-					ExecutorService pool = Executors.newFixedThreadPool(1);
+					ExecutorService pool = Executors.newFixedThreadPool(3);
 //					
 					for (DianpingShopInfo shop : shopList) {
 						pool.execute(new DianPingShopCommentCrawl(shop, false));

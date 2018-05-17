@@ -9,6 +9,8 @@ public class WebDriverConfig extends StatisticsCommon{
 	
 	private String downloadPath;
 	
+	private String userDataDir;
+	
 	private DriverType driverType;
 	
 	/**
@@ -39,6 +41,14 @@ public class WebDriverConfig extends StatisticsCommon{
 
 	public void setDownloadPath(String downloadPath) {
 		this.downloadPath = downloadPath;
+	}
+
+	public String getUserDataDir() {
+		return userDataDir;
+	}
+
+	public void setUserDataDir(String userDataDir) {
+		this.userDataDir = userDataDir;
 	}
 
 	public int getMaxTryTimes() {
