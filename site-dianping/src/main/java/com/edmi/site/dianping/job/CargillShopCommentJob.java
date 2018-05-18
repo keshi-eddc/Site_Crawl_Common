@@ -66,7 +66,7 @@ public class CargillShopCommentJob {
 //				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
 //				DianpingShopInfo.class);
 		
-		DianPingCommonRequest.getShopCommentCookie();
+//		DianPingCommonRequest.getShopCommentCookie();
 		
 		int count = 0;
 		try {
