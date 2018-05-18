@@ -1,11 +1,9 @@
 package com.edmi.site.dianping.http;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.http.conn.ConnectTimeoutException;
 
 import com.alibaba.fastjson.JSONArray;
 import com.edmi.site.dianping.entity.DianpingShopComment;
@@ -22,7 +20,7 @@ public class DianPingTaskRequest extends HttpClientSupport {
 	
 	public static List<DianpingShopComment> getUserInfoTask() {
 		HttpRequestHeader header = new HttpRequestHeader();
-		header.setUrl("http://localhost:9091/task/dianping/user/get");
+		header.setUrl("http://101.231.74.144:9091/task/dianping/user/get");
 		header.setProxyType(ProxyType.NONE);
 		List<DianpingShopComment> list = new ArrayList<>();
 		String html = get(header).getContent();

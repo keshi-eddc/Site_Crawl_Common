@@ -4,6 +4,7 @@ import java.util.List;
 
 import fun.jerry.common.entity.StatisticsCommon;
 import fun.jerry.common.enumeration.RequestType;
+import fun.jerry.proxy.entity.Proxy;
 
 public class HttpRequestHeader extends StatisticsCommon{
 	
@@ -71,6 +72,16 @@ public class HttpRequestHeader extends StatisticsCommon{
 	
 	private RequestType requestType = RequestType.HTTP_GET;
 	
+	private Proxy proxy;
+	
+	public Proxy getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
+	}
+
 	public HttpRequestHeader() {
 		super();
 	}

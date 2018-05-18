@@ -239,5 +239,24 @@ create table dbo.Dianping_User_Check_Info (
 
 ALTER TABLE DataCenter.dbo.Dianping_User_Check_Info ADD CONSTRAINT Dianping_User_Check_Info_PK PRIMARY KEY (id);
 
+-- 店铺详情
+drop table Dianping_Shop_Detail_Info;
+create table dbo.Dianping_Shop_Detail_Info (
+    shop_id varchar(50) not null,
+    latitude varchar(50),
+    longtitude varchar(255),
+    address varchar(500),
+    review_num int,
+    avg_price varchar(255),
+    taste_score varchar(50),
+    environment_score varchar(50),
+    service_score varchar(50),
+    phone varchar(50),
+    open_time varchar(255),
+    update_time datetime,
+    insert_time datetime
+);
+
+ALTER TABLE DataCenter.dbo.Dianping_Shop_Detail_Info ADD CONSTRAINT Dianping_Shop_Detail_Info_PK PRIMARY KEY (shop_id);
 
 

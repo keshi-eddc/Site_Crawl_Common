@@ -2,6 +2,7 @@ package fun.jerry.browser.entity;
 
 import fun.jerry.common.entity.StatisticsCommon;
 import fun.jerry.common.enumeration.DriverType;
+import fun.jerry.proxy.entity.Proxy;
 
 public class WebDriverConfig extends StatisticsCommon{
 	
@@ -13,6 +14,16 @@ public class WebDriverConfig extends StatisticsCommon{
 	
 	private DriverType driverType;
 	
+	private Proxy proxy;
+	
+	public Proxy getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
+	}
+
 	/**
 	 * 是否加载图片，默认值 false<br/>
 	 * 有的需要对图片截图，需将该属性设置为true

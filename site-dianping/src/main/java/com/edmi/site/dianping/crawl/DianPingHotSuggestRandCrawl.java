@@ -68,7 +68,7 @@ public class DianPingHotSuggestRandCrawl {
 				Calendar c = Calendar.getInstance();
 				c.setTime(current);
 				String updateTime = "";
-				String batchTime = DateFormatUtils.format(current, "yyyy-MM-dd HH:mm");
+				String batchTime = DateFormatUtils.format(current, "yyyy-MM-dd HH") + ":00";
 				
 				if (json.containsKey("updateInfo")) {
 					updateTime = json.getString("updateInfo").replace("数据更新时间: ", "");
@@ -115,7 +115,7 @@ public class DianPingHotSuggestRandCrawl {
 				Calendar c = Calendar.getInstance();
 				c.setTime(current);
 				String updateTime = "";
-				String batchTime = DateFormatUtils.format(current, "yyyy-MM-dd HH:mm");
+				String batchTime = DateFormatUtils.format(current, "yyyy-MM-dd HH") + ":00";
 				
 				if (json.containsKey("updateInfo")) {
 					updateTime = json.getString("updateInfo").replace("数据更新时间: ", "");

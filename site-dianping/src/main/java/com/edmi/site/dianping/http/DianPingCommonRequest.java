@@ -1,5 +1,6 @@
 package com.edmi.site.dianping.http;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -15,6 +16,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import fun.jerry.browser.WebDriverSupport;
 import fun.jerry.browser.entity.WebDriverConfig;
@@ -32,8 +35,9 @@ import fun.jerry.entity.system.SqlType;
 import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.httpclient.core.HttpClientSupport;
+import fun.jerry.proxy.entity.Proxy;
 
-//@Component
+@Component
 public class DianPingCommonRequest extends HttpClientSupport {
 
 	private static Logger log = LogSupport.getDianpinglog();
@@ -131,61 +135,138 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		}
 	}
 
-//	@Scheduled(cron = "0 0/10 * * * ?")
+//	@Scheduled(cron = "0 0/2 * * * ?")
 	public static void refreshShopCommentCookie() {
 		synchronized (COOKIES_SHOPCOMMENT) {
-			WebDriverConfig config = new WebDriverConfig();
-			config.setUserDataDir("D:/chrome/user_data_dir/17080236415");
-			config.setProxyType(ProxyType.NONE);
-//			WebDriver driver = WebDriverSupport.getPhantomJSDriverInstance(config);
-			WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
-			try {
-				driver.manage().timeouts().pageLoadTimeout(100, TimeUnit.SECONDS);
-				driver.get("https://www.dianping.com/login?redir=http%3A%2F%2Fwww.dianping.com%2F");
-				
-				List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
-				driver.switchTo().frame(0);
-				
-				WebElement passwordLogin = driver.findElement(By.className("bottom-password-login"));
-				if (null != passwordLogin) {
-					passwordLogin.click();
-					
-					WebElement tab_account = driver.findElement(By.id("tab-account"));
-					if (null != tab_account) {
-						tab_account.click();
-					}
-				}
-				
-				WebElement userName = driver.findElement(By.id("account-textbox"));
-				userName.sendKeys("17080236415");
-				
-				// 密码
-				WebElement password = driver.findElement(By.id("password-textbox"));
-				password.sendKeys("123abc123");
-				//20s用于输入验证码
+			for (String phone : new String[] {"17080236415", "15046321964", "15046322240", "13261382248"}) {
+				WebDriverConfig config = new WebDriverConfig();
+				config.setUserDataDir("D:/chrome/user_data_dir/17080236415");
+				config.setProxyType(ProxyType.PROXY_STATIC_DLY);
+				WebDriver driver = WebDriverSupport.getPhantomJSDriverInstance(config);
+//				WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
 				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
+					driver.manage().timeouts().pageLoadTimeout(100, TimeUnit.SECONDS);
+					driver.get("https://www.dianping.com/login?redir=http%3A%2F%2Fwww.dianping.com%2F");
+					
+					List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
+					driver.switchTo().frame(0);
+					
+					WebElement passwordLogin = driver.findElement(By.className("bottom-password-login"));
+					if (null != passwordLogin) {
+						passwordLogin.click();
+						
+						WebElement tab_account = driver.findElement(By.id("tab-account"));
+						if (null != tab_account) {
+							tab_account.click();
+						}
+					}
+					
+					WebElement userName = driver.findElement(By.id("account-textbox"));
+					userName.sendKeys(phone);
+					
+					// 密码
+					WebElement password = driver.findElement(By.id("password-textbox"));
+					password.sendKeys("123abc123");
+					//20s用于输入验证码
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					
+					WebElement btnLogin = driver.findElement(By.id("login-button-account"));
+					btnLogin.click();
+			        
+			        driver.get("http://www.dianping.com/shop/2278378/review_all/p2?queryType=sortType&queryVal=latest");
+			        log.info(driver.getCurrentUrl());
+			        StringBuilder cookies = new StringBuilder();
+					Set<Cookie> cookieSet = driver.manage().getCookies();
+			        for (Cookie temp : cookieSet) {
+			        	cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
+			        }
+			        if (StringUtils.isNotEmpty(cookies.toString())) {
+			        	COOKIES_SHOPCOMMENT.add(cookies.toString());
+			        }
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					driver.quit();
 				}
 				
-				WebElement btnLogin = driver.findElement(By.id("login-button-account"));
-				btnLogin.click();
-		        
-		        driver.get("http://www.dianping.com/shop/2278378/review_all/p2?queryType=sortType&queryVal=latest");
-		        
-		        StringBuilder cookies = new StringBuilder();
-				Set<Cookie> cookieSet = driver.manage().getCookies();
-		        for (Cookie temp : cookieSet) {
-		        	cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
-		        }
-		        COOKIES_SHOPCOMMENT.add(cookies.toString());
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				driver.quit();
+				log.info(COOKIES_SHOPCOMMENT);
 			}
 		}
+	}
+	
+	public static Map<String, Object> getShopCommentCookie() {
+		Map<String, Object> map = new HashMap<>();
+		synchronized (COOKIES_SHOPCOMMENT) {
+//			for (String phone : new String[] {"17080236415", "15046321964", "15046322240", "13261382248"}) {
+			for (String phone : new String[] {"13261382248"}) {
+				WebDriverConfig config = new WebDriverConfig();
+				config.setUserDataDir("D:/chrome/user_data_dir/17080236415");
+				config.setProxyType(ProxyType.PROXY_STATIC_DLY);
+				WebDriver driver = WebDriverSupport.getPhantomJSDriverInstance(config);
+//				WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
+				try {
+					driver.manage().timeouts().pageLoadTimeout(100, TimeUnit.SECONDS);
+					driver.get("https://www.dianping.com/login?redir=http%3A%2F%2Fwww.dianping.com%2F");
+//					driver.get("https://www.dianping.com/account/iframeLogin?callback=EasyLogin_frame_callback0&wide=false&protocol=https:&redir=http%3A%2F%2Fwww.dianping.com%2F##");
+					log.info(driver.getCurrentUrl());
+					List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
+					driver.switchTo().frame(0);
+					
+					WebElement passwordLogin = driver.findElement(By.className("bottom-password-login"));
+					if (null != passwordLogin) {
+						passwordLogin.click();
+						
+						WebElement tab_account = driver.findElement(By.id("tab-account"));
+						if (null != tab_account) {
+							tab_account.click();
+						}
+					}
+					
+					WebElement userName = driver.findElement(By.id("account-textbox"));
+					userName.sendKeys(phone);
+					
+					// 密码
+					WebElement password = driver.findElement(By.id("password-textbox"));
+					password.sendKeys("123abc123");
+					//20s用于输入验证码
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					
+					WebElement btnLogin = driver.findElement(By.id("login-button-account"));
+					btnLogin.click();
+					
+					log.info(driver.getCurrentUrl() + " ###################");
+			        
+			        driver.get("http://www.dianping.com/shop/2278378/review_all/p2?queryType=sortType&queryVal=latest");
+			        log.info(driver.getPageSource());
+			        StringBuilder cookies = new StringBuilder();
+					Set<Cookie> cookieSet = driver.manage().getCookies();
+			        for (Cookie temp : cookieSet) {
+			        	cookies.append(temp.getName() + "=" + temp.getValue()).append("; ");
+			        }
+			        if (StringUtils.isNotEmpty(cookies.toString())) {
+//			        	COOKIES_SHOPCOMMENT.add(cookies.toString());
+			        	map.put("cookie", cookies.toString());
+			        	map.put("proxy", config.getProxy());
+			        }
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					driver.close();
+					driver.quit();
+				}
+				
+//				log.info(COOKIES_SHOPCOMMENT);
+			}
+		}
+		return map;
 	}
 	
 //	@Scheduled(cron = "0 0/5 * * * ?")
@@ -226,9 +307,9 @@ public class DianPingCommonRequest extends HttpClientSupport {
 	 * 获取Cookie
 	 */
 	private static String getCookie(BlockingQueue<String> queue) {
-		queue.clear();
-		queue.add("cy=1; cye=shanghai; _lxsdk_cuid=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _lxsdk=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _hc.v=2725c736-98fd-868d-44f2-bd11965864c0.1526295303; dper=2b77b9d675a89e5d46ca3857f188dee355599a967b78fe239baf27592a1b54c1cc173547b9de59cc4dbc45d3c7c9ecf06d37d94c9b6d9f51aa16d97feeff9f9481148fca223b824626709c47a30cc9d38f6323ef89bac9b72af5355462655b86; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241caba2053d5b42a9557a4610f9ad4ca92; _lxsdk_s=1635e4a04ed-a-c7c-498%7C%7C"
-				+ new Random().nextInt(2000) + 100);
+//		queue.clear();
+//		queue.add("cy=1; cye=shanghai; _lxsdk_cuid=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _lxsdk=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _hc.v=2725c736-98fd-868d-44f2-bd11965864c0.1526295303; dper=2b77b9d675a89e5d46ca3857f188dee355599a967b78fe239baf27592a1b54c1cc173547b9de59cc4dbc45d3c7c9ecf06d37d94c9b6d9f51aa16d97feeff9f9481148fca223b824626709c47a30cc9d38f6323ef89bac9b72af5355462655b86; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241caba2053d5b42a9557a4610f9ad4ca92; _lxsdk_s=1635e4a04ed-a-c7c-498%7C%7C"
+//				+ new Random().nextInt(2000) + 100);
 //		queue.add("_lxsdk_s=1635dfd1790-2b2-dce-cfd%7C%7C365; ctu=c9b7da1fc6ef7267940b3205785999ae93436f1cbd2ff1ba4a1cf3fcffc59013; cy=1; cye=shanghai; _lxsdk_cuid=1635dfd178ec8-04f1c0752bd161-17347840-1fa400-1635dfd1790c8; _lxsdk=1635dfd178ec8-04f1c0752bd161-17347840-1fa400-1635dfd1790c8; _hc.v=ffb555f9-dcf2-f25b-2b5f-5b163476a686.1526290258; dper=d53c28ee19e0ffaa8a3d3393127536d0b92fb8f9401a9e2f3b5bc4f94153f3be7b96ba6f56523c35209ce67a79914e50d597155ef81deff2e6190185a465ce77aedeaec7128351a776889d3eae07a93b183c202ad5ad102c927361c27fa94379; ll=7fd06e815b796be3df069dec7836c3df; ua=15046321964");
 //		queue.add("ll=7fd06e815b796be3df069dec7836c3df; _lxsdk_s=1635e32d1d6-310-c9-27e%7C%7C223; _lxsdk_cuid=1635e09408fc8-057ef4928081b88-1b317773-1fa400-1635e094091c8; _lxsdk=1635e09408fc8-057ef4928081b88-1b317773-1fa400-1635e094091c8; _hc.v=cd4ce8f3-2b24-6dd1-6a20-5b490b4ccc2c.1526291055; cy=1; cye=shanghai; lgtoken=0f8ed12a1-d0b0-46d6-bd93-97b4110329d5; dper=9d4e7f08fb20ed89be32fb466886701ec11f4ed3cf3ad9daad4fbcb12a2402062c63829a471c319936ab28209d7c9c681a0763a9c39f6717de2e69f926b5254b9aec296f47d3f334714ef2b5396e60b08344cf2f3fbe2b212e1498cc98ce814f; ua=15046322240; ctu=6733198afe88e194c6793c1f3e4a0cfada759e36c59bd8f4d3c7592866fd570b");
 		String cookie = "";
@@ -341,7 +422,6 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
 		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
-		header.setCookie(getCookie(COOKIES_SHOPCOMMENT));
 		int temp = new Random().nextInt(2000) + 100;
 //		log.info("##############################  " + temp);
 //		header.setCookie("cy=1; cye=shanghai; _lxsdk_cuid=1635e81d5a075-09058d3f43fb66-3f3c5501-100200-1635e81d5a1c8; "
@@ -352,18 +432,19 @@ public class DianPingCommonRequest extends HttpClientSupport {
 //		header.setCookie("cy=2; cye=beijing; _lxsdk_cuid=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _lxsdk=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _hc.v=2725c736-98fd-868d-44f2-bd11965864c0.1526295303; dper=2b77b9d675a89e5d46ca3857f188dee355599a967b78fe239baf27592a1b54c1cc173547b9de59cc4dbc45d3c7c9ecf06d37d94c9b6d9f51aa16d97feeff9f9481148fca223b824626709c47a30cc9d38f6323ef89bac9b72af5355462655b86; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241caba2053d5b42a9557a4610f9ad4ca92; _lxsdk_s=1635e4a04ed-a-c7c-498%7C%7C"
 //				+ new Random().nextInt(2000) + 100);
 		header.setAutoPcUa(true);
-		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
-		Map<String, Object> map = iGeneralJdbcUtils
-				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '15046321964'",
-						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
-		if (map.containsKey("cookie")) {
-			header.setCookie(map.get("cookie").toString());
-			log.info("#################### " + map.get("phone").toString());
-		}
+//		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+//		Map<String, Object> map = iGeneralJdbcUtils
+//				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '15046322240'",
+//						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
+//		if (map.containsKey("cookie")) {
+//			header.setCookie(map.get("cookie").toString());
+//			log.info("#################### " + map.get("phone").toString());
+//		}
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+//		header.setCookie();
 		header.setRequestSleepTime(100);
-		header.setMaxTryTimes(10);
+		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
 		if (response.getCode() == HttpStatus.SC_OK) {
 			return response.getContent();
@@ -475,7 +556,8 @@ public class DianPingCommonRequest extends HttpClientSupport {
 	 * @return
 	 */
 	public static String getRealTimeRank(HttpRequestHeader header) {
-		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+//		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setProxyType(ProxyType.NONE);
 		header.setProject(Project.CARGILL);
 		header.setSite(Site.DIANPING);
 		header.setAutoMobileUa(true);

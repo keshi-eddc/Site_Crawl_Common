@@ -203,12 +203,14 @@ public class WebDriverSupport {
 		desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
 		desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
 		if (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
-				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)) {//是否使用代理
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_DLY)) {//是否使用代理
 			org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 			proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
 			proxy.setAutodetect(false);
 			Proxy staticProxy = StaticProxySupport.getStaticProxy(ProxyType.PROXY_STATIC_DLY, Project.CARGILL, Site.DIANPING);//自定义函数，返回代理ip及端口
 			proxy.setHttpProxy(staticProxy.getIp() + ":" + staticProxy.getPort());
+			webDriverConfig.setProxy(staticProxy);
 //			System.out.println(staticProxy.getIp() + ":" + staticProxy.getPort());
 			desiredCapabilities.setCapability(CapabilityType.PROXY, proxy);
 		}

@@ -268,8 +268,10 @@ public class HttpClientSupport {
 ////		            .setRedirectsEnabled(false).build();//disable redirect
 
 //			get.setConfig(requestConfig);//poass the request config to request
-			
-			if (ArrayUtils.contains(new ProxyType[] { ProxyType.PROXY_STATIC_AUTO, ProxyType.PROXY_STATIC_DLY,
+			if (null != header.getProxy()) {
+				HttpHost proxy = new HttpHost(header.getProxy().getIp(), header.getProxy().getPort());
+		        builder.setProxy(proxy);
+			} else if (ArrayUtils.contains(new ProxyType[] { ProxyType.PROXY_STATIC_AUTO, ProxyType.PROXY_STATIC_DLY,
 					ProxyType.PROXY_STATIC_DUNG }, header.getProxyType())) {
 				//普通代理IP设置
 				Proxy _proxy = StaticProxySupport.getStaticProxy(header.getProxyType(), header.getProject(), header.getSite());
