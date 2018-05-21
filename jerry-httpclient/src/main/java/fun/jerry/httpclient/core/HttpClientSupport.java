@@ -125,7 +125,8 @@ public class HttpClientSupport {
 			
 			CredentialsProvider credsProvider = new BasicCredentialsProvider();
 			if (header.getProxyType() == ProxyType.PROXY_CLOUD_ABUYUN) {
-				credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("H26U3Y18CA6L02YD", "0567219ED7DF3592"));
+				//credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("H26U3Y18CA6L02YD", "0567219ED7DF3592"));
+				credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("HN54N0TZA3IO945D", "3524EC2B27DDDDF4"));
 			}
 			if (header.getProxyType() == ProxyType.PROXY_STATIC_DLY) {
 				credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("379862802", "infopower"));

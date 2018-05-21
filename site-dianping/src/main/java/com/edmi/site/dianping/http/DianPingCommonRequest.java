@@ -416,11 +416,20 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setUpgradeInsecureRequests("1");
 //		header.setCookie(
 //				"s_ViewType=10; _lxsdk_cuid=16380a356c9c8-0cc4004fa439b6-3c3c520d-100200-16380a356cac8; _lxsdk=16380a356c9c8-0cc4004fa439b6-3c3c520d-100200-16380a356cac8; _hc.v=c274d1e0-4c7d-f92a-dc57-a68f092822e7.1526871579; _lxsdk_s=16380a356d6-ad6-9ab-aa7%7C%7C5");
-		String random = test(new int[] {13,14,8,6,13});
-		header.setCookie(
-				"s_ViewType=10; _lxsdk_cuid=" + random.substring(0, random.length() - 1) + "; _lxsdk=" + random.substring(0, random.length() - 1) + "; cy=1; cye=shanghai; _hc.v=c274d1e0-4c7d-f92a-dc57-a68f092822e7.1526871579; _lxsdk_s=16380a356d6-ad6-9ab-aa7%7C%7C5");
+//		String random = test(new int[] {13,14,8,6,13});
 //		header.setCookie(
-//				"cy=1; cye=shanghai; _lxsdk_cuid=16372a006e862-0b419a21015b93-5d5e490b-1fa400-16372a006e9b0; _lxsdk=16372a006e862-0b419a21015b93-5d5e490b-1fa400-16372a006e9b0; _hc.v=89e13f09-cfae-9ddc-e6d4-4de0fea8dfef.1526636481; dper=d53c28ee19e0ffaa8a3d3393127536d0df5b2f200c0de5614905f237eab56cc46878644bdabd356238d4d2ebc991918b545aa58276c5deb0b07899b323d236dc03f18475d8dca2c6e3e49473cb01a80174125e929630402ae9d86a3d7be22081; ua=15046321964; ctu=877054e387b412665d57e710e1bf3f01073c81fe0f974c37618c6fc1a3921d8b; _lxsdk_s=1637df6a3f1-c50-648-06c%7C%7C28; s_ViewType=10; ll=7fd06e815b796be3df069dec7836c3df");
+//				"s_ViewType=10; _lxsdk_cuid=" + random.substring(0, random.length() - 1) + "; _lxsdk=" + random.substring(0, random.length() - 1) + "; cy=1; cye=shanghai; _hc.v=c274d1e0-4c7d-f92a-dc57-a68f092822e7.1526871579; _lxsdk_s=16380a356d6-ad6-9ab-aa7%7C%7C5");
+		header.setCookie(
+				"_hc.v=\"\\\"ecf7cc6e-e3ac-4e4b-a454-a8817f963380.1526881397\\\"\"; _lxsdk_cuid=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk_s=163813ba56e-7b1-ecd-dae%7C%7C43");
+		
+//		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+//		Map<String, Object> map = iGeneralJdbcUtils
+//				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '17092688735'",
+//						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
+//		if (map.containsKey("cookie")) {
+//			header.setCookie(map.get("cookie").toString());
+//			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+//		}
 		
 //		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 //		Map<String, Object> map = iGeneralJdbcUtils
@@ -432,15 +441,15 @@ public class DianPingCommonRequest extends HttpClientSupport {
 //		}
 		
 //		header.setAutoPcUa(true);
-		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36");
-		header.setRequestSleepTime(1000);
-		header.setMaxTryTimes(1);
+		header.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+		header.setRequestSleepTime(7000);
+		header.setMaxTryTimes(3);
 		HttpResponse response = get(header);
-		if (response.getCode() == HttpStatus.SC_OK) {
+//		if (response.getCode() == HttpStatus.SC_OK) {
 			return response.getContent();
-		} else {
-			return getShopList(header);
-		}
+//		} else {
+//			return getShopList(header);
+//		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
