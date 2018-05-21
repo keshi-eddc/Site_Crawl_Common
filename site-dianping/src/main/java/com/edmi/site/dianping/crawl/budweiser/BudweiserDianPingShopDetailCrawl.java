@@ -4,23 +4,22 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.edmi.site.dianping.entity.DianpingShopDetailInfo;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
-import com.edmi.site.dianping.entity.DianpingShopInfo_Budweiser;
-import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
 import com.edmi.site.dianping.http.DianPingCommonRequest;
-import com.edmi.site.dianping.http.DianPingTaskRequest;
-import com.edmi.site.dianping.parse.DianpingParser;
 
 import fun.jerry.cache.holder.FirstCacheHolder;
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
@@ -39,178 +38,152 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
-	private DianpingSubCategorySubRegion ss;
+	private DianpingShopInfo shopInfo;
 	
-	private IGeneralJdbcUtils iGeneralJdbcUtils;
-
-	public BudweiserDianPingShopDetailCrawl(DianpingSubCategorySubRegion ss) {
+	public BudweiserDianPingShopDetailCrawl(DianpingShopInfo shopInfo) {
 		super();
-		this.ss = ss;
-		iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+		this.shopInfo = shopInfo;
 	}
 
 	@Override
 	public void run() {
 		
-		int totalPage = 50;
+		HttpRequestHeader header = new HttpRequestHeader();
+		header.setUrl(shopInfo.getShopUrl());
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+//		header.setProxyType(ProxyType.NONE);
+		header.setProject(Project.BUDWEISER);
+		header.setSite(Site.DIANPING);
 		
-		int count = 0;
-		int count1 = 0;
-
-		// 有的时候会返回状态200，但是是假页面，找不到店铺列表也找不到“没有找到符合条件的商户”
+		String pageHtml = DianPingCommonRequest.getShopDetail(header);
+//		WebDriverConfig config = new WebDriverConfig();
+//		config.setProxyType(ProxyType.PROXY_STATIC_DLY);
+//		String pageHtml = WebDriverSupport.load(WebDriverSupport.getPhantomJSDriverInstance(config), header.getUrl());
+		log.info(pageHtml);
 		
-		for (int page = 1; page <= totalPage; page ++) {
-			while (true) {
-				HttpRequestHeader header = new HttpRequestHeader();
-				header.setUrl(ss.getUrl() + "p" + page);
-				header.setProxyType(ProxyType.PROXY_STATIC_DLY);
-//				header.setProxyType(ProxyType.NONE);
-				header.setProject(Project.BUDWEISER);
-				header.setSite(Site.DIANPING);
-				
-				String pageHtml = DianPingCommonRequest.getShopList(header);
-//				log.info(pageHtml);
-				Document pageDoc = Jsoup.parse(pageHtml);
-				
-				// 如果没有发现店铺列表，说明没有抓取成功，继续抓取
-				if (pageHtml.contains("没有找到符合条件的商户")) {
-					// 有的时候再请求不是第一页的时候也会出现 “没有找到符合条件的商户”，但其实应该有数据
-					if (page == 1) {
-						log.info(header.getUrl() + " 请求成功，没有找到符合条件的商户,停止抓取");
-						totalPage = 0;
-						DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
-						tempSS.setUrl(ss.getUrl());
-						tempSS.setShopTotalPage(totalPage);
-						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-						break;
-					} else {
-//						log.info(header.getUrl() + "\n" + pageHtml);
-						log.info(header.getUrl() + " " + totalPage + " 当前页数 " + page + " 请求成功，没有找到符合条件的商户,不是第一页，应该有数据，继续请求");
-						count ++;
-						if (count < 10) {
-							continue;
-						} else {
-							break;
-						}
-					}
-				} else {
-					Element shopList = pageDoc.select("#shop-all-list").first();
-					if (null != shopList) {
-						Elements shopElements = pageDoc.select("#shop-all-list ul li");
-						if (CollectionUtils.isEmpty(shopElements)) {
-							log.info(header.getUrl() + " 请求成功，未发现店铺列表,继续抓取");
-							continue;
-						}
-					} else {
-						log.info(header.getUrl() + " 请求成功，按说应该有店铺列表，但是没有找到");
-//						totalPage = -2;
-//						DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
-//						tempSS.setUrl(ss.getUrl());
-//						tempSS.setShopTotalPage(totalPage);
-//						iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-//						break;
-						count1 ++;
-						if (count1 < 10) {
-							continue;
-						} else {
-							break;
-						}
-//						continue;
-					}
-				}
-				
-				if (page == 1) {
-					totalPage = DianpingParser.parseShopListPage(pageDoc);
-					DianpingSubCategorySubRegion tempSS = new DianpingSubCategorySubRegion();
-					tempSS.setUrl(ss.getUrl());
-					tempSS.setShopTotalPage(totalPage);
-					iGeneralJdbcUtils.execute(new SqlEntity(tempSS, DataSource.DATASOURCE_DianPing, SqlType.PARSE_UPDATE));
-//					log.info("总页数 " + totalPage + " " + header.getUrl());
-				}
-				log.info("总页数 " + totalPage + " 当前页数 " + page + header.getUrl());
-				List<DianpingShopInfo> list = DianpingParser.parseShopList(pageDoc, page);
-//				if (list.size() == 15 || page == totalPage) {
-				if (CollectionUtils.isNotEmpty(list)) {
-					save(list, page, totalPage);
-					break;
-				} else {
-					log.info(header.getUrl() + " 第 " + page + " 页 抓取到的店铺数量不足15条 " + list.size() + " totalPage " + totalPage);
-				}
-			}
-		}
-		
-	}
-	
-	private void save(List<DianpingShopInfo> list, int page, int totalPage) {
-		if (CollectionUtils.isNotEmpty(list)) {
-			for (DianpingShopInfo shop : list) {
-				DianpingShopInfo_Budweiser shopBudweiser = new DianpingShopInfo_Budweiser();
-				BeanUtils.copyProperties(shop, shopBudweiser);
-				
-				shopBudweiser.setPage(page);
-				shopBudweiser.setTotalPage(totalPage);
-				shopBudweiser.setSubCategoryId(ss.getSubCategoryId());
-				shopBudweiser.setCategoryId(ss.getCategoryId());
-				shopBudweiser.setPrimaryCategoryId(ss.getPrimaryCategoryId());
-				shopBudweiser.setSubRegionId(ss.getSubRegionId());
-				shopBudweiser.setRegionId(ss.getRegionId());
-				shopBudweiser.setCityId(ss.getCityId());
-				
-				SqlEntity sqlEntity = new SqlEntity(shopBudweiser, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT);
-				FirstCacheHolder.getInstance().submitFirstCache(sqlEntity);
-			}
+		if (pageHtml.contains("shop/" + shopInfo.getShopId())) {
+			parse(pageHtml);
+		} else {
+			run();
 		}
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void parse (String html) {
+		Document pageDoc = Jsoup.parse(html);
+		
+		DianpingShopDetailInfo detail = new DianpingShopDetailInfo();
+		detail.setShopId(shopInfo.getShopId());
+		
+		String json = "";
+		Pattern p = Pattern.compile("window.shop_config=(.*?)</script>");  
+		Matcher m = p.matcher(html);  
+		while(m.find()){  
+			json = m.group(1);
+		}
+		
+		System.out.println(json);
+		
+//		detail.setLatitude(html.substring(html.indexOf("shopGlat:\"") + 10, html.indexOf("\",")));
+//		detail.setLongtitude(html.substring(html.indexOf("shopGlng:\"") + 10, html.indexOf("\",")));
+		
+		Element address = pageDoc.select("span[itemprop=street-address]").first();
+		detail.setAddress(address.text().trim());
+		
+		Elements scores = pageDoc.select("#comment_score span");
+		for (Element s : scores) {
+			String text = s.text();
+			if (text.contains("口味：")) {
+				detail.setTasteScore(text.replace("口味：", ""));
+			} else if (text.contains("环境：")) {
+				detail.setEnvironmentScore(text.replace("环境：", ""));
+			} else if (text.contains("服务：")) {
+				detail.setServiceScore(text.replace("服务：", ""));
+			}
+		}
+		
+		Element phone = pageDoc.select("span[itemprop=tel]").first();
+		if (null != phone) {
+			detail.setPhone(phone.text().trim());
+		}
+		
+		Element openTime = pageDoc.select("span:contains(营业时间)").first();
+		if (null != openTime) {
+			Element aa = openTime.nextElementSibling();
+			detail.setOpenTime(null != aa ? aa.text().trim() : "");
+		}
+		
+		Element price = pageDoc.select("#avgPriceTitle").first();
+		detail.setAvgPrice(null != price ? price.text().trim() : "");
+		
+		Element reviewNum = pageDoc.select("#reviewCount").first();
+		
+		detail.setReviewNum(null != reviewNum ? NumberUtils.toInt(reviewNum.text().replace("条评论", "")) : 0);
+		
+		FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(detail, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
+	}
+	
 	public static void main(String[] args) {
+		DianpingShopInfo shopInfo = new DianpingShopInfo();
+		shopInfo.setShopUrl("http://www.dianping.com/shop/72351070");
+		shopInfo.setShopId("72351070");
 		
-		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
-
-		int count = 0;
-		try {
-			while (true) {
-				count ++;
-				log.info("##################" + count);
-				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
-				log.info("获取未抓取用户个数：" + list.size());
-				if (CollectionUtils.isNotEmpty(list)) {
-					ExecutorService pool = Executors.newFixedThreadPool(10);
-					for (DianpingSubCategorySubRegion ss : list) {
-						pool.submit(new BudweiserDianPingShopDetailCrawl(ss));
-					}
-					
-					pool.shutdown();
-
-					while (true) {
-						if (pool.isTerminated()) {
-							log.error("大众点评-refresh DianpingSubCategorySubRegion 抓取完成");
-							break;
-						} else {
-							try {
-								TimeUnit.SECONDS.sleep(60);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					
-				} else {
-					System.out.println("$$$$$$$$$$$$$$$" + count);
-					try {
-						TimeUnit.MINUTES.sleep(2);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			System.out.println("##################" + count);
-		}
+//		DianPingCommonRequest.refreshShopDetailCookie();
 		
+		new BudweiserDianPingShopDetailCrawl(shopInfo).run();
 	}
+	
+//	@SuppressWarnings({ "unused", "rawtypes", "unchecked", "resource" })
+//	public static void main(String[] args) {
+//		
+//		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+//		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+//
+//		List<DianpingShopInfo> shopInfoList = iGeneralJdbcUtils.queryForListObject(
+//				new SqlEntity("select distinct shop_id as shopId, shop_url as shopUrl from dbo.Dianping_ShopInfo_Budweiser where category_id in ('g133', '135')", DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingShopInfo.class);
+//		
+//		int count = 0;
+//		try {
+////			while (true) {
+//				count ++;
+//				log.info("##################" + count);
+////				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
+//				log.info("获取未抓取用户个数：" + shopInfoList.size());
+//				if (CollectionUtils.isNotEmpty(shopInfoList)) {
+//					ExecutorService pool = Executors.newFixedThreadPool(1);
+//					for (DianpingShopInfo ss : shopInfoList) {
+//						pool.submit(new BudweiserDianPingShopDetailCrawl(ss));
+//					}
+//					
+//					pool.shutdown();
+//
+//					while (true) {
+//						if (pool.isTerminated()) {
+//							log.error("大众点评-refresh DianpingSubCategorySubRegion 抓取完成");
+//							break;
+//						} else {
+//							try {
+//								TimeUnit.SECONDS.sleep(60);
+//							} catch (Exception e) {
+//								e.printStackTrace();
+//							}
+//						}
+//					}
+//					
+//				} else {
+//					System.out.println("$$$$$$$$$$$$$$$" + count);
+//					try {
+//						TimeUnit.MINUTES.sleep(2);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+////			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			System.out.println("##################" + count);
+//		}
+//		
+//	}
 	
 }
