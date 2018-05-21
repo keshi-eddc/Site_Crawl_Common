@@ -412,37 +412,29 @@ public class DianPingCommonRequest extends HttpClientSupport {
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setPragma("no-cache");
-		header.setReferer("http://www.dianping.com/shanghai/ch10/g110");
+//		header.setReferer("http://www.dianping.com/shanghai/ch10/g110");
 		header.setUpgradeInsecureRequests("1");
 //		header.setCookie(
 //				"s_ViewType=10; _lxsdk_cuid=16380a356c9c8-0cc4004fa439b6-3c3c520d-100200-16380a356cac8; _lxsdk=16380a356c9c8-0cc4004fa439b6-3c3c520d-100200-16380a356cac8; _hc.v=c274d1e0-4c7d-f92a-dc57-a68f092822e7.1526871579; _lxsdk_s=16380a356d6-ad6-9ab-aa7%7C%7C5");
 //		String random = test(new int[] {13,14,8,6,13});
 //		header.setCookie(
 //				"s_ViewType=10; _lxsdk_cuid=" + random.substring(0, random.length() - 1) + "; _lxsdk=" + random.substring(0, random.length() - 1) + "; cy=1; cye=shanghai; _hc.v=c274d1e0-4c7d-f92a-dc57-a68f092822e7.1526871579; _lxsdk_s=16380a356d6-ad6-9ab-aa7%7C%7C5");
-		header.setCookie(
-				"_hc.v=\"\\\"ecf7cc6e-e3ac-4e4b-a454-a8817f963380.1526881397\\\"\"; _lxsdk_cuid=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk_s=163813ba56e-7b1-ecd-dae%7C%7C43");
+//		header.setCookie(
+//				"_hc.v=\"\\\"ecf7cc6e-e3ac-4e4b-a454-a8817f963380.1526881397\\\"\"; _lxsdk_cuid=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk_s=163813ba56e-7b1-ecd-dae%7C%7C43");
 		
-//		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
-//		Map<String, Object> map = iGeneralJdbcUtils
-//				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '17092688735'",
-//						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
-//		if (map.containsKey("cookie")) {
-//			header.setCookie(map.get("cookie").toString());
-//			log.info("本批次使用的电话号码 " + map.get("phone").toString());
-//		}
-		
-//		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
-//		Map<String, Object> map = iGeneralJdbcUtils
-//				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '17092688735'",
-//						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
-//		if (map.containsKey("cookie")) {
-//			header.setCookie(map.get("cookie").toString());
-//			log.info("本批次使用的电话号码 " + map.get("phone").toString());
-//		}
+		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+		Map<String, Object> map = iGeneralJdbcUtils
+				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_ShopDetail_Cookie where phone = '15046321964'",
+						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
+		if (map.containsKey("cookie")) {
+			header.setCookie(map.get("cookie").toString());
+			header.setUserAgent(map.get("user_agent").toString());
+			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+		}
 		
 //		header.setAutoPcUa(true);
-		header.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-		header.setRequestSleepTime(7000);
+//		header.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+		header.setRequestSleepTime(10000);
 		header.setMaxTryTimes(3);
 		HttpResponse response = get(header);
 //		if (response.getCode() == HttpStatus.SC_OK) {

@@ -51,9 +51,9 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 		
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl(shopInfo.getShopUrl());
-//		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 //		header.setProxyType(ProxyType.PROXY_CLOUD_ABUYUN);
-		header.setProxyType(ProxyType.NONE);
+//		header.setProxyType(ProxyType.NONE);
 		header.setProject(Project.BUDWEISER);
 		header.setSite(Site.DIANPING);
 		
@@ -69,61 +69,66 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 	}
 	
 	private void parse (String html) {
+		log.info("开始解析 " + shopInfo.getShopUrl());
 		Document pageDoc = Jsoup.parse(html);
 		
-		DianpingShopDetailInfo detail = new DianpingShopDetailInfo();
-		detail.setShopId(shopInfo.getShopId());
-		
-		String json = "";
-		Pattern p = Pattern.compile("window.shop_config=(.*?)</script>");  
-		Matcher m = p.matcher(html);  
-		while(m.find()){  
-			json = m.group(1);
-		}
-		
-		JSONObject obj = JSONObject.parseObject(json);
-		if (obj.containsKey("shopGlat")) {
-			detail.setLatitude(obj.getString("shopGlat"));
-		}
-		
-		if (obj.containsKey("shopGlng")) {
-			detail.setLongtitude(obj.getString("shopGlng"));
-		}
-		
-		Element address = pageDoc.select("span[itemprop=street-address]").first();
-		detail.setAddress(address.text().trim());
-		
-		Elements scores = pageDoc.select("#comment_score span");
-		for (Element s : scores) {
-			String text = s.text();
-			if (text.contains("口味:")) {
-				detail.setTasteScore(text.replace("口味:", ""));
-			} else if (text.contains("环境:")) {
-				detail.setEnvironmentScore(text.replace("环境:", ""));
-			} else if (text.contains("服务:")) {
-				detail.setServiceScore(text.replace("服务:", ""));
+		try {
+			DianpingShopDetailInfo detail = new DianpingShopDetailInfo();
+			detail.setShopId(shopInfo.getShopId());
+			
+			String json = "";
+			Pattern p = Pattern.compile("window.shop_config=(.*?)</script>");  
+			Matcher m = p.matcher(html);  
+			while(m.find()){  
+				json = m.group(1);
 			}
+			
+			JSONObject obj = JSONObject.parseObject(json);
+			if (obj.containsKey("shopGlat")) {
+				detail.setLatitude(obj.getString("shopGlat"));
+			}
+			
+			if (obj.containsKey("shopGlng")) {
+				detail.setLongtitude(obj.getString("shopGlng"));
+			}
+			
+			Element address = pageDoc.select("span[itemprop=street-address]").first();
+			detail.setAddress(address.text().trim());
+			
+			Elements scores = pageDoc.select("#comment_score span");
+			for (Element s : scores) {
+				String text = s.text();
+				if (text.contains("口味:")) {
+					detail.setTasteScore(text.replace("口味:", ""));
+				} else if (text.contains("环境:")) {
+					detail.setEnvironmentScore(text.replace("环境:", ""));
+				} else if (text.contains("服务:")) {
+					detail.setServiceScore(text.replace("服务:", ""));
+				}
+			}
+			
+			Element phone = pageDoc.select("span[itemprop=tel]").first();
+			if (null != phone) {
+				detail.setPhone(phone.text().trim());
+			}
+			
+			Element openTime = pageDoc.select("span:contains(营业时间)").first();
+			if (null != openTime) {
+				Element aa = openTime.nextElementSibling();
+				detail.setOpenTime(null != aa ? aa.text().trim() : "");
+			}
+			
+			Element price = pageDoc.select("#avgPriceTitle").first();
+			detail.setAvgPrice(null != price ? price.text().trim() : "");
+			
+			Element reviewNum = pageDoc.select("#reviewCount").first();
+			
+			detail.setReviewNum(null != reviewNum ? NumberUtils.toInt(reviewNum.text().replace("条评论", "")) : 0);
+			
+			FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(detail, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
+		} catch (Exception e) {
+			log.error("parse error {}", e);
 		}
-		
-		Element phone = pageDoc.select("span[itemprop=tel]").first();
-		if (null != phone) {
-			detail.setPhone(phone.text().trim());
-		}
-		
-		Element openTime = pageDoc.select("span:contains(营业时间)").first();
-		if (null != openTime) {
-			Element aa = openTime.nextElementSibling();
-			detail.setOpenTime(null != aa ? aa.text().trim() : "");
-		}
-		
-		Element price = pageDoc.select("#avgPriceTitle").first();
-		detail.setAvgPrice(null != price ? price.text().trim() : "");
-		
-		Element reviewNum = pageDoc.select("#reviewCount").first();
-		
-		detail.setReviewNum(null != reviewNum ? NumberUtils.toInt(reviewNum.text().replace("条评论", "")) : 0);
-		
-		FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(detail, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
 	}
 	
 //	public static void main(String[] args) {
