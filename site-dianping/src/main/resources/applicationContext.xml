@@ -26,6 +26,7 @@
 	       	<list>
 	       		<value>classpath:jdbc.properties</value>
 				<value>classpath:config.properties</value>
+				<value>classpath:dianping.properties</value>
 	       	</list>
 	   	</property>
 	</bean>
@@ -33,7 +34,7 @@
 	<bean class="fun.jerry.common.ApplicationContextHolder" />
 	
 	<context:annotation-config />
-	<context:component-scan base-package="com.edmi.site.dianping.http, fun.jerry.cache.jdbc" />
+	<context:component-scan base-package="com.edmi.site.dianping.http, com.edmi.site.dianping.config, fun.jerry.cache.jdbc" />
 
 	<import resource="classpath*:datasource_dianping.xml"/>
 	

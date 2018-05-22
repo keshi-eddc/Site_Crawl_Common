@@ -61,7 +61,7 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 //		WebDriverConfig config = new WebDriverConfig();
 //		config.setProxyType(ProxyType.PROXY_STATIC_DLY);
 //		String pageHtml = WebDriverSupport.load(WebDriverSupport.getPhantomJSDriverInstance(config), header.getUrl());
-		log.info(pageHtml);
+//		log.info(pageHtml);
 		
 		if (pageHtml.contains("shop/" + shopInfo.getShopId())) {
 			parse(pageHtml);
@@ -71,7 +71,7 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 	private void parse (String html) {
 		log.info("开始解析 " + shopInfo.getShopUrl());
 		Document pageDoc = Jsoup.parse(html);
-		
+		log.info(html);
 		try {
 			DianpingShopDetailInfo detail = new DianpingShopDetailInfo();
 			detail.setShopId(shopInfo.getShopId());
@@ -84,11 +84,11 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 			}
 			
 			JSONObject obj = JSONObject.parseObject(json);
-			if (obj.containsKey("shopGlat")) {
+			if (null != obj && obj.containsKey("shopGlat")) {
 				detail.setLatitude(obj.getString("shopGlat"));
 			}
 			
-			if (obj.containsKey("shopGlng")) {
+			if (null != obj && obj.containsKey("shopGlng")) {
 				detail.setLongtitude(obj.getString("shopGlng"));
 			}
 			
@@ -147,20 +147,21 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 
-		List<DianpingShopInfo> shopInfoList = iGeneralJdbcUtils.queryForListObject(
-				new SqlEntity("select distinct shop_id as shopId, shop_url as shopUrl from dbo.Dianping_ShopInfo_Budweiser "
-						+ "where category_id in ('g133', '135') "
-						+ "and shop_id not in (select shop_id from dbo.Dianping_Shop_Detail_Info) ", DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingShopInfo.class);
-		
 		int count = 0;
 		try {
-//			while (true) {
+			while (true) {
+			
+			List<DianpingShopInfo> shopInfoList = iGeneralJdbcUtils.queryForListObject(
+					new SqlEntity("select distinct shop_id as shopId, shop_url as shopUrl from dbo.Dianping_ShopInfo_Budweiser "
+							+ "where category_id in ('g133', '135') "
+							+ "and shop_id not in (select shop_id from dbo.Dianping_Shop_Detail_Info) ", DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingShopInfo.class);
+			
 				count ++;
 				log.info("##################" + count);
 //				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
 				log.info("获取未抓取用户个数：" + shopInfoList.size());
 				if (CollectionUtils.isNotEmpty(shopInfoList)) {
-					ExecutorService pool = Executors.newFixedThreadPool(1);
+					ExecutorService pool = Executors.newFixedThreadPool(7);
 					for (DianpingShopInfo ss : shopInfoList) {
 						pool.submit(new BudweiserDianPingShopDetailCrawl(ss));
 						TimeUnit.MILLISECONDS.sleep(50);
@@ -189,7 +190,7 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 						e.printStackTrace();
 					}
 				}
-//			}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

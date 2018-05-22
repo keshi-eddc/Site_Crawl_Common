@@ -25,6 +25,9 @@ import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
+import fun.jerry.common.enumeration.Project;
+import fun.jerry.common.enumeration.ProxyType;
+import fun.jerry.common.enumeration.Site;
 import fun.jerry.entity.system.DataSource;
 import fun.jerry.entity.system.SqlEntity;
 import fun.jerry.entity.system.SqlType;
@@ -46,17 +49,14 @@ public class DianPingUserInfoCrawl implements Runnable {
 
 	@Override
 	public void run() {
-//		WebDriverConfig config = new WebDriverConfig();
-//		config.setProxyType(ProxyType.PROXY_STATIC_DLY);
-//		WebDriver driver = WebDriverSupport.getChromeDriverInstance(config);
 		try {
 			HttpRequestHeader header = new HttpRequestHeader();
-//			header.setUrl("http://www.dianping.com/member/" + comment.getUserId());
 			header.setUrl("https://m.dianping.com/userprofile/ajax/profileinfo?id=" + comment.getUserId());
-//			header.setReferer("http://www.dianping.com/shop/" + comment.getShopId());
-//			driver.get(header.getUrl());
+			header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+			header.setProject(Project.CARGILL);
+			header.setSite(Site.DIANPING);
+			header.setReferer("http://www.dianping.com/shop/" + comment.getShopId());
 			String html = DianPingCommonRequest.getUserInfo(header);
-//			String html = driver.getPageSource();
 			
 //			if(StringUtils.isNotEmpty(html) && !html.contains("页面无法访问")) {
 //				DianpingUserInfo user = DianpingParser.parseUserInfo_PC(Jsoup.parse(html), comment);
