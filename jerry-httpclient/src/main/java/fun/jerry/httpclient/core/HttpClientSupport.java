@@ -151,7 +151,7 @@ public class HttpClientSupport {
 				// 如果响应不为null
 				if (null != response) {
 					
-//					log.info(header.getUrl() + " response " + response.getStatusLine().getStatusCode());
+					log.info(header.getUrl() + " response " + response.getStatusLine().getStatusCode());
 					httpResponse.setCode(response.getStatusLine().getStatusCode());
 					// 如果请求成功
 					if (null != response.getStatusLine() && (response.getStatusLine().getStatusCode() == 200

@@ -98,7 +98,8 @@ public class DianPingUserInfoCrawl implements Runnable {
 				List<DianpingShopComment> list = DianPingTaskRequest.getUserInfoTask();
 				log.info("获取未抓取用户个数：" + list.size());
 				if (CollectionUtils.isNotEmpty(list)) {
-					ExecutorService pool = Executors.newFixedThreadPool(5);
+					
+					ExecutorService pool = Executors.newFixedThreadPool(10);
 					for (DianpingShopComment comment : list) {
 						pool.submit(new DianPingUserInfoCrawl(comment));
 					}

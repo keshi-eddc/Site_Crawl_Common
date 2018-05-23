@@ -6,10 +6,12 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.alibaba.fastjson.JSONArray;
+import com.edmi.site.dianping.config.DianpingConfig;
 import com.edmi.site.dianping.entity.DianpingShopComment;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.entity.DianpingSubCategorySubRegion;
 
+import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.enumeration.Project;
 import fun.jerry.common.enumeration.ProxyType;
 import fun.jerry.common.enumeration.Site;
@@ -20,7 +22,7 @@ public class DianPingTaskRequest extends HttpClientSupport {
 	
 	public static List<DianpingShopComment> getUserInfoTask() {
 		HttpRequestHeader header = new HttpRequestHeader();
-		header.setUrl("http://101.231.74.144:9091/task/dianping/user/get");
+		header.setUrl(((DianpingConfig) ApplicationContextHolder.getBean(DianpingConfig.class)).getTask_user());
 		header.setProxyType(ProxyType.NONE);
 		List<DianpingShopComment> list = new ArrayList<>();
 		String html = get(header).getContent();
@@ -79,4 +81,5 @@ public class DianPingTaskRequest extends HttpClientSupport {
 	public static void main(String[] args) {
 		getUserInfoTask();
 	}
+	
 }

@@ -65,13 +65,19 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 		
 		if (pageHtml.contains("shop/" + shopInfo.getShopId())) {
 			parse(pageHtml);
+		} else if (pageHtml.contains("抱歉！页面无法访问")) {
+			DianpingShopDetailInfo detail = new DianpingShopDetailInfo();
+			detail.setShopId(shopInfo.getShopId());
+			detail.setAddress("404");
+			
+			FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(detail, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
 		}
-	}
+ 	}
 	
 	private void parse (String html) {
 		log.info("开始解析 " + shopInfo.getShopUrl());
 		Document pageDoc = Jsoup.parse(html);
-		log.info(html);
+//		log.info(html);
 		try {
 			DianpingShopDetailInfo detail = new DianpingShopDetailInfo();
 			detail.setShopId(shopInfo.getShopId());
@@ -153,7 +159,7 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 			
 			List<DianpingShopInfo> shopInfoList = iGeneralJdbcUtils.queryForListObject(
 					new SqlEntity("select distinct shop_id as shopId, shop_url as shopUrl from dbo.Dianping_ShopInfo_Budweiser "
-							+ "where category_id in ('g133', '135') "
+							+ "where category_id in ('g133', 'g135') "
 							+ "and shop_id not in (select shop_id from dbo.Dianping_Shop_Detail_Info) ", DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingShopInfo.class);
 			
 				count ++;
@@ -161,7 +167,7 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 //				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
 				log.info("获取未抓取用户个数：" + shopInfoList.size());
 				if (CollectionUtils.isNotEmpty(shopInfoList)) {
-					ExecutorService pool = Executors.newFixedThreadPool(7);
+					ExecutorService pool = Executors.newFixedThreadPool(10);
 					for (DianpingShopInfo ss : shopInfoList) {
 						pool.submit(new BudweiserDianPingShopDetailCrawl(ss));
 						TimeUnit.MILLISECONDS.sleep(50);

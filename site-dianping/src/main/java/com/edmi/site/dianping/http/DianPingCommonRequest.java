@@ -22,6 +22,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.edmi.site.dianping.config.DianpingConfig;
+import com.edmi.site.dianping.cookie.DianpingShopDetailCookie;
+import com.edmi.site.dianping.cookie.DianpingUserInfoCookie;
 
 import fun.jerry.browser.WebDriverSupport;
 import fun.jerry.browser.entity.WebDriverConfig;
@@ -55,7 +57,9 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 	
 	public final static BlockingQueue<String> COOKIES_USERINFO = new ArrayBlockingQueue<String>(2);
 	
-	public final static BlockingQueue<Map<String, Object>> COOKIES_SHOP_DETAIL = new ArrayBlockingQueue<>(50);
+//	public final static BlockingQueue<Map<String, Object>> COOKIES_SHOP_DETAIL = new ArrayBlockingQueue<>(50);
+
+	public final static BlockingQueue<Map<String, Object>> COOKIES_USER_DETAIL = new ArrayBlockingQueue<>(50);
 	
 	static {
 		COOKIES.add(
@@ -97,9 +101,14 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
-		for (String phone : ((DianpingConfig) ApplicationContextHolder.getBean(DianpingConfig.class)).getLong_phone_queue()) {
-			COOKIES_SHOP_DETAIL.add(iGeneralJdbcUtils.queryOne(
-					new SqlEntity("select * from dbo.Dianping_ShopDetail_Cookie where phone = '" + phone + "'",
+//		for (String phone : ((DianpingConfig) ApplicationContextHolder.getBean(DianpingConfig.class)).getLong_phone_queue()) {
+//			COOKIES_SHOP_DETAIL.add(iGeneralJdbcUtils.queryOne(
+//					new SqlEntity("select * from dbo.Dianping_ShopDetail_Cookie where phone = '" + phone + "'",
+//							DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO)));
+//		}
+		for (String phone : ((DianpingConfig) ApplicationContextHolder.getBean(DianpingConfig.class)).getLogin_user_phone_queue()) {
+			COOKIES_USER_DETAIL.add(iGeneralJdbcUtils.queryOne(
+					new SqlEntity("select * from dbo.Dianping_User_Cookie where phone = '" + phone + "'",
 							DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO)));
 		}
 	}
@@ -434,13 +443,13 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 //		header.setCookie(
 //				"_hc.v=\"\\\"ecf7cc6e-e3ac-4e4b-a454-a8817f963380.1526881397\\\"\"; _lxsdk_cuid=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk_s=163813ba56e-7b1-ecd-dae%7C%7C43");
 		
-		Map<String, Object> map = COOKIES_SHOP_DETAIL.poll();
+		Map<String, Object> map = DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.poll();
 		if (null != map && map.containsKey("cookie")) {
 			header.setCookie(map.get("cookie").toString());
 			header.setUserAgent(map.get("user_agent").toString());
 			log.info("本批次使用的电话号码 " + map.get("phone").toString());
 			
-			COOKIES_SHOP_DETAIL.add(map);
+			DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.add(map);
 			
 		}
 		
@@ -535,10 +544,31 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 		header.setConnection("keep-alive");
 		header.setHost("m.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setCookie("_hc.v=\"\\\"ecf7cc6e-e3ac-4e4b-a454-a8817f963380.1526881397\\\"\"; _lxsdk_cuid=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk_s=163816706e9-b63-be3-c72%7C%7C20");
-		header.setAutoMobileUa(true);
+		
+//		Map<String, Object> map = COOKIES_USER_DETAIL.poll();
+//		if (null != map && map.containsKey("cookie")) {
+//			header.setCookie(map.get("cookie").toString());
+//			header.setUserAgent(map.get("user_agent").toString());
+//			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+//			
+//			COOKIES_USER_DETAIL.add(map);
+//			
+//		}
+		
+		Map<String, Object> map = DianpingUserInfoCookie.COOKIES_USER_INFO.poll();
+		if (null != map && map.containsKey("cookie")) {
+			header.setCookie(map.get("cookie").toString());
+			header.setUserAgent(map.get("user_agent").toString());
+			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+			
+			DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.add(map);
+			
+		}
+		
+//		header.setCookie("_hc.v=\"\\\"ecf7cc6e-e3ac-4e4b-a454-a8817f963380.1526881397\\\"\"; _lxsdk_cuid=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk_s=163816706e9-b63-be3-c72%7C%7C20");
+//		header.setAutoMobileUa(true);
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36");
-		header.setRequestSleepTime(2000);
+		header.setRequestSleepTime(5000);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
 		return response.getContent();
