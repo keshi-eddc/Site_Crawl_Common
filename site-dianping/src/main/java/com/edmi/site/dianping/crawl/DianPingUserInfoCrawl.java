@@ -66,7 +66,8 @@ public class DianPingUserInfoCrawl implements Runnable {
 			if(StringUtils.isNotEmpty(html)) {
 				Document doc = Jsoup.parse(html);
 				JSONObject jsonObj = JSONObject.parseObject(doc.body().text());
-				if (jsonObj.containsKey("code") && jsonObj.getInteger("code") == 200) {
+				if (null != jsonObj && jsonObj.containsKey("code") && jsonObj.getInteger("code") == 200) {
+					log.info("开始解析用户信息 " + comment.getUserId());
 					DianpingUserInfo user = DianpingParser.parseUserInfo_Mobile(jsonObj, comment);
 //					iGeneralJdbcUtils.execute(new SqlEntity(user, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
 					FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(user, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
@@ -99,7 +100,7 @@ public class DianPingUserInfoCrawl implements Runnable {
 				log.info("获取未抓取用户个数：" + list.size());
 				if (CollectionUtils.isNotEmpty(list)) {
 					
-					ExecutorService pool = Executors.newFixedThreadPool(10);
+					ExecutorService pool = Executors.newFixedThreadPool(20);
 					for (DianpingShopComment comment : list) {
 						pool.submit(new DianPingUserInfoCrawl(comment));
 					}

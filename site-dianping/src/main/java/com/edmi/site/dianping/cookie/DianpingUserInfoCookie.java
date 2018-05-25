@@ -17,7 +17,7 @@ import fun.jerry.entity.system.DataSource;
 import fun.jerry.entity.system.SqlEntity;
 import fun.jerry.entity.system.SqlType;
 
-@Component
+//@Component
 public class DianpingUserInfoCookie implements InitializingBean {
 	
 	private Logger log = LogSupport.getDianpinglog();

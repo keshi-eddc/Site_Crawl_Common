@@ -332,7 +332,7 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 	
 //	@Scheduled(cron = "0 0/5 * * * ?")
 	public static void refreshUserInfoCookie() {
-		String url = "http://www.dianping.com/member/20192274";
+		String url = "https://m.dianping.com/userprofile/ajax/profileinfo?id=108875025";
 		synchronized (COOKIES_USERINFO) {
 			try {
 				while (COOKIES_USERINFO.size() < 2) {
@@ -453,10 +453,12 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 			
 		}
 		
+//		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1");
+		
 //		header.setAutoPcUa(true);
 //		header.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-		header.setRequestSleepTime(10000);
-		header.setMaxTryTimes(3);
+		header.setRequestSleepTime(5000);
+		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
 //		if (response.getCode() == HttpStatus.SC_OK) {
 			return response.getContent();
@@ -535,6 +537,36 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 		}
 		return html;
 	}
+	//header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+	/*
+	public static String getUserInfo(HttpRequestHeader header) {
+		header.setAcceptEncoding("gzip, deflate, br");
+		header.setAcceptLanguage("zh-CN,zh;q=0.9");
+		header.setCacheControl("max-age=0");
+		header.setConnection("keep-alive");
+		header.setHost("m.dianping.com");
+		header.setUpgradeInsecureRequests("1");
+		WebDriver driver = null;
+		String html = "";
+		try {
+			WebDriverConfig config = new WebDriverConfig();
+			config.setTimeOut(10);
+			config.setProxyType(ProxyType.PROXY_STATIC_DLY);
+			driver = WebDriverSupport.getPhantomJSDriverInstance(config);
+//			driver = WebDriverSupport.getChromeDriverInstance(config);
+			html = WebDriverSupport.load(driver, header.getUrl());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (null != driver) {
+				driver.close();
+				driver.quit();
+			}
+		}
+		
+		return html;
+	}
+	*/
 	
 	public static String getUserInfo(HttpRequestHeader header) {
 		header.setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
@@ -555,20 +587,20 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 //			
 //		}
 		
-		Map<String, Object> map = DianpingUserInfoCookie.COOKIES_USER_INFO.poll();
-		if (null != map && map.containsKey("cookie")) {
-			header.setCookie(map.get("cookie").toString());
-			header.setUserAgent(map.get("user_agent").toString());
-			log.info("本批次使用的电话号码 " + map.get("phone").toString());
-			
-			DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.add(map);
-			
-		}
+//		Map<String, Object> map = DianpingUserInfoCookie.COOKIES_USER_INFO.poll();
+//		if (null != map && map.containsKey("cookie")) {
+//			header.setCookie(map.get("cookie").toString());
+//			header.setUserAgent(map.get("user_agent").toString());
+//			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+//			
+//			DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.add(map);
+//			
+//		}
 		
-//		header.setCookie("_hc.v=\"\\\"ecf7cc6e-e3ac-4e4b-a454-a8817f963380.1526881397\\\"\"; _lxsdk_cuid=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk=163813ba56b2d-0b00460b78a70c-3b7c015b-100200-163813ba56cc8; _lxsdk_s=163816706e9-b63-be3-c72%7C%7C20");
+//		header.setCookie("m_flash2=1; cityid=1; default_ab=index%3AA%3A1; cy=1; cye=shanghai; _lxsdk_cuid=1638ae2d38bc8-088125da2d0cbf-3c3c520d-100200-1638ae2d38bc8; _lxsdk=1638ae2d38bc8-088125da2d0cbf-3c3c520d-100200-1638ae2d38bc8; _hc.v=4582347e-2065-f8c6-141d-0b3297f319a1.1527043511; s_ViewType=10");
 //		header.setAutoMobileUa(true);
-//		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36");
-		header.setRequestSleepTime(5000);
+		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1");
+		header.setRequestSleepTime(500);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
 		return response.getContent();

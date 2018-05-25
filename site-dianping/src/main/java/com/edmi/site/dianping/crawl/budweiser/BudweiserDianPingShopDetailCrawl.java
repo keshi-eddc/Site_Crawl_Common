@@ -159,7 +159,7 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 			
 			List<DianpingShopInfo> shopInfoList = iGeneralJdbcUtils.queryForListObject(
 					new SqlEntity("select distinct shop_id as shopId, shop_url as shopUrl from dbo.Dianping_ShopInfo_Budweiser "
-							+ "where category_id in ('g133', 'g135') "
+							+ "where category_id in ('g116') "
 							+ "and shop_id not in (select shop_id from dbo.Dianping_Shop_Detail_Info) ", DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingShopInfo.class);
 			
 				count ++;
