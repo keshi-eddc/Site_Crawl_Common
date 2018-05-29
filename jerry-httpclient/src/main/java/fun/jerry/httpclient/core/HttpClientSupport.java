@@ -23,6 +23,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -263,7 +264,9 @@ public class HttpClientSupport {
 					.setSocketTimeout(10000)
 					.setConnectTimeout(10000)
 					.setConnectionRequestTimeout(10000)
-					.setRedirectsEnabled(true);
+					.setRedirectsEnabled(true)
+//					.setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+					;
 			
 //			RequestConfig requestConfig = RequestConfig.custom()
 ////		            .setRedirectsEnabled(false).build();//disable redirect

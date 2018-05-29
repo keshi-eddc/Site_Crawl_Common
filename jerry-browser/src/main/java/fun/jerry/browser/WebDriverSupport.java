@@ -107,7 +107,8 @@ public class WebDriverSupport {
 		options.setExperimentalOption("prefs", prefs);
 
 		if (null != webDriverConfig && (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
-				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN))) {
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_DLY))) {
 			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
 			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
 			// String proxyIpAndPort =
@@ -122,6 +123,19 @@ public class WebDriverSupport {
 			capability.setCapability(CapabilityType.PROXY, driverProxy);
 
 			// options.addArguments("--proxy-server=http://" + proxyIpAndPort);
+		} else if (null != webDriverConfig && (webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN))) {
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
+			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
+//			 String proxyIpAndPort =
+//			 "http://HN54N0TZA3IO945D:3524EC2B27DDDDF4@http-dyn.abuyun.com:9020";
+			org.openqa.selenium.Proxy driverProxy = new org.openqa.selenium.Proxy();
+			driverProxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
+			// 以下三行是为了避免localhost和selenium driver的也使用代理，务必要加，否则无法与chromedriver通讯
+			capability.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+			capability.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+			System.setProperty("http.nonProxyHosts", "localhost");
+
+			capability.setCapability(CapabilityType.PROXY, driverProxy);
 		}
 
 		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
@@ -200,8 +214,13 @@ public class WebDriverSupport {
 		WebDriver driver = null;
 
 		DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
+		
 //		desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
 //		desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+//		String ua = UserAgentSupport.getPCUserAgent();
+//		desiredCapabilities.setCapability("phantomjs.page.settings.userAgent", ua);
+//		desiredCapabilities.setCapability("phantomjs.page.customHeaders.User-Agent", ua);
+		
 		if (null != webDriverConfig.getProxyType() && (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
 				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)
 				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_DLY))) {//是否使用代理
@@ -233,6 +252,8 @@ public class WebDriverSupport {
 			log.error(url + " ####################### 页面加载超时  #######################");
 			stop(driver);
 			driver.navigate().refresh();
+		} finally {
+			
 		}
 
 		html = driver.getPageSource();

@@ -98,20 +98,21 @@
 		<!-- <version>2.53.1</version> -->
 		<!-- </dependency> -->
 		<!-- phantomjsdriver 在 >= 3.0.0-beta1 的版本中才支持 -->
-		<dependency>
+<!-- 		<dependency> -->
 			<!-- 集成测试的强大工具，支持通过浏览器访问页面。 -->
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-server</artifactId>
-			<version>3.4.0</version>
+<!-- 			<groupId>org.seleniumhq.selenium</groupId> -->
+<!-- 			<artifactId>selenium-server</artifactId> -->
+<!-- 			<version>3.12.0</version> -->
+<!-- 			<version>3.4.0</version> -->
 			<!-- <version>3.0.1</version> -->
 			<!-- <version>2.53.1</version> -->
-			<exclusions>
-				<exclusion>
-					<artifactId>org.apache.httpcomponents</artifactId>
-					<groupId>httpclient</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>org.apache.httpcomponents</artifactId> -->
+<!-- 					<groupId>httpclient</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/com.codeborne/phantomjsdriver -->
 		<!-- <dependency> -->
 		<!-- <groupId>com.codeborne</groupId> -->

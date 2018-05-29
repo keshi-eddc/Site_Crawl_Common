@@ -295,7 +295,6 @@ public class ClassUtils {
 			for (Class<?> temp = clazz; temp != Object.class; temp = temp.getSuperclass()) {
 				for (Field field : temp.getDeclaredFields()) {
 					ColumnMapping fm = field.getAnnotation(ColumnMapping.class);
-					//排除在外的field
 					if (null != fm) {
 						fieldColumnMapping.put(field.getName(), fm.value());
 					} else {

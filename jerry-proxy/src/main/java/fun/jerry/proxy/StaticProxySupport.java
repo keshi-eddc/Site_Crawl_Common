@@ -1,16 +1,10 @@
 package fun.jerry.proxy;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -28,7 +22,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.StopWatch;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -70,6 +63,7 @@ public class StaticProxySupport {
 //		HttpGet httpget = new HttpGet("http://192.168.3.236:9090/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
 	//	HttpGet httpget = new HttpGet("http://122.226.223.139:9091/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
 		HttpGet httpget = new HttpGet("http://192.168.0.31:9091/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
+//		HttpGet httpget = new HttpGet("http://192.168.0.49:9092/ip/proxy/get/" + proxyType + "/" + project + "/" + site);
 		String json=null;
 		CloseableHttpResponse response=null;
 		try {
@@ -102,6 +96,7 @@ public class StaticProxySupport {
 			}
 		}
 		proxy = JSONObject.parseObject(json, Proxy.class);
+		log.info(proxy.getIp() + ":" + proxy.getPort());
 //		if (null == proxy) {
 //			proxy = new Proxy();
 //			proxy.setIp("127.0.0.1");

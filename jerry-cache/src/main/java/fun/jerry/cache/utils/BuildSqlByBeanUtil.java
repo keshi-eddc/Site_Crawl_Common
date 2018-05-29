@@ -68,7 +68,12 @@ public class BuildSqlByBeanUtil {
 				continue;
 			}
 			
-			sql.append(fieldColumnMapping.get(pd.getName()));
+			for (String key : fieldColumnMapping.keySet()) {
+				if (key.equalsIgnoreCase(pd.getName())) {
+					sql.append(fieldColumnMapping.get(key));
+				}
+			}
+//			sql.append(fieldColumnMapping.get(pd.getName()));
 			if (pd.getPropertyType() == String.class
 					|| pd.getPropertyType() == Date.class
 					|| pd.getPropertyType() == List.class) {

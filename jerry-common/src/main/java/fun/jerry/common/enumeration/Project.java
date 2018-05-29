@@ -16,6 +16,11 @@ public enum Project {
 	 * 项目-嘉吉-抓取点评数据
 	 */
 	BUDWEISER,
+	
+	/**
+	 * 项目-SGM-抓取汽车数据
+	 */
+	SGM,
 
 	/**
 	 * 项目-其他

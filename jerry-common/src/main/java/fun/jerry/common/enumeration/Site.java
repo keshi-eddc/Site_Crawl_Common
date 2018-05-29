@@ -52,6 +52,14 @@ public enum Site {
 	 */
 	DIANPING,
 	
+	AUTOHOME,
+	
+	PCAUTO,
+	
+	XCAR,	
+	
+	BITAUTO,
+	
 	/**
 	 * 其他
 	 */
