@@ -156,7 +156,9 @@ public class HttpClientSupport {
 					httpResponse.setCode(response.getStatusLine().getStatusCode());
 					// 如果请求成功
 					if (null != response.getStatusLine() && (response.getStatusLine().getStatusCode() == 200
-							|| response.getStatusLine().getStatusCode() == 404 || response.getStatusLine().getStatusCode() == 403)) {
+//							|| response.getStatusLine().getStatusCode() == 404
+//							|| response.getStatusLine().getStatusCode() == 403
+							)) {
 						html = getResponseAsString(header, response);
 						httpResponse.setContent(html);
 						existError = false;
