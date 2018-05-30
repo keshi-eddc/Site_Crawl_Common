@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.edmi.site.dianping.entity.DianpingShopDetailInfo;
 import com.edmi.site.dianping.entity.DianpingShopInfo;
 import com.edmi.site.dianping.http.DianPingCommonRequest;
+import com.edmi.site.dianping.http.DianPingTaskRequest;
 
 import fun.jerry.cache.holder.FirstCacheHolder;
 import fun.jerry.cache.jdbc.GeneralJdbcUtils;
@@ -156,18 +157,12 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 		int count = 0;
 		try {
 			while (true) {
-			
-			List<DianpingShopInfo> shopInfoList = iGeneralJdbcUtils.queryForListObject(
-					new SqlEntity("select distinct shop_id as shopId, shop_url as shopUrl from dbo.Dianping_ShopInfo_Budweiser "
-							+ "where category_id in ('g116') "
-							+ "and shop_id not in (select shop_id from dbo.Dianping_Shop_Detail_Info) ", DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingShopInfo.class);
-			
 				count ++;
 				log.info("##################" + count);
-//				List<DianpingSubCategorySubRegion> list = DianPingTaskRequest.getSubCategorySubRegionTask();
+				List<DianpingShopInfo> shopInfoList = DianPingTaskRequest.getShopDetailTask();
 				log.info("获取未抓取用户个数：" + shopInfoList.size());
 				if (CollectionUtils.isNotEmpty(shopInfoList)) {
-					ExecutorService pool = Executors.newFixedThreadPool(10);
+					ExecutorService pool = Executors.newFixedThreadPool(20);
 					for (DianpingShopInfo ss : shopInfoList) {
 						pool.submit(new BudweiserDianPingShopDetailCrawl(ss));
 						TimeUnit.MILLISECONDS.sleep(50);

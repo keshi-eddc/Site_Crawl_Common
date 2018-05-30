@@ -32,7 +32,7 @@ public class DianpingShopDetailCookie implements InitializingBean {
 		
 		COOKIES_SHOP_DETAIL.clear();
 		
-		COOKIES_SHOP_DETAIL.addAll(iGeneralJdbcUtils.queryForListMap(new SqlEntity("select * from dbo.Dianping_ShopDetail_Cookie",
+		COOKIES_SHOP_DETAIL.addAll(iGeneralJdbcUtils.queryForListMap(new SqlEntity("select * from dbo.Dianping_ShopDetail_Cookie where status = 1",
 				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO)));
 		
 		log.info("本次加载Cookie数量 " + COOKIES_SHOP_DETAIL.size());

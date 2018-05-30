@@ -20,6 +20,16 @@ import fun.jerry.httpclient.core.HttpClientSupport;
 
 public class DianPingTaskRequest extends HttpClientSupport {
 	
+	public static List<DianpingShopInfo> getShopDetailTask() {
+		HttpRequestHeader header = new HttpRequestHeader();
+		header.setUrl("http://101.231.74.144:9091/task/dianping/detail/get");
+		header.setProxyType(ProxyType.NONE);
+		List<DianpingShopInfo> list = new ArrayList<>();
+		String html = get(header).getContent();
+		list = JSONArray.parseArray(html, DianpingShopInfo.class);
+		return list;
+	}
+	
 	public static List<DianpingShopComment> getUserInfoTask() {
 		HttpRequestHeader header = new HttpRequestHeader();
 		header.setUrl(((DianpingConfig) ApplicationContextHolder.getBean(DianpingConfig.class)).getTask_user());
