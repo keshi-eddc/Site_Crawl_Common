@@ -95,7 +95,8 @@ public class DianPingUserCheckCrawl implements Runnable {
 											stopFlag = true;
 											break;
 										}
-										iGeneralJdbcUtils.execute(new SqlEntity(check, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+//										iGeneralJdbcUtils.execute(new SqlEntity(check, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+										FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(check, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
 									}
 									if (stopFlag) {
 										log.info(comment.getUserId() + " 发现 2017，该用户签到信息抓取结束");
@@ -103,6 +104,10 @@ public class DianPingUserCheckCrawl implements Runnable {
 									}
 								} else {
 									log.info(comment.getUserId() + " 未发现签到列表，该用户签到信息抓取结束");
+									DianpingUserCheckInfo check = new DianpingUserCheckInfo();
+									check.setId("-1");
+									check.setUserId(comment.getUserId());
+									FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(check, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
 									break;
 								}
 							}
@@ -126,12 +131,8 @@ public class DianPingUserCheckCrawl implements Runnable {
 //		DianPingCommonRequest.refreshShopRecommendCookie();
 		
 		StringBuilder sql = new StringBuilder();
-		sql.append("with comment as ( "
-					+ "	select user_id, user_name, max(shop_id) as shop_id from " + ClassUtils.getTableName(DianpingShopComment.class) + " "
-					+ "	where len(user_id) > 0 "
-					+ "	group by user_id, user_name "
-					+ ") select top 1000 * from comment A "
-					+ "where not exists (select 1 from " + ClassUtils.getTableName(DianpingUserCheckInfo.class) + " B where A.user_id = B.user_id) "
+		sql.append("select top 10000 * from dbo.Dianping_User_Info A "
+					+ "where not exists (select 1 from dbo.Dianping_User_Check_Info B where A.user_id = B.user_id)"
 				);
 		
 		while (true) {
@@ -143,7 +144,7 @@ public class DianPingUserCheckCrawl implements Runnable {
 				break;
 			}
 			
-			ExecutorService pool = Executors.newFixedThreadPool(1);
+			ExecutorService pool = Executors.newFixedThreadPool(30);
 			for (DianpingShopComment comment : urls) {
 				pool.execute(new DianPingUserCheckCrawl(comment));
 			}

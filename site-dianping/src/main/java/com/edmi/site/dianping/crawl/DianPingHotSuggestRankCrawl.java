@@ -9,7 +9,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,7 @@ import fun.jerry.httpclient.bean.HttpRequestHeader;
  *
  */
 @Component
-public class DianPingHotSuggestRandCrawl {
+public class DianPingHotSuggestRankCrawl {
 	
 	private static Logger log = LogSupport.getDianpinglog();
 	
@@ -45,7 +44,7 @@ public class DianPingHotSuggestRandCrawl {
 	
 	private static List<DianpingCityInfo> cityList = new ArrayList<>();
 	
-	public DianPingHotSuggestRandCrawl() {
+	public DianPingHotSuggestRankCrawl() {
 		super();
 		this.iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 		cityList = iGeneralJdbcUtils.queryForListObject(new SqlEntity(
@@ -54,7 +53,10 @@ public class DianPingHotSuggestRandCrawl {
 				DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO), DianpingCityInfo.class);
 	}
 	
-	@Scheduled(cron="0 30 7,12,15,19 * * ? ")
+	/**
+	 * 每周三，周六 7点，12点，15点，19点
+	 */
+	@Scheduled(cron="0 0 7,12,15,19 ? * 4,7")
 	public void realTimeRank() {
 		for (DianpingCityInfo city : cityList) {
 			HttpRequestHeader header = new HttpRequestHeader();
@@ -101,7 +103,10 @@ public class DianPingHotSuggestRandCrawl {
 		}
 	}
 	
-	@Scheduled(cron="0 30 12 * * ? ")
+	/**
+	 * 每周三的12点
+	 */
+	@Scheduled(cron="0 0 12 ? * 4")
 	public void dishRank() {
 		for (DianpingCityInfo city : cityList) {
 			HttpRequestHeader header = new HttpRequestHeader();
@@ -148,14 +153,13 @@ public class DianPingHotSuggestRandCrawl {
 		}
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void main(String[] args) {
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 //		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
 //		
-		new DianPingHotSuggestRandCrawl().realTimeRank();
-		new DianPingHotSuggestRandCrawl().dishRank();
+		new DianPingHotSuggestRankCrawl().realTimeRank();
+//		new DianPingHotSuggestRandCrawl().dishRank();
 //		
 //		((AbstractApplicationContext) context).registerShutdownHook();
 	}

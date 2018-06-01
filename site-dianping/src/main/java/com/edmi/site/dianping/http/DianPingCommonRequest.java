@@ -616,12 +616,26 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 		header.setPragma("no-cache");
 		header.setUpgradeInsecureRequests("1");
 		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
+		header.setProject(Project.CARGILL);
+		header.setSite(Site.DIANPING);
 //		header.setProxyType(ProxyType.NONE);
-		header.setAutoPcUa(true);
+//		header.setAutoPcUa(true);
 //		header.setCookie(COOKIES_USERINFO.element());
 //		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d.1521009797\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; m_flash2=1; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTIxNTA3OTI5MTk2XV9b; _lxsdk_s=16240ebf651-c5a-e75-b4d%7C%7C319");
-		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d." + ((System.currentTimeMillis() / 1000) - 6666) + "\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; m_flash2=1; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTIxNTA3OTI5MTk2XV9b; _lxsdk_s=16240ebf651-c5a-e75-b4d%7C%7C319");
-		header.setRequestSleepTime(2000);
+//		header.setCookie("_hc.v=\"\"1c28735c-9efb-4f85-8805-eebb74bd311d." + ((System.currentTimeMillis() / 1000) - 6666) + "\"\"; _lxsdk_cuid=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; _lxsdk=162233ff0b061-0bcb8b147ad2f-5e183017-100200-162233ff0b2c8; cy=1; cye=shanghai; s_ViewType=10; m_flash2=1; pvhistory=6L+U5ZuePjo8L2Vycm9yL2Vycm9yX3BhZ2U+OjwxNTIxNTA3OTI5MTk2XV9b; _lxsdk_s=16240ebf651-c5a-e75-b4d%7C%7C319");
+		
+		Map<String, Object> map = DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.poll();
+		if (null != map && map.containsKey("cookie")) {
+			header.setCookie(map.get("cookie").toString());
+			header.setUserAgent(map.get("user_agent").toString());
+			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+			
+			DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.add(map);
+			
+		}
+		
+//		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1");
+		header.setRequestSleepTime(10000);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
 		String html = "";

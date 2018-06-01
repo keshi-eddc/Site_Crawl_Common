@@ -160,9 +160,9 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 				count ++;
 				log.info("##################" + count);
 				List<DianpingShopInfo> shopInfoList = DianPingTaskRequest.getShopDetailTask();
-				log.info("获取未抓取用户个数：" + shopInfoList.size());
 				if (CollectionUtils.isNotEmpty(shopInfoList)) {
-					ExecutorService pool = Executors.newFixedThreadPool(20);
+					log.info("获取未抓取用户个数：" + shopInfoList.size());
+					ExecutorService pool = Executors.newFixedThreadPool(30);
 					for (DianpingShopInfo ss : shopInfoList) {
 						pool.submit(new BudweiserDianPingShopDetailCrawl(ss));
 						TimeUnit.MILLISECONDS.sleep(50);

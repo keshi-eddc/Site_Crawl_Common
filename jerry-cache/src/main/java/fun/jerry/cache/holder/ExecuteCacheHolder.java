@@ -25,7 +25,7 @@ public class ExecuteCacheHolder {
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(10000);
 	
 	/** 执行sql的最大线程数 */
-	private final static int poolSize = 5;
+	private final static int poolSize = 2;
 	
 	private ThreadPoolExecutor pool = new ThreadPoolExecutor(poolSize, poolSize + 5, 60, TimeUnit.SECONDS, queue,
 			new ThreadPoolExecutor.CallerRunsPolicy());
