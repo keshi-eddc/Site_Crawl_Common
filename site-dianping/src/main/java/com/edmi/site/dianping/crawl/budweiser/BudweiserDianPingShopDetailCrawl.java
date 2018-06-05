@@ -162,7 +162,7 @@ public class BudweiserDianPingShopDetailCrawl implements Runnable {
 				List<DianpingShopInfo> shopInfoList = DianPingTaskRequest.getShopDetailTask();
 				if (CollectionUtils.isNotEmpty(shopInfoList)) {
 					log.info("获取未抓取用户个数：" + shopInfoList.size());
-					ExecutorService pool = Executors.newFixedThreadPool(30);
+					ExecutorService pool = Executors.newFixedThreadPool(19);
 					for (DianpingShopInfo ss : shopInfoList) {
 						pool.submit(new BudweiserDianPingShopDetailCrawl(ss));
 						TimeUnit.MILLISECONDS.sleep(50);
