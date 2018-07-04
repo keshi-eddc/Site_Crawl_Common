@@ -1,15 +1,14 @@
 package com.edmi.site.dianping.crawl;
 
-import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
@@ -53,12 +52,28 @@ public class DianPingShopCommentCrawl implements Runnable {
 	private DianpingShopInfo dianpingShopInfo;
 	
 	private IGeneralJdbcUtils iGeneralJdbcUtils;
+	
+	private long maxCommentTime = 0L; 
+	
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	public DianPingShopCommentCrawl(DianpingShopInfo dianpingShopInfo, boolean increment) {
 		super();
 		this.dianpingShopInfo = dianpingShopInfo;
 		this.increment = increment;
 		this.iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+		Map<String, Object> map = iGeneralJdbcUtils
+				.queryOne(new SqlEntity(
+						"select max(comment_time) as commentTime from dbo.Dianping_Shop_Comment where shop_id = '"
+								+ dianpingShopInfo.getShopId() + "'",
+						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
+		if (null != map && map.containsKey("commentTime")) {
+			try {
+				maxCommentTime = sdf.parse(map.get("commentTime").toString()).getTime();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -162,14 +177,15 @@ public class DianPingShopCommentCrawl implements Runnable {
 						comment.setCommentTime(commentTime);
 					}
 					
-					if (DateFormatSupport.before(comment.getCommentTime(), DateFormatSupport.YYYY_MM_DD, new java.util.Date(1483200000000L))) {
+					Element commentIdEle = shop.select(".actions a[data-id]").first();
+					comment.setCommentId(null != commentIdEle ? commentIdEle.attr("data-id") : "");
+					
+					if (DateFormatSupport.before(comment.getCommentTime(), DateFormatSupport.YYYY_MM_DD, new java.util.Date(1483200000000L))
+							|| maxCommentTime >= sdf.parse(comment.getCommentTime()).getTime()) {
 						flag = true;
 						log.info(dianpingShopInfo.getShopId() + " 页数 " + page + " 评论时间早于指定截止时间，中断抓取 " + comment.getCommentTime());
 						break;
 					}
-					
-					Element commentIdEle = shop.select(".actions a[data-id]").first();
-					comment.setCommentId(null != commentIdEle ? commentIdEle.attr("data-id") : "");
 					
 					Element praiseEle = shop.select(".actions .praise").first().nextElementSibling();
 					comment.setFavoriteNum(praiseEle.hasClass("col-exp")

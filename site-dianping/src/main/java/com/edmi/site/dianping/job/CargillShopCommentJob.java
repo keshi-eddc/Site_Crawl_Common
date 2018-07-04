@@ -19,6 +19,9 @@ import fun.jerry.cache.jdbc.GeneralJdbcUtils;
 import fun.jerry.cache.jdbc.IGeneralJdbcUtils;
 import fun.jerry.common.ApplicationContextHolder;
 import fun.jerry.common.LogSupport;
+import fun.jerry.entity.system.DataSource;
+import fun.jerry.entity.system.SqlEntity;
+import fun.jerry.entity.system.SqlType;
 
 /**
  * 项目-嘉吉
@@ -62,9 +65,11 @@ public class CargillShopCommentJob {
 //				+ "select distinct shop_id from dbo.Dianping_Shop_Comment "
 //				+ ") and rn = 1 order by review_num asc");
 		
-//		List<DianpingShopInfo> shopList = iGeneralJdbcUtils.queryForListObject(
-//				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
-//				DianpingShopInfo.class);
+		sql.append("select DISTINCT shop_id as shopId from dbo.Dianping_ShopInfo_Cargill where version = '201805'");
+		
+		List<DianpingShopInfo> shopList = iGeneralJdbcUtils.queryForListObject(
+				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
+				DianpingShopInfo.class);
 		
 //		DianPingCommonRequest.getShopCommentCookie();
 		
@@ -73,10 +78,10 @@ public class CargillShopCommentJob {
 			while (true) {
 				count ++;
 				log.info("##################" + count);
-				List<DianpingShopInfo> shopList = DianPingTaskRequest.getCommentShop();
+//				List<DianpingShopInfo> shopList = DianPingTaskRequest.getCommentShop();
 				log.info("获取未抓取评论的店铺个数：" + shopList.size());
 				if (CollectionUtils.isNotEmpty(shopList)) {
-					ExecutorService pool = Executors.newFixedThreadPool(1);
+					ExecutorService pool = Executors.newFixedThreadPool(10);
 //					
 					for (DianpingShopInfo shop : shopList) {
 						pool.execute(new DianPingShopCommentCrawl(shop, false));

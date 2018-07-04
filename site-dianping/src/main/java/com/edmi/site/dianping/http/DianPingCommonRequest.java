@@ -42,7 +42,7 @@ import fun.jerry.httpclient.bean.HttpRequestHeader;
 import fun.jerry.httpclient.bean.HttpResponse;
 import fun.jerry.httpclient.core.HttpClientSupport;
 
-@Component
+//@Component
 public class DianPingCommonRequest extends HttpClientSupport implements InitializingBean {
 
 	private static Logger log = LogSupport.getDianpinglog();
@@ -476,7 +476,7 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 		header.setConnection("keep-alive");
 		header.setHost("www.dianping.com");
 		header.setUpgradeInsecureRequests("1");
-		header.setProxyType(ProxyType.PROXY_STATIC_AUTO);
+		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 //		int temp = new Random().nextInt(2000) + 100;
 //		log.info("##############################  " + temp);
 //		header.setCookie("cy=1; cye=shanghai; _lxsdk_cuid=1635e81d5a075-09058d3f43fb66-3f3c5501-100200-1635e81d5a1c8; "
@@ -486,15 +486,26 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 //		header.setCookie("cy=1; cye=shanghai; _lxsdk_cuid=16363a4d9d5c8-081941b76cdc5-3c3c5905-100200-16363a4d9d581; _lxsdk=16363a4d9d5c8-081941b76cdc5-3c3c5905-100200-16363a4d9d581; _hc.v=7d65222a-e429-4eef-0af2-fb043377894b.1526385138; dper=d53c28ee19e0ffaa8a3d3393127536d0c6ac92de9efd6c62493afc0a30bbebb46793b9834c958069742a1986a372819a4622755ed61fbd57a77a8e7fa9861b682d267627bfa9fbd952089820514b74489a9296d4dc9516c860007b176cdeaabc; ll=7fd06e815b796be3df069dec7836c3df; ua=15046321964; ctu=877054e387b412665d57e710e1bf3f01c861a2dc561249d58a2132e548b5f7dd; s_ViewType=10; _lxsdk_s=16363a4d9d7-2b2-718-d54%7C%7C328");
 //		header.setCookie("cy=2; cye=beijing; _lxsdk_cuid=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _lxsdk=1635e4a04ecc8-04865857687ba9-3f3c5501-100200-1635e4a04ecc8; _hc.v=2725c736-98fd-868d-44f2-bd11965864c0.1526295303; dper=2b77b9d675a89e5d46ca3857f188dee355599a967b78fe239baf27592a1b54c1cc173547b9de59cc4dbc45d3c7c9ecf06d37d94c9b6d9f51aa16d97feeff9f9481148fca223b824626709c47a30cc9d38f6323ef89bac9b72af5355462655b86; ll=7fd06e815b796be3df069dec7836c3df; ua=17080236415; ctu=8547636063072e202fea44548b5b3241caba2053d5b42a9557a4610f9ad4ca92; _lxsdk_s=1635e4a04ed-a-c7c-498%7C%7C"
 //				+ new Random().nextInt(2000) + 100);
-		header.setAutoPcUa(true);
-		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
-		Map<String, Object> map = iGeneralJdbcUtils
-				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '17092688735'",
-						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
-		if (map.containsKey("cookie")) {
+//		header.setAutoPcUa(true);
+//		IGeneralJdbcUtils iGeneralJdbcUtils = (IGeneralJdbcUtils) ApplicationContextHolder.getBean(GeneralJdbcUtils.class);
+//		Map<String, Object> map = iGeneralJdbcUtils
+//				.queryOne(new SqlEntity("select top 1 * from dbo.Dianping_Cookie where phone = '17092688735'",
+//						DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO));
+//		if (map.containsKey("cookie")) {
+//			header.setCookie(map.get("cookie").toString());
+//			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+//		}
+		
+		Map<String, Object> map = DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.poll();
+		if (null != map && map.containsKey("cookie")) {
 			header.setCookie(map.get("cookie").toString());
+			header.setUserAgent(map.get("user_agent").toString());
 			log.info("本批次使用的电话号码 " + map.get("phone").toString());
+			
+			DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.add(map);
+			
 		}
+		
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
 //		header.setCookie();

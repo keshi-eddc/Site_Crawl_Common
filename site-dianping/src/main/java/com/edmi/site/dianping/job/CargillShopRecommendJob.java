@@ -42,7 +42,9 @@ public class CargillShopRecommendJob {
 //		DianPingCommonRequest.refreshShopRecommendCookie();
 		StringBuilder sql = new StringBuilder();
 		sql.append("select distinct shop_id as shop_id from " + ClassUtils.getTableName(DianpingShopInfo_Cargill.class) + " A "
-				+ "where not exists (select 1 from Dianping_Shop_Recommend_Page B where A.shop_id = B.shop_id "
+				+ "where version = '201806' "
+				+ "and not exists (select 1 from Dianping_Shop_Recommend_Info B where B.version = '201806'"
+				+ "and A.shop_id = B.shop_id "
 //				+ "and B.page = 1 and B.status = 200) "
 				+ ") "
 //				+ "and shop_id in ('72351070')"
@@ -53,7 +55,7 @@ public class CargillShopRecommendJob {
 				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
 				DianpingShopInfo.class);
 		
-		ExecutorService pool = Executors.newFixedThreadPool(5);
+		ExecutorService pool = Executors.newFixedThreadPool(20);
 		
 		for (DianpingShopInfo shop : shopList) {
 			pool.execute(new DianPingShopRecommendPageCrawl(shop));

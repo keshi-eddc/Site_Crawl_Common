@@ -88,7 +88,7 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 						List<DianpingShopRecommendInfo> recommendList = DianpingParser.parseShopRecommend(doc, shop, page);
 						for (DianpingShopRecommendInfo recommend : recommendList) {
 							FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(recommend,
-									DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT_NOT_EXISTS));
+									DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
 						}
 						
 					} else {
@@ -112,17 +112,17 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select distinct shop_id, shop_url from Dianping_ShopInfo_Cargill A "
-				+ "where version = '201805' "
-				+ "and shop_id not in (select distinct shop_id from dbo.Dianping_Shop_Recommend_Info where version = '201805')"
+				+ "where version = '201806' "
+				+ "and shop_id not in (select distinct shop_id from dbo.Dianping_Shop_Recommend_Info where version = '201806')"
 				);
 		
 		List<DianpingShopInfo> urls = iGeneralJdbcUtils.queryForListObject(
 				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
 				DianpingShopInfo.class);
-//		while (true) {
+		while (true) {
 			if (CollectionUtils.isNotEmpty(urls)) {
 				
-				ExecutorService pool = Executors.newFixedThreadPool(6);
+				ExecutorService pool = Executors.newFixedThreadPool(20);
 				
 				for (DianpingShopInfo shopInfo : urls) {
 					pool.execute(new DianPingShopRecommendPageCrawl(shopInfo));
@@ -146,7 +146,7 @@ public class DianPingShopRecommendPageCrawl implements Runnable {
 			} else {
 //				break;
 			}
-//		}
+		}
 		
 	}
 	
