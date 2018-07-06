@@ -28,18 +28,19 @@ public class FirstSqlCache {
 	public static void add(SqlEntity obj) {
 		try {
 			if (null != obj) {
+				first.add(obj);
 				// 判断对象是否在当前内存缓存中已存在，规则查看具体的对象equals方法
-				boolean existInMemory = false;
-				for (SqlEntity se : first) {
-					if (obj.getObj().equals(se.getObj())) {
-						existInMemory = true;
-						break;
-					}
-				}
-				
-				if (!existInMemory) {
-					first.add(obj);
-				}
+//				boolean existInMemory = false;
+//				for (SqlEntity se : first) {
+//					if (obj.getObj().equals(se.getObj())) {
+//						existInMemory = true;
+//						break;
+//					}
+//				}
+//				
+//				if (!existInMemory) {
+//					first.add(obj);
+//				}
 			} else {
 				log.error("SqlContext is error " + obj);
 			}

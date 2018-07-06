@@ -65,7 +65,7 @@ public class CargillShopCommentJob {
 //				+ "select distinct shop_id from dbo.Dianping_Shop_Comment "
 //				+ ") and rn = 1 order by review_num asc");
 		
-		sql.append("select DISTINCT shop_id as shopId from dbo.Dianping_ShopInfo_Cargill where version = '201805'");
+		sql.append("select DISTINCT shop_id as shopId from dbo.Dianping_ShopInfo_Cargill where version = '201805' and review_num > 0");
 		
 		List<DianpingShopInfo> shopList = iGeneralJdbcUtils.queryForListObject(
 				new SqlEntity(sql.toString(), DataSource.DATASOURCE_DianPing, SqlType.PARSE_NO),
@@ -81,7 +81,7 @@ public class CargillShopCommentJob {
 //				List<DianpingShopInfo> shopList = DianPingTaskRequest.getCommentShop();
 				log.info("获取未抓取评论的店铺个数：" + shopList.size());
 				if (CollectionUtils.isNotEmpty(shopList)) {
-					ExecutorService pool = Executors.newFixedThreadPool(10);
+					ExecutorService pool = Executors.newFixedThreadPool(8);
 //					
 					for (DianpingShopInfo shop : shopList) {
 						pool.execute(new DianPingShopCommentCrawl(shop, false));

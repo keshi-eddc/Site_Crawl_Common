@@ -499,23 +499,25 @@ public class DianPingCommonRequest extends HttpClientSupport implements Initiali
 		Map<String, Object> map = DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.poll();
 		if (null != map && map.containsKey("cookie")) {
 			header.setCookie(map.get("cookie").toString());
-			header.setUserAgent(map.get("user_agent").toString());
+//			header.setUserAgent(map.get("user_agent").toString());
+			header.setAutoPcUa(true);
 			log.info("本批次使用的电话号码 " + map.get("phone").toString());
 			
 			DianpingShopDetailCookie.COOKIES_SHOP_DETAIL.add(map);
 			
 		}
-		
+		header.setAutoPcUa(true);
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
 //		header.setUserAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
 //		header.setCookie();
-		header.setRequestSleepTime(5000);
+		header.setRequestSleepTime(10000);
 		header.setMaxTryTimes(1);
 		HttpResponse response = get(header);
 		if (response.getCode() == HttpStatus.SC_OK) {
 			return response.getContent();
 		} else {
-			return getShopComment(header);
+//			return getShopComment(header);
+			return "";
 		}
 	}
 	

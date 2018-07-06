@@ -201,6 +201,8 @@ public class DianPingShopCommentCrawl implements Runnable {
 					
 					FirstCacheHolder.getInstance().submitFirstCache(new SqlEntity(comment, DataSource.DATASOURCE_DianPing, SqlType.PARSE_INSERT));
 				
+					log.info(dianpingShopInfo.getShopId() + totalPage + " 当前页数 " + page + " 向缓存中添加一条记录");
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -221,7 +223,7 @@ public class DianPingShopCommentCrawl implements Runnable {
 		header.setProxyType(ProxyType.PROXY_STATIC_DLY);
 		header.setProject(Project.CARGILL);
 		header.setSite(Site.DIANPING);
-		header.setMaxTryTimes(10);
+		header.setMaxTryTimes(1);
 		String html = DianPingCommonRequest.getShopComment(header);
 		Document doc = Jsoup.parse(html);
 //		log.info(html);

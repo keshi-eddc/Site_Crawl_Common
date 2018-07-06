@@ -56,7 +56,7 @@ public class DianPingHotSuggestRankCrawl {
 	/**
 	 * 每周三，周六 7点，12点，15点，19点
 	 */
-	@Scheduled(cron="0 0 7,12,15,19 ? * 4,7")
+	@Scheduled(cron="0 0 7,12,15,19 ? * Wed,Sat")
 	public void realTimeRank() {
 		for (DianpingCityInfo city : cityList) {
 			HttpRequestHeader header = new HttpRequestHeader();
@@ -106,8 +106,9 @@ public class DianPingHotSuggestRankCrawl {
 	/**
 	 * 每周三的12点
 	 */
-	@Scheduled(cron="0 0 12 ? * 4")
+	@Scheduled(cron="0 0 12 ? * Sat,Sun")
 	public void dishRank() {
+		System.out.println(123);
 		for (DianpingCityInfo city : cityList) {
 			HttpRequestHeader header = new HttpRequestHeader();
 			header.setUrl("https://mapi.dianping.com/mapi/hotsuggestranklist.json?categoryid=0&cityid=" + city.getCityId() + "&type=2&mylng=&mylat=0&_=" + System.currentTimeMillis());
