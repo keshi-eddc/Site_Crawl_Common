@@ -14,7 +14,6 @@
 		<module>jerry-httpclient</module>
 		<module>jerry-browser</module>
 		<module>jerry-jdbc</module>
-		<module>site-dianping</module>
 	</modules>
 
 	<properties>
