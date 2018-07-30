@@ -217,7 +217,8 @@ public class HttpClientSupport {
 //					while ((line = bufferedReader.readLine()) != null) {
 //						entityStringBuilder.append(line + "\n");
 //					}
-					entityStringBuilder = new StringBuilder(EntityUtils.toString(entity));
+				entityStringBuilder = new StringBuilder(EntityUtils.toString(entity,
+						(StringUtils.isNotEmpty(header.getEncode()) ? header.getEncode() : "UTF-8")));
 				} catch (Exception e) {
 //					log.error("getResponseAsString error ", e);
 					throw new Exception(e);

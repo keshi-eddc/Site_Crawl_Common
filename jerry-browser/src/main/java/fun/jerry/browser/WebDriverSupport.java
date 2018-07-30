@@ -375,10 +375,15 @@ public class WebDriverSupport {
 		try {
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/10005596/review_all/p2?queryType=sortType&queryVal=latest"));
-			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/91018291/dishlist"));
+//			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/shop/91018291/dishlist"));
 //			System.out.println(WebDriverSupport.getCookies("http://www.dianping.com/ajax/member/checkin/checkinList?memberId=4426996"));
 //			System.out.println(DateFormatUtils.format(new Date(1483200000000L - 1000), "yyyy-MM-dd HH:mm:ss"));
 //			System.out.println(1483200000000L - 1000);
+			for (int i = 5; i < 15; i++) {
+				WebDriverConfig config = new WebDriverConfig();
+				config.setUserDataDir("path_" + i);
+				getChromeDriverInstance(config);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
