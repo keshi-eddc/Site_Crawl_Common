@@ -1,6 +1,7 @@
 package fun.jerry.browser;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +15,12 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.stereotype.Component;
 
 import fun.jerry.browser.entity.WebDriverConfig;
@@ -141,10 +144,88 @@ public class WebDriverSupport {
 		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 
 		capability.setCapability(ChromeOptions.CAPABILITY, options);
-		driver = new ChromeDriver(capability);
+//		driver = new ChromeDriver(capability);
+		ChromeDriverService service = new ChromeDriverService.Builder()
+		        .usingDriverExecutable(new File(chromedriver_path))
+		        .usingAnyFreePort()
+		        .build();
+		try {
+			service.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		driver = new RemoteWebDriver(service.getUrl(), capability);
 
 		driver.manage().timeouts().pageLoadTimeout(null != webDriverConfig ? webDriverConfig.getTimeOut() : 60, TimeUnit.SECONDS);
 
+		return driver;
+	}
+	
+	public static WebDriver getChromeDriverInstance2(WebDriverConfig webDriverConfig) {
+		
+		WebDriver driver = null;
+		
+		
+		String filePath = chromedriver_path;
+		File file = new File(filePath);
+		if (!file.exists()) {
+			filePath = "browserDriver/chromedriver.exe";
+		}
+		System.setProperty("webdriver.chrome.driver", filePath);
+		
+		DesiredCapabilities capability = null;
+		capability = DesiredCapabilities.chrome();
+		
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments(Arrays.asList("allow-running-insecure-content", "ignore-certificate-errors"));
+		options.addArguments("test-type");
+		// options.addArguments("user-data-dir=C:/Users/user_name/AppData/Local/Google/Chrome/User Data");
+		options.addArguments("user-data-dir=" + webDriverConfig.getUserDataDir());
+		
+		Map<String, Object> prefs = new HashMap<String, Object>();
+		prefs.put("profile.default_content_settings.popups", 0);
+		prefs.put("download.default_directory", (null != webDriverConfig ? webDriverConfig.getDownloadPath() : ""));
+		options.setExperimentalOption("prefs", prefs);
+		
+		if (null != webDriverConfig && (webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_AUTO)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN)
+				|| webDriverConfig.getProxyType().equals(ProxyType.PROXY_STATIC_DLY))) {
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
+			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
+			// String proxyIpAndPort =
+			// "http://H26U3Y18CA6L02YD:0567219ED7DF3592@http-dyn.abuyun.com:9020";
+			org.openqa.selenium.Proxy driverProxy = new org.openqa.selenium.Proxy();
+			driverProxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
+			// 以下三行是为了避免localhost和selenium driver的也使用代理，务必要加，否则无法与chromedriver通讯
+			capability.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+			capability.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+			System.setProperty("http.nonProxyHosts", "localhost");
+			
+			capability.setCapability(CapabilityType.PROXY, driverProxy);
+			
+			// options.addArguments("--proxy-server=http://" + proxyIpAndPort);
+		} else if (null != webDriverConfig && (webDriverConfig.getProxyType().equals(ProxyType.PROXY_CLOUD_ABUYUN))) {
+			Proxy proxy = StaticProxySupport.getStaticProxy(webDriverConfig.getProxyType(), webDriverConfig.getProject(), webDriverConfig.getSite());
+			String proxyIpAndPort = proxy.getIp() + ":" + proxy.getPort();
+//			 String proxyIpAndPort =
+//			 "http://HN54N0TZA3IO945D:3524EC2B27DDDDF4@http-dyn.abuyun.com:9020";
+			org.openqa.selenium.Proxy driverProxy = new org.openqa.selenium.Proxy();
+			driverProxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
+			// 以下三行是为了避免localhost和selenium driver的也使用代理，务必要加，否则无法与chromedriver通讯
+			capability.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+			capability.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+			System.setProperty("http.nonProxyHosts", "localhost");
+			
+			capability.setCapability(CapabilityType.PROXY, driverProxy);
+		}
+		
+		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+		
+		capability.setCapability(ChromeOptions.CAPABILITY, options);
+		driver = new ChromeDriver(capability);
+		
+		driver.manage().timeouts().pageLoadTimeout(null != webDriverConfig ? webDriverConfig.getTimeOut() : 60, TimeUnit.SECONDS);
+		
 		return driver;
 	}
 	
